@@ -10,6 +10,11 @@ import { BookingsModule } from './modules/bookings/bookings.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { TripsModule } from './modules/trips/trips.module';
+import { LocationsModule } from './modules/locations/locations.module';
+import { AircraftAvailabilityModule } from './modules/aircraft-availability/aircraft-availability.module';
+import { DirectCharterModule } from './modules/direct-charter/direct-charter.module';
+import { BookingInquiriesModule } from './modules/booking-inquiries/booking-inquiries.module';
+import { GoogleEarthEngineModule } from './modules/google-earth-engine/google-earth-engine.module';
 import { HealthController } from './health.controller';
 import { User } from './common/entities/user.entity';
 import { CharterDeal } from './common/entities/charter-deal.entity';
@@ -27,6 +32,12 @@ import { UserTrip } from './common/entities/user-trips.entity';
 import { UserFile } from './common/entities/user-files.entity';
 import { UserEvent } from './common/entities/user-events.entity';
 import { BookingTimeline } from './common/entities/booking-timeline.entity';
+import { Location } from './common/entities/location.entity';
+import { AircraftAvailability } from './common/entities/aircraft-availability.entity';
+import { AircraftImage } from './common/entities/aircraft-image.entity';
+import { AircraftCalendar } from './common/entities/aircraft-calendar.entity';
+import { BookingInquiry } from './common/entities/booking-inquiry.entity';
+import { InquiryStop } from './common/entities/inquiry-stop.entity';
 
 @Module({
   imports: [
@@ -57,6 +68,12 @@ import { BookingTimeline } from './common/entities/booking-timeline.entity';
         UserFile,
         UserEvent,
         BookingTimeline,
+        Location,
+        AircraftAvailability,
+        AircraftImage,
+        AircraftCalendar,
+        BookingInquiry,
+        InquiryStop,
       ],
       synchronize: false,
       logging: false,
@@ -112,7 +129,12 @@ import { BookingTimeline } from './common/entities/booking-timeline.entity';
     PaymentsModule,
     WalletModule,
     TripsModule,
-  ],
+    LocationsModule,
+    AircraftAvailabilityModule,
+            DirectCharterModule,
+        BookingInquiriesModule,
+        GoogleEarthEngineModule,
+      ],
   controllers: [HealthController],
 })
 export class AppModule {} 

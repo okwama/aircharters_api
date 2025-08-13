@@ -8,13 +8,13 @@ export class Passenger {
 
   @Column({ name: 'booking_id', type: 'varchar', length: 255 })
   @Index()
-  bookingId: string;
+  booking_id: string;
 
   @Column({ name: 'first_name', type: 'varchar', length: 100 })
-  firstName: string;
+  first_name: string;
 
   @Column({ name: 'last_name', type: 'varchar', length: 100 })
-  lastName: string;
+  last_name: string;
 
   @Column({ type: 'int', nullable: true })
   age: number;
@@ -23,17 +23,17 @@ export class Passenger {
   nationality: string;
 
   @Column({ name: 'id_passport_number', type: 'varchar', length: 100, nullable: true })
-  idPassportNumber: string;
+  id_passport_number: string;
 
   @Column({ name: 'is_user', type: 'boolean', default: false })
-  isUser: boolean;
+  is_user: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  created_at: Date;
 
   // Computed property for full name
   get fullName(): string {
-    return `${this.firstName} ${this.lastName}`.trim();
+    return `${this.first_name} ${this.last_name}`.trim();
   }
 
   // Computed property for display name

@@ -124,7 +124,7 @@ export class BookingPaymentService {
       const payment = queryRunner.manager.create(Payment, {
         id: `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: booking.userId,
-        companyId: booking.companyId,
+        company_id: booking.company_id,
         bookingId: booking.id,
         paymentMethod: this.mapPaymentMethod(paymentMethod),
         totalAmount: amount,

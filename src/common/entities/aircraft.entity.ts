@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { CharterDeal } from './charter-deal.entity';
+import { ChartersCompany } from './charters-company.entity';
+import { AircraftImage } from './aircraft-image.entity';
 
 @Entity('aircrafts')
 export class Aircraft {
@@ -33,6 +35,9 @@ export class Aircraft {
   @Column({ type: 'int' })
   capacity: number;
 
+  @Column({ name: 'pricePerHour', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  pricePerHour: number;
+
   @Column({ name: 'isAvailable', type: 'boolean', default: true })
   isAvailable: boolean;
 
@@ -44,6 +49,12 @@ export class Aircraft {
   })
   maintenanceStatus: string;
 
+  @Column({ name: 'baseAirport', type: 'varchar', length: 100, nullable: true })
+  baseAirport: string;
+
+  @Column({ name: 'baseCity', type: 'varchar', length: 100, nullable: true })
+  baseCity: string;
+
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
@@ -51,6 +62,13 @@ export class Aircraft {
   updatedAt: Date;
 
   // Relations
+  @ManyToOne(() => ChartersCompany, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'companyId' })
+  company: ChartersCompany;
+
   @OneToMany(() => CharterDeal, deal => deal.aircraft)
   deals: CharterDeal[];
+
+  @OneToMany(() => AircraftImage, image => image.aircraft)
+  images: AircraftImage[];
 } 

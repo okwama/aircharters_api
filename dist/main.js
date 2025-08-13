@@ -28,6 +28,11 @@ const bookings_module_1 = __webpack_require__(/*! ./modules/bookings/bookings.mo
 const payments_module_1 = __webpack_require__(/*! ./modules/payments/payments.module */ "./src/modules/payments/payments.module.ts");
 const wallet_module_1 = __webpack_require__(/*! ./modules/wallet/wallet.module */ "./src/modules/wallet/wallet.module.ts");
 const trips_module_1 = __webpack_require__(/*! ./modules/trips/trips.module */ "./src/modules/trips/trips.module.ts");
+const locations_module_1 = __webpack_require__(/*! ./modules/locations/locations.module */ "./src/modules/locations/locations.module.ts");
+const aircraft_availability_module_1 = __webpack_require__(/*! ./modules/aircraft-availability/aircraft-availability.module */ "./src/modules/aircraft-availability/aircraft-availability.module.ts");
+const direct_charter_module_1 = __webpack_require__(/*! ./modules/direct-charter/direct-charter.module */ "./src/modules/direct-charter/direct-charter.module.ts");
+const booking_inquiries_module_1 = __webpack_require__(/*! ./modules/booking-inquiries/booking-inquiries.module */ "./src/modules/booking-inquiries/booking-inquiries.module.ts");
+const google_earth_engine_module_1 = __webpack_require__(/*! ./modules/google-earth-engine/google-earth-engine.module */ "./src/modules/google-earth-engine/google-earth-engine.module.ts");
 const health_controller_1 = __webpack_require__(/*! ./health.controller */ "./src/health.controller.ts");
 const user_entity_1 = __webpack_require__(/*! ./common/entities/user.entity */ "./src/common/entities/user.entity.ts");
 const charter_deal_entity_1 = __webpack_require__(/*! ./common/entities/charter-deal.entity */ "./src/common/entities/charter-deal.entity.ts");
@@ -45,6 +50,12 @@ const user_trips_entity_1 = __webpack_require__(/*! ./common/entities/user-trips
 const user_files_entity_1 = __webpack_require__(/*! ./common/entities/user-files.entity */ "./src/common/entities/user-files.entity.ts");
 const user_events_entity_1 = __webpack_require__(/*! ./common/entities/user-events.entity */ "./src/common/entities/user-events.entity.ts");
 const booking_timeline_entity_1 = __webpack_require__(/*! ./common/entities/booking-timeline.entity */ "./src/common/entities/booking-timeline.entity.ts");
+const location_entity_1 = __webpack_require__(/*! ./common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+const aircraft_availability_entity_1 = __webpack_require__(/*! ./common/entities/aircraft-availability.entity */ "./src/common/entities/aircraft-availability.entity.ts");
+const aircraft_image_entity_1 = __webpack_require__(/*! ./common/entities/aircraft-image.entity */ "./src/common/entities/aircraft-image.entity.ts");
+const aircraft_calendar_entity_1 = __webpack_require__(/*! ./common/entities/aircraft-calendar.entity */ "./src/common/entities/aircraft-calendar.entity.ts");
+const booking_inquiry_entity_1 = __webpack_require__(/*! ./common/entities/booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
+const inquiry_stop_entity_1 = __webpack_require__(/*! ./common/entities/inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -78,6 +89,12 @@ exports.AppModule = AppModule = __decorate([
                     user_files_entity_1.UserFile,
                     user_events_entity_1.UserEvent,
                     booking_timeline_entity_1.BookingTimeline,
+                    location_entity_1.Location,
+                    aircraft_availability_entity_1.AircraftAvailability,
+                    aircraft_image_entity_1.AircraftImage,
+                    aircraft_calendar_entity_1.AircraftCalendar,
+                    booking_inquiry_entity_1.BookingInquiry,
+                    inquiry_stop_entity_1.InquiryStop,
                 ],
                 synchronize: false,
                 logging: false,
@@ -114,6 +131,11 @@ exports.AppModule = AppModule = __decorate([
             payments_module_1.PaymentsModule,
             wallet_module_1.WalletModule,
             trips_module_1.TripsModule,
+            locations_module_1.LocationsModule,
+            aircraft_availability_module_1.AircraftAvailabilityModule,
+            direct_charter_module_1.DirectCharterModule,
+            booking_inquiries_module_1.BookingInquiriesModule,
+            google_earth_engine_module_1.GoogleEarthEngineModule,
         ],
         controllers: [health_controller_1.HealthController],
     })
@@ -136,6 +158,143 @@ exports.CurrentUser = (0, common_1.createParamDecorator)((data, ctx) => {
     const request = ctx.switchToHttp().getRequest();
     return request.user;
 });
+
+
+/***/ }),
+
+/***/ "./src/common/entities/aircraft-availability.entity.ts":
+/*!*************************************************************!*\
+  !*** ./src/common/entities/aircraft-availability.entity.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AircraftAvailability = exports.AvailabilityType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const aircraft_entity_1 = __webpack_require__(/*! ./aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ./charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const location_entity_1 = __webpack_require__(/*! ./location.entity */ "./src/common/entities/location.entity.ts");
+var AvailabilityType;
+(function (AvailabilityType) {
+    AvailabilityType["AVAILABLE"] = "available";
+    AvailabilityType["BOOKED"] = "booked";
+    AvailabilityType["MAINTENANCE"] = "maintenance";
+    AvailabilityType["BLOCKED"] = "blocked";
+})(AvailabilityType || (exports.AvailabilityType = AvailabilityType = {}));
+let AircraftAvailability = class AircraftAvailability {
+};
+exports.AircraftAvailability = AircraftAvailability;
+__decorate([
+    (0, typeorm_1.PrimaryColumn)({ type: 'varchar', length: 255 }),
+    __metadata("design:type", String)
+], AircraftAvailability.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'aircraft_id', type: 'int' }),
+    __metadata("design:type", Number)
+], AircraftAvailability.prototype, "aircraftId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'company_id', type: 'int' }),
+    __metadata("design:type", Number)
+], AircraftAvailability.prototype, "companyId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'booking_id', type: 'varchar', length: 255, nullable: true }),
+    __metadata("design:type", String)
+], AircraftAvailability.prototype, "bookingId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'availability_type',
+        type: 'enum',
+        enum: AvailabilityType,
+        default: AvailabilityType.AVAILABLE
+    }),
+    __metadata("design:type", String)
+], AircraftAvailability.prototype, "availabilityType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'start_datetime', type: 'datetime' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], AircraftAvailability.prototype, "startDatetime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'end_datetime', type: 'datetime' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], AircraftAvailability.prototype, "endDatetime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'departure_location_id', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], AircraftAvailability.prototype, "departureLocationId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'arrival_location_id', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], AircraftAvailability.prototype, "arrivalLocationId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'repositioning_required', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], AircraftAvailability.prototype, "repositioningRequired", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'repositioning_cost', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], AircraftAvailability.prototype, "repositioningCost", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], AircraftAvailability.prototype, "notes", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'created_by', type: 'varchar', length: 255, nullable: true }),
+    __metadata("design:type", String)
+], AircraftAvailability.prototype, "createdBy", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'booking_reference', type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], AircraftAvailability.prototype, "bookingReference", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'is_recurring', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], AircraftAvailability.prototype, "isRecurring", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'recurrence_pattern', type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], AircraftAvailability.prototype, "recurrencePattern", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], AircraftAvailability.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], AircraftAvailability.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => aircraft_entity_1.Aircraft, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'aircraft_id' }),
+    __metadata("design:type", typeof (_e = typeof aircraft_entity_1.Aircraft !== "undefined" && aircraft_entity_1.Aircraft) === "function" ? _e : Object)
+], AircraftAvailability.prototype, "aircraft", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => charters_company_entity_1.ChartersCompany, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'company_id' }),
+    __metadata("design:type", typeof (_f = typeof charters_company_entity_1.ChartersCompany !== "undefined" && charters_company_entity_1.ChartersCompany) === "function" ? _f : Object)
+], AircraftAvailability.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => location_entity_1.Location, { onDelete: 'SET NULL' }),
+    (0, typeorm_1.JoinColumn)({ name: 'departure_location_id' }),
+    __metadata("design:type", typeof (_g = typeof location_entity_1.Location !== "undefined" && location_entity_1.Location) === "function" ? _g : Object)
+], AircraftAvailability.prototype, "departureLocation", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => location_entity_1.Location, { onDelete: 'SET NULL' }),
+    (0, typeorm_1.JoinColumn)({ name: 'arrival_location_id' }),
+    __metadata("design:type", typeof (_h = typeof location_entity_1.Location !== "undefined" && location_entity_1.Location) === "function" ? _h : Object)
+], AircraftAvailability.prototype, "arrivalLocation", void 0);
+exports.AircraftAvailability = AircraftAvailability = __decorate([
+    (0, typeorm_1.Entity)('aircraft_availability')
+], AircraftAvailability);
 
 
 /***/ }),
@@ -220,6 +379,190 @@ exports.Aircraft = Aircraft = __decorate([
 
 /***/ }),
 
+/***/ "./src/common/entities/aircraft-calendar.entity.ts":
+/*!*********************************************************!*\
+  !*** ./src/common/entities/aircraft-calendar.entity.ts ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f, _g;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AircraftCalendar = exports.CalendarEventType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const aircraft_entity_1 = __webpack_require__(/*! ./aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const company_entity_1 = __webpack_require__(/*! ./company.entity */ "./src/common/entities/company.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ./booking.entity */ "./src/common/entities/booking.entity.ts");
+var CalendarEventType;
+(function (CalendarEventType) {
+    CalendarEventType["AVAILABLE"] = "available";
+    CalendarEventType["BOOKED"] = "booked";
+    CalendarEventType["MAINTENANCE"] = "maintenance";
+    CalendarEventType["BLOCKED"] = "blocked";
+})(CalendarEventType || (exports.CalendarEventType = CalendarEventType = {}));
+let AircraftCalendar = class AircraftCalendar {
+};
+exports.AircraftCalendar = AircraftCalendar;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'aircraftId' }),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "aircraftId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'companyId' }),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "companyId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'startDateTime', type: 'datetime' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], AircraftCalendar.prototype, "startDateTime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'endDateTime', type: 'datetime' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], AircraftCalendar.prototype, "endDateTime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'eventType',
+        type: 'enum',
+        enum: CalendarEventType,
+        default: CalendarEventType.AVAILABLE
+    }),
+    __metadata("design:type", String)
+], AircraftCalendar.prototype, "eventType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'bookingId', nullable: true, length: 255 }),
+    __metadata("design:type", String)
+], AircraftCalendar.prototype, "bookingId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'originAirport', nullable: true, length: 100 }),
+    __metadata("design:type", String)
+], AircraftCalendar.prototype, "originAirport", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'destinationAirport', nullable: true, length: 100 }),
+    __metadata("design:type", String)
+], AircraftCalendar.prototype, "destinationAirport", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'passengerCount', nullable: true }),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "passengerCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'totalPrice', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "totalPrice", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'pricePerHour', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "pricePerHour", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'repositioningCost', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], AircraftCalendar.prototype, "repositioningCost", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'createdAt' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], AircraftCalendar.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updatedAt' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], AircraftCalendar.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => aircraft_entity_1.Aircraft, aircraft => aircraft.id),
+    (0, typeorm_1.JoinColumn)({ name: 'aircraftId' }),
+    __metadata("design:type", typeof (_e = typeof aircraft_entity_1.Aircraft !== "undefined" && aircraft_entity_1.Aircraft) === "function" ? _e : Object)
+], AircraftCalendar.prototype, "aircraft", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => company_entity_1.Company, company => company.id),
+    (0, typeorm_1.JoinColumn)({ name: 'companyId' }),
+    __metadata("design:type", typeof (_f = typeof company_entity_1.Company !== "undefined" && company_entity_1.Company) === "function" ? _f : Object)
+], AircraftCalendar.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => booking_entity_1.Booking, booking => booking.id),
+    (0, typeorm_1.JoinColumn)({ name: 'bookingId' }),
+    __metadata("design:type", typeof (_g = typeof booking_entity_1.Booking !== "undefined" && booking_entity_1.Booking) === "function" ? _g : Object)
+], AircraftCalendar.prototype, "booking", void 0);
+exports.AircraftCalendar = AircraftCalendar = __decorate([
+    (0, typeorm_1.Entity)('aircraft_calendar')
+], AircraftCalendar);
+
+
+/***/ }),
+
+/***/ "./src/common/entities/aircraft-image.entity.ts":
+/*!******************************************************!*\
+  !*** ./src/common/entities/aircraft-image.entity.ts ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AircraftImage = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const aircraft_entity_1 = __webpack_require__(/*! ./aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+let AircraftImage = class AircraftImage {
+};
+exports.AircraftImage = AircraftImage;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], AircraftImage.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'aircraftId', type: 'int' }),
+    __metadata("design:type", Number)
+], AircraftImage.prototype, "aircraftId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50 }),
+    __metadata("design:type", String)
+], AircraftImage.prototype, "category", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], AircraftImage.prototype, "url", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'publicId', type: 'varchar', length: 255 }),
+    __metadata("design:type", String)
+], AircraftImage.prototype, "publicId", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'createdAt' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], AircraftImage.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updatedAt' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], AircraftImage.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => aircraft_entity_1.Aircraft, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'aircraftId' }),
+    __metadata("design:type", typeof (_c = typeof aircraft_entity_1.Aircraft !== "undefined" && aircraft_entity_1.Aircraft) === "function" ? _c : Object)
+], AircraftImage.prototype, "aircraft", void 0);
+exports.AircraftImage = AircraftImage = __decorate([
+    (0, typeorm_1.Entity)('aircraft_images')
+], AircraftImage);
+
+
+/***/ }),
+
 /***/ "./src/common/entities/aircraft.entity.ts":
 /*!************************************************!*\
   !*** ./src/common/entities/aircraft.entity.ts ***!
@@ -236,11 +579,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Aircraft = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const charter_deal_entity_1 = __webpack_require__(/*! ./charter-deal.entity */ "./src/common/entities/charter-deal.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ./charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const aircraft_image_entity_1 = __webpack_require__(/*! ./aircraft-image.entity */ "./src/common/entities/aircraft-image.entity.ts");
 let Aircraft = class Aircraft {
 };
 exports.Aircraft = Aircraft;
@@ -284,6 +629,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Aircraft.prototype, "capacity", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'pricePerHour', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], Aircraft.prototype, "pricePerHour", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'isAvailable', type: 'boolean', default: true }),
     __metadata("design:type", Boolean)
 ], Aircraft.prototype, "isAvailable", void 0);
@@ -297,6 +646,14 @@ __decorate([
     __metadata("design:type", String)
 ], Aircraft.prototype, "maintenanceStatus", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'baseAirport', type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Aircraft.prototype, "baseAirport", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'baseCity', type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], Aircraft.prototype, "baseCity", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'createdAt' }),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], Aircraft.prototype, "createdAt", void 0);
@@ -305,12 +662,161 @@ __decorate([
     __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
 ], Aircraft.prototype, "updatedAt", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => charters_company_entity_1.ChartersCompany, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'companyId' }),
+    __metadata("design:type", typeof (_c = typeof charters_company_entity_1.ChartersCompany !== "undefined" && charters_company_entity_1.ChartersCompany) === "function" ? _c : Object)
+], Aircraft.prototype, "company", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => charter_deal_entity_1.CharterDeal, deal => deal.aircraft),
     __metadata("design:type", Array)
 ], Aircraft.prototype, "deals", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => aircraft_image_entity_1.AircraftImage, image => image.aircraft),
+    __metadata("design:type", Array)
+], Aircraft.prototype, "images", void 0);
 exports.Aircraft = Aircraft = __decorate([
     (0, typeorm_1.Entity)('aircrafts')
 ], Aircraft);
+
+
+/***/ }),
+
+/***/ "./src/common/entities/booking-inquiry.entity.ts":
+/*!*******************************************************!*\
+  !*** ./src/common/entities/booking-inquiry.entity.ts ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f, _g;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookingInquiry = exports.ProposedPriceType = exports.InquiryStatus = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const user_entity_1 = __webpack_require__(/*! ./user.entity */ "./src/common/entities/user.entity.ts");
+const aircraft_entity_1 = __webpack_require__(/*! ./aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const inquiry_stop_entity_1 = __webpack_require__(/*! ./inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
+var InquiryStatus;
+(function (InquiryStatus) {
+    InquiryStatus["PENDING"] = "pending";
+    InquiryStatus["PRICED"] = "priced";
+    InquiryStatus["CONFIRMED"] = "confirmed";
+    InquiryStatus["CANCELLED"] = "cancelled";
+})(InquiryStatus || (exports.InquiryStatus = InquiryStatus = {}));
+var ProposedPriceType;
+(function (ProposedPriceType) {
+    ProposedPriceType["PER_SEAT"] = "per_seat";
+    ProposedPriceType["PER_HOUR"] = "per_hour";
+    ProposedPriceType["TOTAL"] = "total";
+})(ProposedPriceType || (exports.ProposedPriceType = ProposedPriceType = {}));
+let BookingInquiry = class BookingInquiry {
+};
+exports.BookingInquiry = BookingInquiry;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], BookingInquiry.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)('varchar', { length: 255 }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.Column)('int'),
+    __metadata("design:type", Number)
+], BookingInquiry.prototype, "aircraftId", void 0);
+__decorate([
+    (0, typeorm_1.Column)('int'),
+    __metadata("design:type", Number)
+], BookingInquiry.prototype, "company_id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: InquiryStatus, default: InquiryStatus.PENDING }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "inquiryStatus", void 0);
+__decorate([
+    (0, typeorm_1.Column)('int', { default: 1 }),
+    __metadata("design:type", Number)
+], BookingInquiry.prototype, "requestedSeats", void 0);
+__decorate([
+    (0, typeorm_1.Column)('text', { nullable: true }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "specialRequirements", void 0);
+__decorate([
+    (0, typeorm_1.Column)('boolean', { default: false }),
+    __metadata("design:type", Boolean)
+], BookingInquiry.prototype, "onboardDining", void 0);
+__decorate([
+    (0, typeorm_1.Column)('boolean', { default: false }),
+    __metadata("design:type", Boolean)
+], BookingInquiry.prototype, "groundTransportation", void 0);
+__decorate([
+    (0, typeorm_1.Column)('varchar', { length: 100, nullable: true }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "billingRegion", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], BookingInquiry.prototype, "proposedPrice", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: ProposedPriceType, nullable: true }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "proposedPriceType", void 0);
+__decorate([
+    (0, typeorm_1.Column)('text', { nullable: true }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "adminNotes", void 0);
+__decorate([
+    (0, typeorm_1.Column)('text', { nullable: true }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "userNotes", void 0);
+__decorate([
+    (0, typeorm_1.Column)('varchar', { length: 50 }),
+    __metadata("design:type", String)
+], BookingInquiry.prototype, "referenceNumber", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ type: 'datetime', precision: 6 }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], BookingInquiry.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ type: 'datetime', precision: 6 }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], BookingInquiry.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)('datetime', { precision: 6, nullable: true }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], BookingInquiry.prototype, "pricedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)('datetime', { precision: 6, nullable: true }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], BookingInquiry.prototype, "confirmedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)('datetime', { precision: 6, nullable: true }),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], BookingInquiry.prototype, "cancelledAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'userId' }),
+    __metadata("design:type", typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object)
+], BookingInquiry.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => aircraft_entity_1.Aircraft, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'aircraftId' }),
+    __metadata("design:type", typeof (_g = typeof aircraft_entity_1.Aircraft !== "undefined" && aircraft_entity_1.Aircraft) === "function" ? _g : Object)
+], BookingInquiry.prototype, "aircraft", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => inquiry_stop_entity_1.InquiryStop, (stop) => stop.bookingInquiry, { cascade: true }),
+    __metadata("design:type", Array)
+], BookingInquiry.prototype, "stops", void 0);
+exports.BookingInquiry = BookingInquiry = __decorate([
+    (0, typeorm_1.Entity)('booking_inquiries')
+], BookingInquiry);
 
 
 /***/ }),
@@ -480,7 +986,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ name: 'company_id', type: 'int' }),
     __metadata("design:type", Number)
-], Booking.prototype, "companyId", void 0);
+], Booking.prototype, "company_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'totalPrice', type: 'decimal', precision: 10, scale: 2 }),
     __metadata("design:type", Number)
@@ -955,6 +1461,172 @@ exports.FixedRoute = FixedRoute = __decorate([
 
 /***/ }),
 
+/***/ "./src/common/entities/inquiry-stop.entity.ts":
+/*!****************************************************!*\
+  !*** ./src/common/entities/inquiry-stop.entity.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InquiryStop = exports.LocationType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const booking_inquiry_entity_1 = __webpack_require__(/*! ./booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
+var LocationType;
+(function (LocationType) {
+    LocationType["AIRPORT"] = "airport";
+    LocationType["CITY"] = "city";
+    LocationType["CUSTOM"] = "custom";
+})(LocationType || (exports.LocationType = LocationType = {}));
+let InquiryStop = class InquiryStop {
+};
+exports.InquiryStop = InquiryStop;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], InquiryStop.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)('int'),
+    __metadata("design:type", Number)
+], InquiryStop.prototype, "bookingInquiryId", void 0);
+__decorate([
+    (0, typeorm_1.Column)('varchar', { length: 255 }),
+    __metadata("design:type", String)
+], InquiryStop.prototype, "stopName", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 11, scale: 8 }),
+    __metadata("design:type", Number)
+], InquiryStop.prototype, "longitude", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 8 }),
+    __metadata("design:type", Number)
+], InquiryStop.prototype, "latitude", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], InquiryStop.prototype, "price", void 0);
+__decorate([
+    (0, typeorm_1.Column)('datetime', { nullable: true }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], InquiryStop.prototype, "datetime", void 0);
+__decorate([
+    (0, typeorm_1.Column)('int', { default: 1 }),
+    __metadata("design:type", Number)
+], InquiryStop.prototype, "stopOrder", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: LocationType, default: LocationType.CUSTOM }),
+    __metadata("design:type", String)
+], InquiryStop.prototype, "locationType", void 0);
+__decorate([
+    (0, typeorm_1.Column)('varchar', { length: 10, nullable: true }),
+    __metadata("design:type", String)
+], InquiryStop.prototype, "locationCode", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ type: 'datetime', precision: 6 }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], InquiryStop.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ type: 'datetime', precision: 6 }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], InquiryStop.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => booking_inquiry_entity_1.BookingInquiry, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'bookingInquiryId' }),
+    __metadata("design:type", typeof (_d = typeof booking_inquiry_entity_1.BookingInquiry !== "undefined" && booking_inquiry_entity_1.BookingInquiry) === "function" ? _d : Object)
+], InquiryStop.prototype, "bookingInquiry", void 0);
+exports.InquiryStop = InquiryStop = __decorate([
+    (0, typeorm_1.Entity)('inquiry_stops')
+], InquiryStop);
+
+
+/***/ }),
+
+/***/ "./src/common/entities/location.entity.ts":
+/*!************************************************!*\
+  !*** ./src/common/entities/location.entity.ts ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Location = exports.LocationType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+var LocationType;
+(function (LocationType) {
+    LocationType["AIRPORT"] = "airport";
+    LocationType["CITY"] = "city";
+    LocationType["REGION"] = "region";
+})(LocationType || (exports.LocationType = LocationType = {}));
+let Location = class Location {
+};
+exports.Location = Location;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], Location.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 255 }),
+    __metadata("design:type", String)
+], Location.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 10, unique: true }),
+    __metadata("design:type", String)
+], Location.prototype, "code", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    __metadata("design:type", String)
+], Location.prototype, "country", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: LocationType,
+        default: LocationType.CITY,
+    }),
+    __metadata("design:type", String)
+], Location.prototype, "type", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 8, nullable: true }),
+    __metadata("design:type", Number)
+], Location.prototype, "latitude", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 11, scale: 8, nullable: true }),
+    __metadata("design:type", Number)
+], Location.prototype, "longitude", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Location.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Location.prototype, "updatedAt", void 0);
+exports.Location = Location = __decorate([
+    (0, typeorm_1.Entity)('locations')
+], Location);
+
+
+/***/ }),
+
 /***/ "./src/common/entities/passenger.entity.ts":
 /*!*************************************************!*\
   !*** ./src/common/entities/passenger.entity.ts ***!
@@ -978,7 +1650,7 @@ const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const booking_entity_1 = __webpack_require__(/*! ./booking.entity */ "./src/common/entities/booking.entity.ts");
 let Passenger = class Passenger {
     get fullName() {
-        return `${this.firstName} ${this.lastName}`.trim();
+        return `${this.first_name} ${this.last_name}`.trim();
     }
     get displayName() {
         return this.fullName || 'Unnamed Passenger';
@@ -993,15 +1665,15 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'booking_id', type: 'varchar', length: 255 }),
     (0, typeorm_1.Index)(),
     __metadata("design:type", String)
-], Passenger.prototype, "bookingId", void 0);
+], Passenger.prototype, "booking_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'first_name', type: 'varchar', length: 100 }),
     __metadata("design:type", String)
-], Passenger.prototype, "firstName", void 0);
+], Passenger.prototype, "first_name", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'last_name', type: 'varchar', length: 100 }),
     __metadata("design:type", String)
-], Passenger.prototype, "lastName", void 0);
+], Passenger.prototype, "last_name", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'int', nullable: true }),
     __metadata("design:type", Number)
@@ -1013,15 +1685,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ name: 'id_passport_number', type: 'varchar', length: 100, nullable: true }),
     __metadata("design:type", String)
-], Passenger.prototype, "idPassportNumber", void 0);
+], Passenger.prototype, "id_passport_number", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'is_user', type: 'boolean', default: false }),
     __metadata("design:type", Boolean)
-], Passenger.prototype, "isUser", void 0);
+], Passenger.prototype, "is_user", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Passenger.prototype, "createdAt", void 0);
+], Passenger.prototype, "created_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => booking_entity_1.Booking, booking => booking.passengers),
     (0, typeorm_1.JoinColumn)({ name: 'booking_id' }),
@@ -1428,6 +2100,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], UserProfile.prototype, "profileVisible", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'data_sharing', type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], UserProfile.prototype, "dataSharing", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'location_tracking', type: 'boolean', default: true }),
+    __metadata("design:type", Boolean)
+], UserProfile.prototype, "locationTracking", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], UserProfile.prototype, "createdAt", void 0);
@@ -1559,7 +2239,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.User = exports.Theme = exports.LoyaltyTier = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
@@ -1678,6 +2358,14 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
 ], User.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'deleted_at', type: 'timestamp', nullable: true }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], User.prototype, "deleted_at", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'deletion_reason', type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "deletion_reason", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('users')
 ], User);
@@ -1934,6 +2622,519 @@ exports.HealthController = HealthController = __decorate([
     (0, swagger_1.ApiTags)('health'),
     (0, common_1.Controller)()
 ], HealthController);
+
+
+/***/ }),
+
+/***/ "./src/modules/aircraft-availability/aircraft-availability.controller.ts":
+/*!*******************************************************************************!*\
+  !*** ./src/modules/aircraft-availability/aircraft-availability.controller.ts ***!
+  \*******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AircraftAvailabilityController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../common/guards/jwt-auth.guard */ "./src/common/guards/jwt-auth.guard.ts");
+const aircraft_availability_service_1 = __webpack_require__(/*! ./aircraft-availability.service */ "./src/modules/aircraft-availability/aircraft-availability.service.ts");
+const aircraft_availability_dto_1 = __webpack_require__(/*! ./dto/aircraft-availability.dto */ "./src/modules/aircraft-availability/dto/aircraft-availability.dto.ts");
+let AircraftAvailabilityController = class AircraftAvailabilityController {
+    constructor(aircraftAvailabilityService) {
+        this.aircraftAvailabilityService = aircraftAvailabilityService;
+    }
+    async searchAvailableAircraft(searchDto) {
+        return this.aircraftAvailabilityService.searchAvailableAircraft(searchDto);
+    }
+};
+exports.AircraftAvailabilityController = AircraftAvailabilityController;
+__decorate([
+    (0, common_1.Post)('search'),
+    (0, swagger_1.ApiOperation)({ summary: 'Search for available aircraft' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Available aircraft found',
+        type: [aircraft_availability_dto_1.AvailableAircraftDto],
+    }),
+    (0, swagger_1.ApiBody)({ type: aircraft_availability_dto_1.AircraftAvailabilitySearchDto }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof aircraft_availability_dto_1.AircraftAvailabilitySearchDto !== "undefined" && aircraft_availability_dto_1.AircraftAvailabilitySearchDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], AircraftAvailabilityController.prototype, "searchAvailableAircraft", null);
+exports.AircraftAvailabilityController = AircraftAvailabilityController = __decorate([
+    (0, swagger_1.ApiTags)('Aircraft Availability'),
+    (0, common_1.Controller)('aircraft-availability'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof aircraft_availability_service_1.AircraftAvailabilityService !== "undefined" && aircraft_availability_service_1.AircraftAvailabilityService) === "function" ? _a : Object])
+], AircraftAvailabilityController);
+
+
+/***/ }),
+
+/***/ "./src/modules/aircraft-availability/aircraft-availability.module.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/aircraft-availability/aircraft-availability.module.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AircraftAvailabilityModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const aircraft_availability_controller_1 = __webpack_require__(/*! ./aircraft-availability.controller */ "./src/modules/aircraft-availability/aircraft-availability.controller.ts");
+const aircraft_availability_service_1 = __webpack_require__(/*! ./aircraft-availability.service */ "./src/modules/aircraft-availability/aircraft-availability.service.ts");
+const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const location_entity_1 = __webpack_require__(/*! ../../common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ../../common/entities/charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const charter_deal_entity_1 = __webpack_require__(/*! ../../common/entities/charter-deal.entity */ "./src/common/entities/charter-deal.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
+const aircraft_image_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft-image.entity */ "./src/common/entities/aircraft-image.entity.ts");
+let AircraftAvailabilityModule = class AircraftAvailabilityModule {
+};
+exports.AircraftAvailabilityModule = AircraftAvailabilityModule;
+exports.AircraftAvailabilityModule = AircraftAvailabilityModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                aircraft_entity_1.Aircraft,
+                location_entity_1.Location,
+                charters_company_entity_1.ChartersCompany,
+                charter_deal_entity_1.CharterDeal,
+                booking_entity_1.Booking,
+                aircraft_image_entity_1.AircraftImage,
+            ]),
+        ],
+        controllers: [aircraft_availability_controller_1.AircraftAvailabilityController],
+        providers: [aircraft_availability_service_1.AircraftAvailabilityService],
+        exports: [aircraft_availability_service_1.AircraftAvailabilityService],
+    })
+], AircraftAvailabilityModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/aircraft-availability/aircraft-availability.service.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/aircraft-availability/aircraft-availability.service.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AircraftAvailabilityService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const location_entity_1 = __webpack_require__(/*! ../../common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ../../common/entities/charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const charter_deal_entity_1 = __webpack_require__(/*! ../../common/entities/charter-deal.entity */ "./src/common/entities/charter-deal.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
+const aircraft_image_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft-image.entity */ "./src/common/entities/aircraft-image.entity.ts");
+let AircraftAvailabilityService = class AircraftAvailabilityService {
+    constructor(aircraftRepository, locationRepository, companyRepository, charterDealRepository, bookingRepository, aircraftImageRepository) {
+        this.aircraftRepository = aircraftRepository;
+        this.locationRepository = locationRepository;
+        this.companyRepository = companyRepository;
+        this.charterDealRepository = charterDealRepository;
+        this.bookingRepository = bookingRepository;
+        this.aircraftImageRepository = aircraftImageRepository;
+    }
+    async searchAvailableAircraft(searchDto) {
+        try {
+            const { departureLocationId, arrivalLocationId, departureDate, returnDate, passengerCount, isRoundTrip } = searchDto;
+            const departureDateObj = new Date(departureDate);
+            const returnDateObj = returnDate ? new Date(returnDate) : undefined;
+            const departureLocation = await this.locationRepository.findOne({ where: { id: departureLocationId } });
+            const arrivalLocation = await this.locationRepository.findOne({ where: { id: arrivalLocationId } });
+            if (!departureLocation || !arrivalLocation) {
+                throw new common_1.BadRequestException('Invalid departure or arrival location');
+            }
+            const aircraft = await this.aircraftRepository
+                .createQueryBuilder('aircraft')
+                .leftJoinAndSelect('aircraft.company', 'company')
+                .where('aircraft.capacity >= :passengerCount', { passengerCount })
+                .andWhere('aircraft.isAvailable = :isAvailable', { isAvailable: true })
+                .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
+                .getMany();
+            const availableAircraft = [];
+            for (const aircraftItem of aircraft) {
+                try {
+                    const isAvailable = await this.isAircraftAvailableForDate(aircraftItem.id, departureDateObj, passengerCount);
+                    if (!isAvailable)
+                        continue;
+                    if (isRoundTrip && returnDateObj) {
+                        const isAvailableReturn = await this.isAircraftAvailableForDate(aircraftItem.id, returnDateObj, passengerCount);
+                        if (!isAvailableReturn)
+                            continue;
+                    }
+                    const flightDetails = await this.calculateFlightDetails(aircraftItem, departureLocation, arrivalLocation, departureDateObj);
+                    if (flightDetails) {
+                        const aircraftDto = {
+                            aircraftId: aircraftItem.id || 0,
+                            aircraftName: aircraftItem.name || 'Unknown Aircraft',
+                            aircraftType: aircraftItem.type || 'fixedWing',
+                            capacity: aircraftItem.capacity || 0,
+                            companyId: aircraftItem.companyId || 0,
+                            companyName: aircraftItem.company?.companyName || 'Unknown Company',
+                            basePrice: flightDetails.basePrice || 0,
+                            repositioningCost: flightDetails.repositioningCost || 0,
+                            totalPrice: flightDetails.totalPrice || 0,
+                            availableSeats: (aircraftItem.capacity || 0) - passengerCount,
+                            departureTime: flightDetails.departureTime || '09:00:00',
+                            arrivalTime: flightDetails.arrivalTime || '10:00:00',
+                            flightDuration: flightDetails.duration || 60,
+                            distance: flightDetails.distance || 0,
+                            amenities: flightDetails.amenities || ['Comfortable Seating'],
+                            images: flightDetails.images || ['https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=Aircraft'],
+                        };
+                        availableAircraft.push(aircraftDto);
+                    }
+                }
+                catch (error) {
+                    console.error(`Error processing aircraft ${aircraftItem.id}:`, error);
+                    continue;
+                }
+            }
+            return availableAircraft.sort((a, b) => a.totalPrice - b.totalPrice);
+        }
+        catch (error) {
+            console.error('Error in searchAvailableAircraft:', error);
+            throw error;
+        }
+    }
+    async isAircraftAvailableForDate(aircraftId, date, passengerCount) {
+        const aircraft = await this.aircraftRepository.findOne({
+            where: {
+                id: aircraftId,
+                isAvailable: true,
+                maintenanceStatus: 'operational'
+            }
+        });
+        if (!aircraft)
+            return false;
+        return aircraft.capacity >= passengerCount;
+    }
+    async calculateFlightDetails(aircraft, departureLocation, arrivalLocation, departureDate) {
+        try {
+            const distance = this.calculateDistance(departureLocation, arrivalLocation);
+            const durationHours = distance / 800;
+            const durationMinutes = Math.round(durationHours * 60);
+            const pricePerHour = aircraft.pricePerHour || this.getDefaultPricePerHour(aircraft.type);
+            const basePrice = durationHours * pricePerHour;
+            const repositioningCost = await this.calculateRepositioningCost(aircraft.id, departureLocation.id, arrivalLocation.id, departureDate);
+            const totalPrice = basePrice + (repositioningCost || 0);
+            const departureTime = '09:00:00';
+            const arrivalTime = this.addMinutesToTime(departureTime, durationMinutes);
+            const amenities = this.getAircraftAmenities(aircraft.type);
+            const images = await this.getAircraftImages(aircraft.id);
+            return {
+                basePrice,
+                repositioningCost,
+                totalPrice,
+                departureTime,
+                arrivalTime,
+                duration: durationMinutes,
+                distance,
+                amenities,
+                images,
+            };
+        }
+        catch (error) {
+            console.error('Error calculating flight details:', error);
+            return {
+                basePrice: 1000,
+                repositioningCost: 0,
+                totalPrice: 1000,
+                departureTime: '09:00:00',
+                arrivalTime: '10:00:00',
+                duration: 60,
+                distance: 800,
+                amenities: ['Comfortable Seating'],
+                images: ['https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=Aircraft'],
+            };
+        }
+    }
+    calculateDistance(origin, destination) {
+        if (!origin.latitude || !origin.longitude || !destination.latitude || !destination.longitude) {
+            return 0;
+        }
+        const R = 6371;
+        const lat1 = origin.latitude * (Math.PI / 180);
+        const lat2 = destination.latitude * (Math.PI / 180);
+        const deltaLat = (destination.latitude - origin.latitude) * (Math.PI / 180);
+        const deltaLon = (destination.longitude - origin.longitude) * (Math.PI / 180);
+        const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+            Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    getDefaultPricePerHour(aircraftType) {
+        const pricing = {
+            'helicopter': 1500,
+            'fixedWing': 800,
+            'jet': 2500,
+            'glider': 500,
+            'seaplane': 1200,
+            'ultralight': 300,
+            'balloon': 2000,
+            'tiltrotor': 3000,
+            'gyroplane': 1000,
+            'airship': 3500,
+        };
+        return pricing[aircraftType] || 1000;
+    }
+    async calculateRepositioningCost(aircraftId, departureLocationId, arrivalLocationId, departureDate) {
+        try {
+            const departureLocation = await this.locationRepository.findOne({
+                where: { id: departureLocationId }
+            });
+            const arrivalLocation = await this.locationRepository.findOne({
+                where: { id: arrivalLocationId }
+            });
+            if (departureLocation && arrivalLocation) {
+                const distance = this.calculateDistance(departureLocation, arrivalLocation);
+                const aircraft = await this.aircraftRepository.findOne({
+                    where: { id: aircraftId }
+                });
+                if (aircraft) {
+                    const pricePerHour = aircraft.pricePerHour || this.getDefaultPricePerHour(aircraft.type);
+                    const repositioningHours = distance / 800;
+                    const repositioningCost = repositioningHours * pricePerHour * 0.3;
+                    const basePrice = repositioningHours * pricePerHour;
+                    return Math.min(repositioningCost, basePrice * 0.2);
+                }
+            }
+            return 0;
+        }
+        catch (error) {
+            console.error('Error calculating repositioning cost:', error);
+            return 0;
+        }
+    }
+    addMinutesToTime(time, minutes) {
+        const [hours, mins, secs] = time.split(':').map(Number);
+        const totalMinutes = hours * 60 + mins + minutes;
+        const newHours = Math.floor(totalMinutes / 60) % 24;
+        const newMins = totalMinutes % 60;
+        return `${newHours.toString().padStart(2, '0')}:${newMins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    getAircraftAmenities(aircraftType) {
+        const amenities = {
+            'helicopter': ['Air Conditioning', 'Comfortable Seating', 'Large Windows'],
+            'fixedWing': ['Air Conditioning', 'Comfortable Seating', 'Refreshments'],
+            'jet': ['Luxury Seating', 'WiFi', 'Refreshments', 'Entertainment', 'Air Conditioning'],
+            'glider': ['Comfortable Seating', 'Large Windows'],
+            'seaplane': ['Air Conditioning', 'Comfortable Seating', 'Refreshments'],
+            'ultralight': ['Comfortable Seating', 'Large Windows'],
+            'balloon': ['Comfortable Seating', 'Large Windows', 'Refreshments'],
+            'tiltrotor': ['Luxury Seating', 'WiFi', 'Refreshments', 'Entertainment', 'Air Conditioning'],
+            'gyroplane': ['Comfortable Seating', 'Large Windows'],
+            'airship': ['Luxury Seating', 'WiFi', 'Refreshments', 'Entertainment', 'Air Conditioning'],
+        };
+        return amenities[aircraftType] || ['Comfortable Seating'];
+    }
+    async getAircraftImages(aircraftId) {
+        try {
+            const images = await this.aircraftImageRepository.find({
+                where: { aircraftId },
+                order: { id: 'ASC' },
+                take: 5,
+            });
+            const imageUrls = images.map(img => img.url).filter(url => url != null);
+            if (imageUrls.length === 0) {
+                return [
+                    'https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=Aircraft',
+                    'https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=Interior',
+                ];
+            }
+            return imageUrls;
+        }
+        catch (error) {
+            console.error('Error fetching aircraft images:', error);
+            return [
+                'https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=Aircraft',
+                'https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=Interior',
+            ];
+        }
+    }
+};
+exports.AircraftAvailabilityService = AircraftAvailabilityService;
+exports.AircraftAvailabilityService = AircraftAvailabilityService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(aircraft_entity_1.Aircraft)),
+    __param(1, (0, typeorm_1.InjectRepository)(location_entity_1.Location)),
+    __param(2, (0, typeorm_1.InjectRepository)(charters_company_entity_1.ChartersCompany)),
+    __param(3, (0, typeorm_1.InjectRepository)(charter_deal_entity_1.CharterDeal)),
+    __param(4, (0, typeorm_1.InjectRepository)(booking_entity_1.Booking)),
+    __param(5, (0, typeorm_1.InjectRepository)(aircraft_image_entity_1.AircraftImage)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object])
+], AircraftAvailabilityService);
+
+
+/***/ }),
+
+/***/ "./src/modules/aircraft-availability/dto/aircraft-availability.dto.ts":
+/*!****************************************************************************!*\
+  !*** ./src/modules/aircraft-availability/dto/aircraft-availability.dto.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AvailableAircraftDto = exports.AircraftAvailabilitySearchDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class AircraftAvailabilitySearchDto {
+}
+exports.AircraftAvailabilitySearchDto = AircraftAvailabilitySearchDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Departure location ID' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], AircraftAvailabilitySearchDto.prototype, "departureLocationId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Arrival location ID' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], AircraftAvailabilitySearchDto.prototype, "arrivalLocationId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Departure date' }),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], AircraftAvailabilitySearchDto.prototype, "departureDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Return date (optional for round trips)', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], AircraftAvailabilitySearchDto.prototype, "returnDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Number of passengers' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1),
+    __metadata("design:type", Number)
+], AircraftAvailabilitySearchDto.prototype, "passengerCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Is round trip', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], AircraftAvailabilitySearchDto.prototype, "isRoundTrip", void 0);
+class AvailableAircraftDto {
+}
+exports.AvailableAircraftDto = AvailableAircraftDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Aircraft ID' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "aircraftId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Aircraft name' }),
+    __metadata("design:type", String)
+], AvailableAircraftDto.prototype, "aircraftName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Aircraft type' }),
+    __metadata("design:type", String)
+], AvailableAircraftDto.prototype, "aircraftType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Aircraft capacity' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "capacity", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Company ID' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "companyId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Company name' }),
+    __metadata("design:type", String)
+], AvailableAircraftDto.prototype, "companyName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Base price' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "basePrice", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Repositioning cost', required: false }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "repositioningCost", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Total price' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "totalPrice", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Available seats' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "availableSeats", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Departure time' }),
+    __metadata("design:type", String)
+], AvailableAircraftDto.prototype, "departureTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Arrival time' }),
+    __metadata("design:type", String)
+], AvailableAircraftDto.prototype, "arrivalTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Flight duration in minutes' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "flightDuration", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Distance in km' }),
+    __metadata("design:type", Number)
+], AvailableAircraftDto.prototype, "distance", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Amenities', type: [String] }),
+    __metadata("design:type", Array)
+], AvailableAircraftDto.prototype, "amenities", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Aircraft images', type: [String] }),
+    __metadata("design:type", Array)
+], AvailableAircraftDto.prototype, "images", void 0);
 
 
 /***/ }),
@@ -2597,10 +3798,10 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             throw new common_1.UnauthorizedException('Invalid token payload');
         }
         return {
-            sub: payload.sub,
-            userId: payload.sub,
+            id: payload.sub,
             email: payload.email,
             phone: payload.phone,
+            type: payload.type,
         };
     }
 };
@@ -2609,6 +3810,575 @@ exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
 ], JwtStrategy);
+
+
+/***/ }),
+
+/***/ "./src/modules/booking-inquiries/booking-inquiries.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/booking-inquiries/booking-inquiries.controller.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookingInquiriesController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const booking_inquiries_service_1 = __webpack_require__(/*! ./booking-inquiries.service */ "./src/modules/booking-inquiries/booking-inquiries.service.ts");
+const create_booking_inquiry_dto_1 = __webpack_require__(/*! ./dto/create-booking-inquiry.dto */ "./src/modules/booking-inquiries/dto/create-booking-inquiry.dto.ts");
+const update_booking_inquiry_dto_1 = __webpack_require__(/*! ./dto/update-booking-inquiry.dto */ "./src/modules/booking-inquiries/dto/update-booking-inquiry.dto.ts");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../common/guards/jwt-auth.guard */ "./src/common/guards/jwt-auth.guard.ts");
+const current_user_decorator_1 = __webpack_require__(/*! ../../common/decorators/current-user.decorator */ "./src/common/decorators/current-user.decorator.ts");
+const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
+let BookingInquiriesController = class BookingInquiriesController {
+    constructor(bookingInquiriesService) {
+        this.bookingInquiriesService = bookingInquiriesService;
+    }
+    async create(createBookingInquiryDto, user) {
+        return this.bookingInquiriesService.create(createBookingInquiryDto, user.id);
+    }
+    async findAll(user) {
+        return this.bookingInquiriesService.findAll(user.id);
+    }
+    async findOne(id, user) {
+        return this.bookingInquiriesService.findOne(id);
+    }
+    async findByReference(referenceNumber) {
+        return this.bookingInquiriesService.findByReference(referenceNumber);
+    }
+    async confirmInquiry(id, user) {
+        const result = await this.bookingInquiriesService.confirmInquiry(id, user.id);
+        return {
+            success: true,
+            message: 'Inquiry confirmed successfully',
+            data: result,
+        };
+    }
+    async cancelInquiry(id, user) {
+        return this.bookingInquiriesService.cancelInquiry(id, user.id);
+    }
+    async update(id, updateBookingInquiryDto) {
+        return this.bookingInquiriesService.update(id, updateBookingInquiryDto);
+    }
+};
+exports.BookingInquiriesController = BookingInquiriesController;
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_booking_inquiry_dto_1.CreateBookingInquiryDto !== "undefined" && create_booking_inquiry_dto_1.CreateBookingInquiryDto) === "function" ? _b : Object, typeof (_c = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _d : Object]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_e = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _e : Object]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('reference/:referenceNumber'),
+    __param(0, (0, common_1.Param)('referenceNumber')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "findByReference", null);
+__decorate([
+    (0, common_1.Put)(':id/confirm'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "confirmInquiry", null);
+__decorate([
+    (0, common_1.Put)(':id/cancel'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_g = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _g : Object]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "cancelInquiry", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_h = typeof update_booking_inquiry_dto_1.UpdateBookingInquiryDto !== "undefined" && update_booking_inquiry_dto_1.UpdateBookingInquiryDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", Promise)
+], BookingInquiriesController.prototype, "update", null);
+exports.BookingInquiriesController = BookingInquiriesController = __decorate([
+    (0, common_1.Controller)('booking-inquiries'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:paramtypes", [typeof (_a = typeof booking_inquiries_service_1.BookingInquiriesService !== "undefined" && booking_inquiries_service_1.BookingInquiriesService) === "function" ? _a : Object])
+], BookingInquiriesController);
+
+
+/***/ }),
+
+/***/ "./src/modules/booking-inquiries/booking-inquiries.module.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/booking-inquiries/booking-inquiries.module.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookingInquiriesModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const booking_inquiries_controller_1 = __webpack_require__(/*! ./booking-inquiries.controller */ "./src/modules/booking-inquiries/booking-inquiries.controller.ts");
+const booking_inquiries_service_1 = __webpack_require__(/*! ./booking-inquiries.service */ "./src/modules/booking-inquiries/booking-inquiries.service.ts");
+const payments_module_1 = __webpack_require__(/*! ../payments/payments.module */ "./src/modules/payments/payments.module.ts");
+const booking_inquiry_entity_1 = __webpack_require__(/*! ../../common/entities/booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
+const inquiry_stop_entity_1 = __webpack_require__(/*! ../../common/entities/inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
+const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
+const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+let BookingInquiriesModule = class BookingInquiriesModule {
+};
+exports.BookingInquiriesModule = BookingInquiriesModule;
+exports.BookingInquiriesModule = BookingInquiriesModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([booking_inquiry_entity_1.BookingInquiry, inquiry_stop_entity_1.InquiryStop, aircraft_entity_1.Aircraft, user_entity_1.User, booking_entity_1.Booking, payment_entity_1.Payment]),
+            payments_module_1.PaymentsModule,
+        ],
+        controllers: [booking_inquiries_controller_1.BookingInquiriesController],
+        providers: [booking_inquiries_service_1.BookingInquiriesService],
+        exports: [booking_inquiries_service_1.BookingInquiriesService],
+    })
+], BookingInquiriesModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/booking-inquiries/booking-inquiries.service.ts":
+/*!********************************************************************!*\
+  !*** ./src/modules/booking-inquiries/booking-inquiries.service.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookingInquiriesService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const booking_inquiry_entity_1 = __webpack_require__(/*! ../../common/entities/booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
+const inquiry_stop_entity_1 = __webpack_require__(/*! ../../common/entities/inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
+const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
+const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+const payment_provider_service_1 = __webpack_require__(/*! ../payments/services/payment-provider.service */ "./src/modules/payments/services/payment-provider.service.ts");
+let BookingInquiriesService = class BookingInquiriesService {
+    constructor(bookingInquiryRepository, inquiryStopRepository, aircraftRepository, userRepository, bookingRepository, paymentRepository, dataSource, paymentProviderService) {
+        this.bookingInquiryRepository = bookingInquiryRepository;
+        this.inquiryStopRepository = inquiryStopRepository;
+        this.aircraftRepository = aircraftRepository;
+        this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
+        this.paymentRepository = paymentRepository;
+        this.dataSource = dataSource;
+        this.paymentProviderService = paymentProviderService;
+    }
+    async create(createBookingInquiryDto, userId) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const referenceNumber = this.generateReferenceNumber();
+            const aircraft = await this.aircraftRepository.findOne({
+                where: { id: createBookingInquiryDto.aircraftId }
+            });
+            if (!aircraft) {
+                throw new common_1.NotFoundException('Aircraft not found');
+            }
+            const user = await this.userRepository.findOne({
+                where: { id: userId }
+            });
+            if (!user) {
+                throw new common_1.NotFoundException('User not found');
+            }
+            const bookingInquiry = this.bookingInquiryRepository.create({
+                userId,
+                aircraftId: createBookingInquiryDto.aircraftId,
+                company_id: aircraft.companyId,
+                requestedSeats: createBookingInquiryDto.requestedSeats,
+                specialRequirements: createBookingInquiryDto.specialRequirements,
+                onboardDining: createBookingInquiryDto.onboardDining || false,
+                groundTransportation: createBookingInquiryDto.groundTransportation || false,
+                billingRegion: createBookingInquiryDto.billingRegion,
+                userNotes: createBookingInquiryDto.userNotes,
+                referenceNumber,
+            });
+            const savedInquiry = await queryRunner.manager.save(bookingInquiry);
+            if (createBookingInquiryDto.stops && createBookingInquiryDto.stops.length > 0) {
+                const stops = createBookingInquiryDto.stops.map(stopDto => this.inquiryStopRepository.create({
+                    bookingInquiryId: savedInquiry.id,
+                    stopName: stopDto.stopName,
+                    longitude: stopDto.longitude,
+                    latitude: stopDto.latitude,
+                    price: stopDto.price,
+                    datetime: stopDto.datetime ? new Date(stopDto.datetime) : null,
+                    stopOrder: stopDto.stopOrder || 1,
+                    locationCode: stopDto.locationCode,
+                }));
+                await queryRunner.manager.save(stops);
+            }
+            await queryRunner.commitTransaction();
+            return await this.findOne(savedInquiry.id);
+        }
+        catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
+        }
+    }
+    async findAll(userId) {
+        return await this.bookingInquiryRepository.find({
+            where: { userId },
+            relations: ['stops', 'aircraft', 'user'],
+            order: { createdAt: 'DESC' },
+        });
+    }
+    async findOne(id) {
+        const inquiry = await this.bookingInquiryRepository.findOne({
+            where: { id },
+            relations: ['stops', 'aircraft', 'user'],
+        });
+        if (!inquiry) {
+            throw new common_1.NotFoundException(`Booking inquiry with ID ${id} not found`);
+        }
+        return inquiry;
+    }
+    async findByReference(referenceNumber) {
+        const inquiry = await this.bookingInquiryRepository.findOne({
+            where: { referenceNumber },
+            relations: ['stops', 'aircraft', 'user'],
+        });
+        if (!inquiry) {
+            throw new common_1.NotFoundException(`Booking inquiry with reference ${referenceNumber} not found`);
+        }
+        return inquiry;
+    }
+    async update(id, updateBookingInquiryDto) {
+        const inquiry = await this.findOne(id);
+        if (updateBookingInquiryDto.inquiryStatus === booking_inquiry_entity_1.InquiryStatus.PRICED) {
+            inquiry.inquiryStatus = booking_inquiry_entity_1.InquiryStatus.PRICED;
+            inquiry.proposedPrice = updateBookingInquiryDto.proposedPrice;
+            inquiry.proposedPriceType = updateBookingInquiryDto.proposedPriceType;
+            inquiry.adminNotes = updateBookingInquiryDto.adminNotes;
+            inquiry.pricedAt = new Date();
+        }
+        return await this.bookingInquiryRepository.save(inquiry);
+    }
+    async confirmInquiry(id, userId) {
+        const inquiry = await this.findOne(id);
+        if (inquiry.userId !== userId) {
+            throw new common_1.BadRequestException('You can only confirm your own inquiries');
+        }
+        if (inquiry.inquiryStatus !== booking_inquiry_entity_1.InquiryStatus.PRICED) {
+            throw new common_1.BadRequestException('Inquiry must be priced before confirmation');
+        }
+        if (!inquiry.proposedPrice) {
+            throw new common_1.BadRequestException('Inquiry must have a proposed price');
+        }
+        inquiry.inquiryStatus = booking_inquiry_entity_1.InquiryStatus.CONFIRMED;
+        inquiry.confirmedAt = new Date();
+        await this.bookingInquiryRepository.save(inquiry);
+        const booking = await this.createBookingFromInquiry(inquiry);
+        let paymentIntent = null;
+        if (this.paymentProviderService) {
+            try {
+                paymentIntent = await this.paymentProviderService.createPaymentIntent({
+                    amount: inquiry.proposedPrice * 100,
+                    currency: 'USD',
+                    bookingId: booking.id,
+                    userId: inquiry.userId,
+                    description: `Payment for inquiry ${inquiry.referenceNumber}`,
+                    metadata: {
+                        inquiryId: inquiry.id,
+                        inquiryReference: inquiry.referenceNumber,
+                        aircraftId: inquiry.aircraftId,
+                        requestedSeats: inquiry.requestedSeats,
+                    },
+                });
+            }
+            catch (error) {
+                console.error('Failed to create payment intent:', error);
+            }
+        }
+        return {
+            inquiry,
+            paymentIntent: paymentIntent ? {
+                paymentIntentId: paymentIntent.id,
+                clientSecret: paymentIntent.clientSecret,
+                status: paymentIntent.status,
+            } : null,
+        };
+    }
+    async cancelInquiry(id, userId) {
+        const inquiry = await this.findOne(id);
+        if (inquiry.userId !== userId) {
+            throw new common_1.BadRequestException('You can only cancel your own inquiries');
+        }
+        if (inquiry.inquiryStatus === booking_inquiry_entity_1.InquiryStatus.CONFIRMED) {
+            throw new common_1.BadRequestException('Cannot cancel confirmed inquiries');
+        }
+        inquiry.inquiryStatus = booking_inquiry_entity_1.InquiryStatus.CANCELLED;
+        inquiry.cancelledAt = new Date();
+        return await this.bookingInquiryRepository.save(inquiry);
+    }
+    async createBookingFromInquiry(inquiry) {
+        const bookingId = `BK-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`;
+        const booking = this.bookingRepository.create({
+            id: bookingId,
+            userId: inquiry.userId,
+            dealId: 0,
+            company_id: inquiry.company_id,
+            totalPrice: inquiry.proposedPrice || 0,
+            onboardDining: inquiry.onboardDining,
+            groundTransportation: inquiry.groundTransportation,
+            billingRegion: inquiry.billingRegion,
+            paymentMethod: booking_entity_1.PaymentMethod.CARD,
+            bookingStatus: booking_entity_1.BookingStatus.CONFIRMED,
+            paymentStatus: booking_entity_1.PaymentStatus.PENDING,
+            referenceNumber: inquiry.referenceNumber,
+            specialRequirements: inquiry.specialRequirements,
+        });
+        return await this.bookingRepository.save(booking);
+    }
+    generateReferenceNumber() {
+        const timestamp = Date.now().toString().slice(-8);
+        const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+        return `AC${timestamp}${random}`;
+    }
+};
+exports.BookingInquiriesService = BookingInquiriesService;
+exports.BookingInquiriesService = BookingInquiriesService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(booking_inquiry_entity_1.BookingInquiry)),
+    __param(1, (0, typeorm_1.InjectRepository)(inquiry_stop_entity_1.InquiryStop)),
+    __param(2, (0, typeorm_1.InjectRepository)(aircraft_entity_1.Aircraft)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(4, (0, typeorm_1.InjectRepository)(booking_entity_1.Booking)),
+    __param(5, (0, typeorm_1.InjectRepository)(payment_entity_1.Payment)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _g : Object, typeof (_h = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _h : Object])
+], BookingInquiriesService);
+
+
+/***/ }),
+
+/***/ "./src/modules/booking-inquiries/dto/create-booking-inquiry.dto.ts":
+/*!*************************************************************************!*\
+  !*** ./src/modules/booking-inquiries/dto/create-booking-inquiry.dto.ts ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateBookingInquiryDto = exports.InquiryStopDto = exports.ProposedPriceType = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+var ProposedPriceType;
+(function (ProposedPriceType) {
+    ProposedPriceType["PER_SEAT"] = "per_seat";
+    ProposedPriceType["PER_HOUR"] = "per_hour";
+    ProposedPriceType["TOTAL"] = "total";
+})(ProposedPriceType || (exports.ProposedPriceType = ProposedPriceType = {}));
+class InquiryStopDto {
+}
+exports.InquiryStopDto = InquiryStopDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], InquiryStopDto.prototype, "stopName", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(-180),
+    (0, class_validator_1.Max)(180),
+    __metadata("design:type", Number)
+], InquiryStopDto.prototype, "longitude", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(-90),
+    (0, class_validator_1.Max)(90),
+    __metadata("design:type", Number)
+], InquiryStopDto.prototype, "latitude", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], InquiryStopDto.prototype, "price", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], InquiryStopDto.prototype, "datetime", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], InquiryStopDto.prototype, "stopOrder", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], InquiryStopDto.prototype, "locationCode", void 0);
+class CreateBookingInquiryDto {
+}
+exports.CreateBookingInquiryDto = CreateBookingInquiryDto;
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateBookingInquiryDto.prototype, "aircraftId", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1),
+    __metadata("design:type", Number)
+], CreateBookingInquiryDto.prototype, "requestedSeats", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateBookingInquiryDto.prototype, "specialRequirements", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateBookingInquiryDto.prototype, "onboardDining", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateBookingInquiryDto.prototype, "groundTransportation", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateBookingInquiryDto.prototype, "billingRegion", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateBookingInquiryDto.prototype, "userNotes", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => InquiryStopDto),
+    __metadata("design:type", Array)
+], CreateBookingInquiryDto.prototype, "stops", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/booking-inquiries/dto/update-booking-inquiry.dto.ts":
+/*!*************************************************************************!*\
+  !*** ./src/modules/booking-inquiries/dto/update-booking-inquiry.dto.ts ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateBookingInquiryDto = exports.InquiryStatus = void 0;
+const mapped_types_1 = __webpack_require__(/*! @nestjs/mapped-types */ "@nestjs/mapped-types");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const create_booking_inquiry_dto_1 = __webpack_require__(/*! ./create-booking-inquiry.dto */ "./src/modules/booking-inquiries/dto/create-booking-inquiry.dto.ts");
+var InquiryStatus;
+(function (InquiryStatus) {
+    InquiryStatus["PENDING"] = "pending";
+    InquiryStatus["PRICED"] = "priced";
+    InquiryStatus["CONFIRMED"] = "confirmed";
+    InquiryStatus["CANCELLED"] = "cancelled";
+})(InquiryStatus || (exports.InquiryStatus = InquiryStatus = {}));
+class UpdateBookingInquiryDto extends (0, mapped_types_1.PartialType)(create_booking_inquiry_dto_1.CreateBookingInquiryDto) {
+}
+exports.UpdateBookingInquiryDto = UpdateBookingInquiryDto;
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(InquiryStatus),
+    __metadata("design:type", String)
+], UpdateBookingInquiryDto.prototype, "inquiryStatus", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpdateBookingInquiryDto.prototype, "proposedPrice", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(create_booking_inquiry_dto_1.ProposedPriceType),
+    __metadata("design:type", typeof (_a = typeof create_booking_inquiry_dto_1.ProposedPriceType !== "undefined" && create_booking_inquiry_dto_1.ProposedPriceType) === "function" ? _a : Object)
+], UpdateBookingInquiryDto.prototype, "proposedPriceType", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateBookingInquiryDto.prototype, "adminNotes", void 0);
 
 
 /***/ }),
@@ -3403,30 +5173,28 @@ let BookingsService = class BookingsService {
                 id: bookingId,
                 userId,
                 dealId: createBookingDto.dealId,
-                companyId: deal.companyId,
+                company_id: createBookingDto.companyId,
                 totalPrice: createBookingDto.totalPrice,
                 onboardDining: createBookingDto.onboardDining || false,
                 groundTransportation: createBookingDto.groundTransportation || false,
-                specialRequirements: createBookingDto.specialRequirements,
                 billingRegion: createBookingDto.billingRegion,
                 paymentMethod: createBookingDto.paymentMethod,
                 referenceNumber: referenceNumber,
                 bookingStatus: booking_entity_1.BookingStatus.PENDING,
                 paymentStatus: booking_entity_1.PaymentStatus.PENDING,
-                loyaltyPointsEarned: 0,
-                loyaltyPointsRedeemed: 0,
-                walletAmountUsed: 0,
+                specialRequirements: createBookingDto.specialRequirements,
             });
             const savedBooking = await queryRunner.manager.save(booking);
+            const passengersToCreate = createBookingDto.passengers || [];
             for (const passengerData of passengersToCreate) {
                 const passenger = this.passengerRepository.create({
-                    bookingId: bookingId,
-                    firstName: passengerData.firstName,
-                    lastName: passengerData.lastName,
+                    booking_id: bookingId,
+                    first_name: passengerData.firstName,
+                    last_name: passengerData.lastName,
                     age: passengerData.age,
                     nationality: passengerData.nationality,
-                    idPassportNumber: passengerData.idPassportNumber,
-                    isUser: passengerData.isUser || false,
+                    id_passport_number: passengerData.idPassportNumber,
+                    is_user: passengerData.isUser || false,
                 });
                 await queryRunner.manager.save(passenger);
             }
@@ -3470,7 +5238,7 @@ let BookingsService = class BookingsService {
                     bookingId: booking.id,
                     referenceNumber: booking.referenceNumber,
                     dealId: booking.dealId,
-                    companyId: booking.companyId,
+                    company_id: booking.company_id,
                 },
             }, payment_provider_interface_1.PaymentProviderType.STRIPE);
             return {
@@ -3904,7 +5672,7 @@ let BookingPaymentService = class BookingPaymentService {
             const payment = queryRunner.manager.create(payment_entity_1.Payment, {
                 id: `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                 userId: booking.userId,
-                companyId: booking.companyId,
+                company_id: booking.company_id,
                 bookingId: booking.id,
                 paymentMethod: this.mapPaymentMethod(paymentMethod),
                 totalAmount: amount,
@@ -5162,6 +6930,1594 @@ exports.CharterDealsService = CharterDealsService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/direct-charter/direct-charter.controller.ts":
+/*!*****************************************************************!*\
+  !*** ./src/modules/direct-charter/direct-charter.controller.ts ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DirectCharterController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../common/guards/jwt-auth.guard */ "./src/common/guards/jwt-auth.guard.ts");
+const direct_charter_service_1 = __webpack_require__(/*! ./direct-charter.service */ "./src/modules/direct-charter/direct-charter.service.ts");
+const search_direct_charter_dto_1 = __webpack_require__(/*! ./dto/search-direct-charter.dto */ "./src/modules/direct-charter/dto/search-direct-charter.dto.ts");
+const book_direct_charter_dto_1 = __webpack_require__(/*! ./dto/book-direct-charter.dto */ "./src/modules/direct-charter/dto/book-direct-charter.dto.ts");
+let DirectCharterController = class DirectCharterController {
+    constructor(directCharterService) {
+        this.directCharterService = directCharterService;
+    }
+    async searchAvailableAircraft(searchDto) {
+        try {
+            const results = await this.directCharterService.searchAvailableAircraft(searchDto);
+            return {
+                success: true,
+                data: results,
+                message: `Found ${results.length} available aircraft`,
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: error.message || 'Failed to search for available aircraft',
+                data: [],
+            };
+        }
+    }
+    async bookDirectCharter(bookDto, req) {
+        try {
+            const userId = req.user.id;
+            const result = await this.directCharterService.bookDirectCharter(bookDto, userId);
+            return {
+                success: true,
+                data: result,
+                message: 'Direct charter booking confirmed successfully',
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: error.message || 'Failed to book direct charter',
+                data: null,
+            };
+        }
+    }
+    async healthCheck() {
+        return {
+            success: true,
+            message: 'Direct charter service is running',
+            timestamp: new Date().toISOString(),
+        };
+    }
+};
+exports.DirectCharterController = DirectCharterController;
+__decorate([
+    (0, common_1.Post)('search'),
+    (0, swagger_1.ApiOperation)({ summary: 'Search for available aircraft for direct charter' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Returns available aircraft sorted by priority and price'
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid search parameters' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof search_direct_charter_dto_1.SearchDirectCharterDto !== "undefined" && search_direct_charter_dto_1.SearchDirectCharterDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", Promise)
+], DirectCharterController.prototype, "searchAvailableAircraft", null);
+__decorate([
+    (0, common_1.Post)('book'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Book a direct charter flight' }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: 'Booking confirmed successfully'
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Aircraft not available or invalid booking data' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof book_direct_charter_dto_1.BookDirectCharterDto !== "undefined" && book_direct_charter_dto_1.BookDirectCharterDto) === "function" ? _c : Object, Object]),
+    __metadata("design:returntype", Promise)
+], DirectCharterController.prototype, "bookDirectCharter", null);
+__decorate([
+    (0, common_1.Get)('health'),
+    (0, swagger_1.ApiOperation)({ summary: 'Check direct charter service health' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Service is healthy' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DirectCharterController.prototype, "healthCheck", null);
+exports.DirectCharterController = DirectCharterController = __decorate([
+    (0, swagger_1.ApiTags)('Direct Charter'),
+    (0, common_1.Controller)('direct-charter'),
+    __metadata("design:paramtypes", [typeof (_a = typeof direct_charter_service_1.DirectCharterService !== "undefined" && direct_charter_service_1.DirectCharterService) === "function" ? _a : Object])
+], DirectCharterController);
+
+
+/***/ }),
+
+/***/ "./src/modules/direct-charter/direct-charter.module.ts":
+/*!*************************************************************!*\
+  !*** ./src/modules/direct-charter/direct-charter.module.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DirectCharterModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const direct_charter_controller_1 = __webpack_require__(/*! ./direct-charter.controller */ "./src/modules/direct-charter/direct-charter.controller.ts");
+const direct_charter_service_1 = __webpack_require__(/*! ./direct-charter.service */ "./src/modules/direct-charter/direct-charter.service.ts");
+const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const aircraft_calendar_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft-calendar.entity */ "./src/common/entities/aircraft-calendar.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ../../common/entities/charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const passenger_entity_1 = __webpack_require__(/*! ../../common/entities/passenger.entity */ "./src/common/entities/passenger.entity.ts");
+const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+const payments_module_1 = __webpack_require__(/*! ../payments/payments.module */ "./src/modules/payments/payments.module.ts");
+let DirectCharterModule = class DirectCharterModule {
+};
+exports.DirectCharterModule = DirectCharterModule;
+exports.DirectCharterModule = DirectCharterModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                aircraft_entity_1.Aircraft,
+                aircraft_calendar_entity_1.AircraftCalendar,
+                booking_entity_1.Booking,
+                charters_company_entity_1.ChartersCompany,
+                passenger_entity_1.Passenger,
+                payment_entity_1.Payment,
+            ]),
+            payments_module_1.PaymentsModule,
+        ],
+        controllers: [direct_charter_controller_1.DirectCharterController],
+        providers: [direct_charter_service_1.DirectCharterService],
+        exports: [direct_charter_service_1.DirectCharterService],
+    })
+], DirectCharterModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/direct-charter/direct-charter.service.ts":
+/*!**************************************************************!*\
+  !*** ./src/modules/direct-charter/direct-charter.service.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DirectCharterService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const aircraft_calendar_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft-calendar.entity */ "./src/common/entities/aircraft-calendar.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ../../common/entities/charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const passenger_entity_1 = __webpack_require__(/*! ../../common/entities/passenger.entity */ "./src/common/entities/passenger.entity.ts");
+const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
+const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+const payment_provider_service_1 = __webpack_require__(/*! ../payments/services/payment-provider.service */ "./src/modules/payments/services/payment-provider.service.ts");
+const payment_provider_interface_1 = __webpack_require__(/*! ../payments/interfaces/payment-provider.interface */ "./src/modules/payments/interfaces/payment-provider.interface.ts");
+let DirectCharterService = class DirectCharterService {
+    constructor(aircraftRepository, aircraftCalendarRepository, bookingRepository, companyRepository, passengerRepository, paymentRepository, dataSource, paymentProviderService) {
+        this.aircraftRepository = aircraftRepository;
+        this.aircraftCalendarRepository = aircraftCalendarRepository;
+        this.bookingRepository = bookingRepository;
+        this.companyRepository = companyRepository;
+        this.passengerRepository = passengerRepository;
+        this.paymentRepository = paymentRepository;
+        this.dataSource = dataSource;
+        this.paymentProviderService = paymentProviderService;
+    }
+    async searchAvailableAircraft(searchDto) {
+        const { origin, destination, departureDateTime, returnDateTime, passengerCount, tripType } = searchDto;
+        const departureDate = new Date(departureDateTime);
+        const returnDate = returnDateTime ? new Date(returnDateTime) : null;
+        const availableAircraft = await this.aircraftRepository
+            .createQueryBuilder('aircraft')
+            .leftJoinAndSelect('aircraft.company', 'company')
+            .leftJoinAndSelect('aircraft.images', 'images')
+            .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
+            .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
+            .andWhere('aircraft.capacity >= :passengerCount', { passengerCount })
+            .getMany();
+        const results = [];
+        for (const aircraft of availableAircraft) {
+            const isAvailable = await this.checkAircraftAvailability(aircraft.id, departureDate, returnDate, tripType);
+            if (isAvailable) {
+                const pricing = await this.calculatePricing(aircraft, origin, destination, departureDate, returnDate, tripType);
+                const priority = this.calculateLocationPriority(aircraft, origin);
+                results.push({
+                    id: aircraft.id,
+                    name: aircraft.name,
+                    model: aircraft.model,
+                    capacity: aircraft.capacity,
+                    pricePerHour: aircraft.pricePerHour,
+                    baseAirport: aircraft.baseAirport,
+                    baseCity: aircraft.baseCity,
+                    companyName: aircraft.company?.companyName || 'Unknown',
+                    imageUrl: aircraft.images?.[0]?.url || null,
+                    ...pricing,
+                    priority,
+                });
+            }
+        }
+        return results.sort((a, b) => {
+            if (a.priority !== b.priority) {
+                return a.priority - b.priority;
+            }
+            return a.totalPrice - b.totalPrice;
+        });
+    }
+    async checkAircraftAvailability(aircraftId, departureDate, returnDate, tripType) {
+        const startDate = departureDate;
+        const endDate = returnDate || departureDate;
+        const conflicts = await this.aircraftCalendarRepository
+            .createQueryBuilder('calendar')
+            .where('calendar.aircraftId = :aircraftId', { aircraftId })
+            .andWhere('calendar.eventType IN (:...blockingEvents)', {
+            blockingEvents: [aircraft_calendar_entity_1.CalendarEventType.BOOKED, aircraft_calendar_entity_1.CalendarEventType.MAINTENANCE, aircraft_calendar_entity_1.CalendarEventType.BLOCKED]
+        })
+            .andWhere('(calendar.startDateTime <= :endDate AND calendar.endDateTime >= :startDate)', { startDate, endDate })
+            .getCount();
+        return conflicts === 0;
+    }
+    async calculatePricing(aircraft, origin, destination, departureDate, returnDate, tripType) {
+        const basePricePerHour = parseFloat(aircraft.pricePerHour.toString());
+        const flightDurationHours = this.estimateFlightDuration(origin, destination);
+        const repositioningCost = this.calculateRepositioningCost(aircraft, origin);
+        let totalHours = flightDurationHours;
+        let totalPrice = basePricePerHour * flightDurationHours;
+        if (tripType === 'roundtrip' && returnDate) {
+            const returnDurationHours = this.estimateFlightDuration(destination, origin);
+            totalHours += returnDurationHours;
+            totalPrice += basePricePerHour * returnDurationHours;
+        }
+        totalPrice += repositioningCost;
+        return {
+            totalPrice: Math.round(totalPrice * 100) / 100,
+            pricePerHour: basePricePerHour,
+            repositioningCost: Math.round(repositioningCost * 100) / 100,
+            flightDurationHours: Math.round(flightDurationHours * 10) / 10,
+            totalHours: Math.round(totalHours * 10) / 10,
+        };
+    }
+    estimateFlightDuration(origin, destination) {
+        return 2.5;
+    }
+    calculateRepositioningCost(aircraft, origin) {
+        if (aircraft.baseCity?.toLowerCase() === origin.toLowerCase()) {
+            return 0;
+        }
+        const basePricePerHour = parseFloat(aircraft.pricePerHour.toString());
+        return basePricePerHour * 0.5;
+    }
+    calculateLocationPriority(aircraft, origin) {
+        const aircraftCity = aircraft.baseCity?.toLowerCase();
+        const originCity = origin.toLowerCase();
+        if (aircraftCity === originCity) {
+            return 1;
+        }
+        return 2;
+    }
+    async bookDirectCharter(bookDto, userId) {
+        const { aircraftId, departureDateTime, returnDateTime, tripType } = bookDto;
+        const isAvailable = await this.checkAircraftAvailability(aircraftId, new Date(departureDateTime), returnDateTime ? new Date(returnDateTime) : null, tripType);
+        if (!isAvailable) {
+            throw new common_1.BadRequestException('Aircraft is no longer available for the selected time period');
+        }
+        const aircraft = await this.aircraftRepository.findOne({
+            where: { id: aircraftId },
+            relations: ['company'],
+        });
+        if (!aircraft) {
+            throw new common_1.NotFoundException(`Aircraft with ID ${aircraftId} not found`);
+        }
+        const user = await this.dataSource.getRepository(user_entity_1.User).findOne({
+            where: { id: userId },
+            select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
+        });
+        if (!user) {
+            throw new common_1.NotFoundException(`User with ID ${userId} not found`);
+        }
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const time = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
+            const random = Math.random().toString(36).substr(2, 3).toUpperCase();
+            const bookingId = `BK-${timestamp}-${time}-${random}`;
+            const referenceNumber = `AC${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+            const booking = this.bookingRepository.create({
+                id: bookingId,
+                userId: userId,
+                dealId: 0,
+                company_id: aircraft.company?.id || 1,
+                totalPrice: bookDto.totalPrice,
+                bookingStatus: 'pending',
+                paymentStatus: 'pending',
+                referenceNumber: referenceNumber,
+                specialRequirements: bookDto.specialRequests,
+            });
+            const savedBookingArr = await queryRunner.manager.save(booking);
+            const savedBooking = Array.isArray(savedBookingArr) ? savedBookingArr[0] : savedBookingArr;
+            const passenger = this.passengerRepository.create({
+                booking_id: bookingId,
+                first_name: user.first_name || 'Direct Charter',
+                last_name: user.last_name || 'Passenger',
+                age: user.date_of_birth ? this.calculateAge(user.date_of_birth) : 25,
+                nationality: user.nationality || 'Kenyan',
+                id_passport_number: 'N/A',
+                is_user: true,
+            });
+            await queryRunner.manager.save(passenger);
+            const calendarEntry = this.aircraftCalendarRepository.create({
+                aircraftId: bookDto.aircraftId,
+                companyId: aircraft.company?.id || 1,
+                startDateTime: new Date(departureDateTime),
+                endDateTime: returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime),
+                eventType: aircraft_calendar_entity_1.CalendarEventType.BOOKED,
+                bookingId: savedBooking.id,
+                originAirport: bookDto.origin,
+                destinationAirport: bookDto.destination,
+                passengerCount: bookDto.passengerCount,
+                totalPrice: bookDto.totalPrice,
+                pricePerHour: bookDto.pricePerHour,
+                repositioningCost: bookDto.repositioningCost,
+            });
+            await queryRunner.manager.save(calendarEntry);
+            await queryRunner.commitTransaction();
+            let paymentIntent = null;
+            try {
+                paymentIntent = await this.paymentProviderService.createPaymentIntent({
+                    amount: bookDto.totalPrice,
+                    currency: 'USD',
+                    bookingId: savedBooking.id,
+                    userId: userId,
+                    description: `Payment for direct charter booking ${referenceNumber}`,
+                    metadata: {
+                        bookingId: savedBooking.id,
+                        referenceNumber: referenceNumber,
+                        dealId: 0,
+                        company_id: aircraft.company?.id || 1,
+                        bookingType: 'direct_charter',
+                        aircraftId: bookDto.aircraftId,
+                    },
+                }, payment_provider_interface_1.PaymentProviderType.STRIPE);
+            }
+            catch (error) {
+                console.error('Failed to create payment intent for direct charter:', error);
+            }
+            return {
+                booking: {
+                    id: savedBooking.id,
+                    referenceNumber: referenceNumber,
+                    totalPrice: bookDto.totalPrice,
+                    bookingStatus: 'pending',
+                    paymentStatus: 'pending',
+                },
+                paymentIntent: paymentIntent ? {
+                    id: paymentIntent.id,
+                    clientSecret: paymentIntent.clientSecret,
+                    status: paymentIntent.status,
+                    requiresAction: paymentIntent.requiresAction,
+                    nextAction: paymentIntent.nextAction,
+                } : null,
+                paymentInstructions: {
+                    amount: bookDto.totalPrice,
+                    currency: 'USD',
+                    paymentMethods: ['card', 'apple_pay', 'google_pay'],
+                    nextSteps: paymentIntent ? [
+                        'Complete payment using the client secret',
+                        'Confirm payment using /bookings/:id/pay',
+                    ] : [
+                        'Create payment intent using /payments/create-intent',
+                        'Complete payment with Stripe',
+                        'Process booking using /bookings/:id/pay',
+                    ],
+                    apiEndpoints: {
+                        createIntent: `/payments/create-intent`,
+                        confirmPayment: `/bookings/${savedBooking.id}/pay`,
+                        paymentStatus: paymentIntent ? `/payments/status/${paymentIntent.id}` : null,
+                    },
+                },
+                message: 'Direct charter booking created successfully. Please complete payment to confirm.',
+            };
+        }
+        catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
+        }
+    }
+    calculateAge(birthDate) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+};
+exports.DirectCharterService = DirectCharterService;
+exports.DirectCharterService = DirectCharterService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(aircraft_entity_1.Aircraft)),
+    __param(1, (0, typeorm_1.InjectRepository)(aircraft_calendar_entity_1.AircraftCalendar)),
+    __param(2, (0, typeorm_1.InjectRepository)(booking_entity_1.Booking)),
+    __param(3, (0, typeorm_1.InjectRepository)(charters_company_entity_1.ChartersCompany)),
+    __param(4, (0, typeorm_1.InjectRepository)(passenger_entity_1.Passenger)),
+    __param(5, (0, typeorm_1.InjectRepository)(payment_entity_1.Payment)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _g : Object, typeof (_h = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _h : Object])
+], DirectCharterService);
+
+
+/***/ }),
+
+/***/ "./src/modules/direct-charter/dto/book-direct-charter.dto.ts":
+/*!*******************************************************************!*\
+  !*** ./src/modules/direct-charter/dto/book-direct-charter.dto.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookDirectCharterDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class BookDirectCharterDto {
+}
+exports.BookDirectCharterDto = BookDirectCharterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Aircraft ID' }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], BookDirectCharterDto.prototype, "aircraftId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Origin airport' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BookDirectCharterDto.prototype, "origin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Destination airport' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BookDirectCharterDto.prototype, "destination", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Departure date and time' }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BookDirectCharterDto.prototype, "departureDateTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Return date and time (for round trips)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], BookDirectCharterDto.prototype, "returnDateTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Number of passengers' }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(50),
+    __metadata("design:type", Number)
+], BookDirectCharterDto.prototype, "passengerCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Total price' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], BookDirectCharterDto.prototype, "totalPrice", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Price per hour' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], BookDirectCharterDto.prototype, "pricePerHour", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Repositioning cost', required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], BookDirectCharterDto.prototype, "repositioningCost", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Trip type', enum: ['oneway', 'roundtrip'] }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], BookDirectCharterDto.prototype, "tripType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Special requests', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], BookDirectCharterDto.prototype, "specialRequests", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/direct-charter/dto/search-direct-charter.dto.ts":
+/*!*********************************************************************!*\
+  !*** ./src/modules/direct-charter/dto/search-direct-charter.dto.ts ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SearchDirectCharterDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class SearchDirectCharterDto {
+    constructor() {
+        this.tripType = 'oneway';
+    }
+}
+exports.SearchDirectCharterDto = SearchDirectCharterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Origin airport code or city' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SearchDirectCharterDto.prototype, "origin", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Destination airport code or city' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SearchDirectCharterDto.prototype, "destination", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Departure date and time', example: '2024-01-15T10:00:00Z' }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SearchDirectCharterDto.prototype, "departureDateTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Return date and time (optional for round trip)', example: '2024-01-20T18:00:00Z', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SearchDirectCharterDto.prototype, "returnDateTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Number of passengers', minimum: 1, maximum: 50 }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(50),
+    __metadata("design:type", Number)
+], SearchDirectCharterDto.prototype, "passengerCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Trip type', enum: ['oneway', 'roundtrip'], default: 'oneway' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SearchDirectCharterDto.prototype, "tripType", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/google-earth-engine/dto/google-earth-engine.dto.ts":
+/*!************************************************************************!*\
+  !*** ./src/modules/google-earth-engine/dto/google-earth-engine.dto.ts ***!
+  \************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GoogleEarthEngineDistanceDto = exports.GoogleEarthEngineReverseGeocodeDto = exports.GoogleEarthEngineSearchDto = exports.GoogleEarthEngineLocationDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class GoogleEarthEngineLocationDto {
+}
+exports.GoogleEarthEngineLocationDto = GoogleEarthEngineLocationDto;
+class GoogleEarthEngineSearchDto {
+}
+exports.GoogleEarthEngineSearchDto = GoogleEarthEngineSearchDto;
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], GoogleEarthEngineSearchDto.prototype, "query", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], GoogleEarthEngineSearchDto.prototype, "type", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], GoogleEarthEngineSearchDto.prototype, "location", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1000),
+    (0, class_validator_1.Max)(50000),
+    __metadata("design:type", Number)
+], GoogleEarthEngineSearchDto.prototype, "radius", void 0);
+class GoogleEarthEngineReverseGeocodeDto {
+}
+exports.GoogleEarthEngineReverseGeocodeDto = GoogleEarthEngineReverseGeocodeDto;
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(-90),
+    (0, class_validator_1.Max)(90),
+    __metadata("design:type", Number)
+], GoogleEarthEngineReverseGeocodeDto.prototype, "latitude", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(-180),
+    (0, class_validator_1.Max)(180),
+    __metadata("design:type", Number)
+], GoogleEarthEngineReverseGeocodeDto.prototype, "longitude", void 0);
+class GoogleEarthEngineDistanceDto {
+}
+exports.GoogleEarthEngineDistanceDto = GoogleEarthEngineDistanceDto;
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Object)
+], GoogleEarthEngineDistanceDto.prototype, "origin", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Object)
+], GoogleEarthEngineDistanceDto.prototype, "destination", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(['driving', 'walking', 'bicycling', 'transit']),
+    __metadata("design:type", String)
+], GoogleEarthEngineDistanceDto.prototype, "mode", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/google-earth-engine/google-earth-engine.controller.ts":
+/*!***************************************************************************!*\
+  !*** ./src/modules/google-earth-engine/google-earth-engine.controller.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GoogleEarthEngineController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const google_earth_engine_service_1 = __webpack_require__(/*! ./google-earth-engine.service */ "./src/modules/google-earth-engine/google-earth-engine.service.ts");
+const google_earth_engine_dto_1 = __webpack_require__(/*! ./dto/google-earth-engine.dto */ "./src/modules/google-earth-engine/dto/google-earth-engine.dto.ts");
+let GoogleEarthEngineController = class GoogleEarthEngineController {
+    constructor(googleEarthEngineService) {
+        this.googleEarthEngineService = googleEarthEngineService;
+    }
+    async searchLocations(searchDto) {
+        return this.googleEarthEngineService.searchLocations(searchDto);
+    }
+    async reverseGeocode(reverseGeocodeDto) {
+        return this.googleEarthEngineService.reverseGeocode(reverseGeocodeDto);
+    }
+    async calculateDistance(distanceDto) {
+        return this.googleEarthEngineService.calculateDistance(distanceDto);
+    }
+    async calculateFlightDistance(lat1, lon1, lat2, lon2, aircraftType = 'jet') {
+        const distance = this.googleEarthEngineService.calculateFlightDistance(lat1, lon1, lat2, lon2);
+        const duration = this.googleEarthEngineService.estimateFlightDuration(distance, aircraftType);
+        return {
+            distance: distance,
+            duration: duration,
+            distanceText: `${distance.toFixed(1)} km`,
+            durationText: `${(duration / 3600).toFixed(1)} hours`,
+            aircraftType: aircraftType,
+        };
+    }
+};
+exports.GoogleEarthEngineController = GoogleEarthEngineController;
+__decorate([
+    (0, common_1.Get)('search/locations'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof google_earth_engine_dto_1.GoogleEarthEngineSearchDto !== "undefined" && google_earth_engine_dto_1.GoogleEarthEngineSearchDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", Promise)
+], GoogleEarthEngineController.prototype, "searchLocations", null);
+__decorate([
+    (0, common_1.Get)('geocode/reverse'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof google_earth_engine_dto_1.GoogleEarthEngineReverseGeocodeDto !== "undefined" && google_earth_engine_dto_1.GoogleEarthEngineReverseGeocodeDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], GoogleEarthEngineController.prototype, "reverseGeocode", null);
+__decorate([
+    (0, common_1.Get)('distance/calculate'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof google_earth_engine_dto_1.GoogleEarthEngineDistanceDto !== "undefined" && google_earth_engine_dto_1.GoogleEarthEngineDistanceDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", Promise)
+], GoogleEarthEngineController.prototype, "calculateDistance", null);
+__decorate([
+    (0, common_1.Get)('distance/flight'),
+    __param(0, (0, common_1.Query)('lat1')),
+    __param(1, (0, common_1.Query)('lon1')),
+    __param(2, (0, common_1.Query)('lat2')),
+    __param(3, (0, common_1.Query)('lon2')),
+    __param(4, (0, common_1.Query)('aircraftType')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Number, Number, String]),
+    __metadata("design:returntype", Promise)
+], GoogleEarthEngineController.prototype, "calculateFlightDistance", null);
+exports.GoogleEarthEngineController = GoogleEarthEngineController = __decorate([
+    (0, common_1.Controller)('google-earth-engine'),
+    __metadata("design:paramtypes", [typeof (_a = typeof google_earth_engine_service_1.GoogleEarthEngineService !== "undefined" && google_earth_engine_service_1.GoogleEarthEngineService) === "function" ? _a : Object])
+], GoogleEarthEngineController);
+
+
+/***/ }),
+
+/***/ "./src/modules/google-earth-engine/google-earth-engine.module.ts":
+/*!***********************************************************************!*\
+  !*** ./src/modules/google-earth-engine/google-earth-engine.module.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GoogleEarthEngineModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const axios_1 = __webpack_require__(/*! @nestjs/axios */ "@nestjs/axios");
+const google_earth_engine_controller_1 = __webpack_require__(/*! ./google-earth-engine.controller */ "./src/modules/google-earth-engine/google-earth-engine.controller.ts");
+const google_earth_engine_service_1 = __webpack_require__(/*! ./google-earth-engine.service */ "./src/modules/google-earth-engine/google-earth-engine.service.ts");
+let GoogleEarthEngineModule = class GoogleEarthEngineModule {
+};
+exports.GoogleEarthEngineModule = GoogleEarthEngineModule;
+exports.GoogleEarthEngineModule = GoogleEarthEngineModule = __decorate([
+    (0, common_1.Global)(),
+    (0, common_1.Module)({
+        imports: [axios_1.HttpModule],
+        controllers: [google_earth_engine_controller_1.GoogleEarthEngineController],
+        providers: [google_earth_engine_service_1.GoogleEarthEngineService],
+        exports: [google_earth_engine_service_1.GoogleEarthEngineService],
+    })
+], GoogleEarthEngineModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/google-earth-engine/google-earth-engine.service.ts":
+/*!************************************************************************!*\
+  !*** ./src/modules/google-earth-engine/google-earth-engine.service.ts ***!
+  \************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GoogleEarthEngineService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const axios_1 = __webpack_require__(/*! @nestjs/axios */ "@nestjs/axios");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const rxjs_1 = __webpack_require__(/*! rxjs */ "rxjs");
+let GoogleEarthEngineService = class GoogleEarthEngineService {
+    constructor(httpService, configService) {
+        this.httpService = httpService;
+        this.configService = configService;
+        this.baseUrl = 'https://maps.googleapis.com/maps/api';
+        this.apiKey = this.configService.get('GOOGLE_MAPS_API_KEY');
+    }
+    async searchLocations(searchDto) {
+        if (!this.apiKey) {
+            throw new common_1.HttpException('Google Maps API key not configured', common_1.HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/place/textsearch/json`, {
+                params: {
+                    query: searchDto.query,
+                    key: this.apiKey,
+                    type: searchDto.type || 'establishment',
+                    location: searchDto.location,
+                    radius: searchDto.radius || 50000,
+                },
+            }));
+            if (response.data.status !== 'OK') {
+                throw new common_1.HttpException(`Google Places API error: ${response.data.status}`, common_1.HttpStatus.BAD_REQUEST);
+            }
+            return response.data.results.map(place => ({
+                placeId: place.place_id,
+                name: place.name,
+                formattedAddress: place.formatted_address,
+                location: {
+                    lat: place.geometry.location.lat,
+                    lng: place.geometry.location.lng,
+                },
+                types: place.types,
+                rating: place.rating,
+                userRatingsTotal: place.user_ratings_total,
+            }));
+        }
+        catch (error) {
+            throw new common_1.HttpException(`Location search failed: ${error.message}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async getPlaceDetails(placeId) {
+        if (!this.apiKey) {
+            throw new common_1.HttpException('Google Maps API key not configured', common_1.HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/place/details/json`, {
+                params: {
+                    place_id: placeId,
+                    key: this.apiKey,
+                    fields: 'place_id,name,formatted_address,geometry,types,rating,user_ratings_total',
+                },
+            }));
+            if (response.data.status !== 'OK') {
+                throw new common_1.HttpException(`Google Places API error: ${response.data.status}`, common_1.HttpStatus.BAD_REQUEST);
+            }
+            const place = response.data.result;
+            return {
+                placeId: place.place_id,
+                name: place.name,
+                formattedAddress: place.formatted_address,
+                location: {
+                    lat: place.geometry.location.lat,
+                    lng: place.geometry.location.lng,
+                },
+                types: place.types,
+                rating: place.rating,
+                userRatingsTotal: place.user_ratings_total,
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(`Place details failed: ${error.message}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async reverseGeocode(reverseGeocodeDto) {
+        if (!this.apiKey) {
+            throw new common_1.HttpException('Google Maps API key not configured', common_1.HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/geocode/json`, {
+                params: {
+                    latlng: `${reverseGeocodeDto.latitude},${reverseGeocodeDto.longitude}`,
+                    key: this.apiKey,
+                },
+            }));
+            if (response.data.status !== 'OK') {
+                throw new common_1.HttpException(`Google Geocoding API error: ${response.data.status}`, common_1.HttpStatus.BAD_REQUEST);
+            }
+            const result = response.data.results[0];
+            return {
+                placeId: result.place_id,
+                name: this.extractLocationName(result),
+                formattedAddress: result.formatted_address,
+                location: {
+                    lat: reverseGeocodeDto.latitude,
+                    lng: reverseGeocodeDto.longitude,
+                },
+                types: result.types,
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(`Reverse geocoding failed: ${error.message}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async calculateDistance(distanceDto) {
+        if (!this.apiKey) {
+            throw new common_1.HttpException('Google Maps API key not configured', common_1.HttpStatus.SERVICE_UNAVAILABLE);
+        }
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/distancematrix/json`, {
+                params: {
+                    origins: `${distanceDto.origin.lat},${distanceDto.origin.lng}`,
+                    destinations: `${distanceDto.destination.lat},${distanceDto.destination.lng}`,
+                    key: this.apiKey,
+                    mode: distanceDto.mode || 'driving',
+                    units: 'metric',
+                },
+            }));
+            if (response.data.status !== 'OK') {
+                throw new common_1.HttpException(`Google Distance Matrix API error: ${response.data.status}`, common_1.HttpStatus.BAD_REQUEST);
+            }
+            const element = response.data.rows[0].elements[0];
+            return {
+                distance: element.distance,
+                duration: element.duration,
+                status: element.status,
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(`Distance calculation failed: ${error.message}`, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    calculateFlightDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = this.toRadians(lat2 - lat1);
+        const dLon = this.toRadians(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    estimateFlightDuration(distance, aircraftType = 'jet') {
+        const speeds = {
+            jet: 800,
+            turboprop: 500,
+            helicopter: 250,
+            small: 300,
+        };
+        const speed = speeds[aircraftType] || speeds.jet;
+        return (distance / speed) * 3600;
+    }
+    toRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+    extractLocationName(result) {
+        const components = result.address_components;
+        const nameComponent = components.find(comp => comp.types.includes('establishment') ||
+            comp.types.includes('point_of_interest') ||
+            comp.types.includes('airport'));
+        return nameComponent ? nameComponent.long_name : result.formatted_address;
+    }
+};
+exports.GoogleEarthEngineService = GoogleEarthEngineService;
+exports.GoogleEarthEngineService = GoogleEarthEngineService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof axios_1.HttpService !== "undefined" && axios_1.HttpService) === "function" ? _a : Object, typeof (_b = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _b : Object])
+], GoogleEarthEngineService);
+
+
+/***/ }),
+
+/***/ "./src/modules/locations/dto/search-locations.dto.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/locations/dto/search-locations.dto.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SearchLocationsDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const location_entity_1 = __webpack_require__(/*! ../../../common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+class SearchLocationsDto {
+    constructor() {
+        this.limit = 20;
+    }
+}
+exports.SearchLocationsDto = SearchLocationsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Search query for location name, code, or country',
+        required: false,
+        example: 'Nairobi',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(1),
+    (0, class_validator_1.MaxLength)(100),
+    __metadata("design:type", String)
+], SearchLocationsDto.prototype, "q", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Filter by location type',
+        enum: location_entity_1.LocationType,
+        required: false,
+        example: location_entity_1.LocationType.AIRPORT,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(location_entity_1.LocationType),
+    __metadata("design:type", typeof (_a = typeof location_entity_1.LocationType !== "undefined" && location_entity_1.LocationType) === "function" ? _a : Object)
+], SearchLocationsDto.prototype, "type", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Filter by country',
+        required: false,
+        example: 'Kenya',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(1),
+    (0, class_validator_1.MaxLength)(100),
+    __metadata("design:type", String)
+], SearchLocationsDto.prototype, "country", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Limit number of results',
+        required: false,
+        example: 20,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], SearchLocationsDto.prototype, "limit", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/locations/locations.controller.ts":
+/*!*******************************************************!*\
+  !*** ./src/modules/locations/locations.controller.ts ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocationsController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const jwt_auth_guard_1 = __webpack_require__(/*! ../../common/guards/jwt-auth.guard */ "./src/common/guards/jwt-auth.guard.ts");
+const locations_service_1 = __webpack_require__(/*! ./locations.service */ "./src/modules/locations/locations.service.ts");
+const search_locations_dto_1 = __webpack_require__(/*! ./dto/search-locations.dto */ "./src/modules/locations/dto/search-locations.dto.ts");
+const location_entity_1 = __webpack_require__(/*! ../../common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+let LocationsController = class LocationsController {
+    constructor(locationsService) {
+        this.locationsService = locationsService;
+    }
+    async findAll(searchDto) {
+        const locations = await this.locationsService.findAll(searchDto);
+        return {
+            success: true,
+            message: 'Locations retrieved successfully',
+            data: locations,
+            count: locations.length,
+        };
+    }
+    async searchLocations(query, limit = '10') {
+        if (!query || query.trim().length === 0) {
+            throw new common_1.BadRequestException('Search query is required');
+        }
+        const limitNum = parseInt(limit, 10) || 10;
+        const locations = await this.locationsService.searchLocations(query, limitNum);
+        return {
+            success: true,
+            message: 'Search results retrieved successfully',
+            data: locations,
+            count: locations.length,
+        };
+    }
+    async getPopularLocations() {
+        const locations = await this.locationsService.getPopularLocations();
+        return {
+            success: true,
+            message: 'Popular locations retrieved successfully',
+            data: locations,
+            count: locations.length,
+        };
+    }
+    async getLocationsByCountry(country) {
+        const locations = await this.locationsService.getLocationsByCountry(country);
+        return {
+            success: true,
+            message: `Locations in ${country} retrieved successfully`,
+            data: locations,
+            count: locations.length,
+        };
+    }
+    async findById(id) {
+        const location = await this.locationsService.findById(parseInt(id, 10));
+        if (!location) {
+            throw new common_1.BadRequestException('Location not found');
+        }
+        return {
+            success: true,
+            message: 'Location retrieved successfully',
+            data: location,
+        };
+    }
+    async findByCode(code) {
+        const location = await this.locationsService.findByCode(code);
+        if (!location) {
+            throw new common_1.BadRequestException('Location not found');
+        }
+        return {
+            success: true,
+            message: 'Location retrieved successfully',
+            data: location,
+        };
+    }
+    async getRouteInfo(origin, destination, aircraftType = 'jet') {
+        const routeInfo = await this.locationsService.getRouteInfo(origin, destination, aircraftType);
+        if (!routeInfo) {
+            throw new common_1.BadRequestException('Route information not available. Coordinates may be missing.');
+        }
+        return {
+            success: true,
+            message: 'Route information retrieved successfully',
+            data: routeInfo,
+        };
+    }
+};
+exports.LocationsController = LocationsController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all locations with optional filtering' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Locations retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'number' },
+                            name: { type: 'string' },
+                            code: { type: 'string' },
+                            country: { type: 'string' },
+                            type: { type: 'string', enum: ['airport', 'city', 'region'] },
+                            latitude: { type: 'number', nullable: true },
+                            longitude: { type: 'number', nullable: true },
+                            imageUrl: { type: 'string', nullable: true },
+                            createdAt: { type: 'string', format: 'date-time' },
+                            updatedAt: { type: 'string', format: 'date-time' },
+                        },
+                    },
+                },
+                count: { type: 'number' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Search query' }),
+    (0, swagger_1.ApiQuery)({ name: 'type', required: false, enum: location_entity_1.LocationType, description: 'Location type filter' }),
+    (0, swagger_1.ApiQuery)({ name: 'country', required: false, type: String, description: 'Country filter' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Limit results' }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof search_locations_dto_1.SearchLocationsDto !== "undefined" && search_locations_dto_1.SearchLocationsDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('search'),
+    (0, swagger_1.ApiOperation)({ summary: 'Search locations by query' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Search results retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/Location' },
+                },
+                count: { type: 'number' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: true, type: String, description: 'Search query' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Limit results (default: 10)' }),
+    __param(0, (0, common_1.Query)('q')),
+    __param(1, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "searchLocations", null);
+__decorate([
+    (0, common_1.Get)('popular'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get popular locations (airports and major cities)' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Popular locations retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/Location' },
+                },
+                count: { type: 'number' },
+            },
+        },
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "getPopularLocations", null);
+__decorate([
+    (0, common_1.Get)('country/:country'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get locations by country' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Locations by country retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/Location' },
+                },
+                count: { type: 'number' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiParam)({ name: 'country', type: String, description: 'Country name' }),
+    __param(0, (0, common_1.Param)('country')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "getLocationsByCountry", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get location by ID' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Location retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: { $ref: '#/components/schemas/Location' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Location not found' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: Number, description: 'Location ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "findById", null);
+__decorate([
+    (0, common_1.Get)('code/:code'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get location by code' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Location retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: { $ref: '#/components/schemas/Location' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Location not found' }),
+    (0, swagger_1.ApiParam)({ name: 'code', type: String, description: 'Location code (e.g., NBO)' }),
+    __param(0, (0, common_1.Param)('code')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "findByCode", null);
+__decorate([
+    (0, common_1.Get)('route/:origin/:destination'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get route information between two locations' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Route information retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'object',
+                    properties: {
+                        distance: { type: 'number', description: 'Distance in kilometers' },
+                        duration: { type: 'number', description: 'Flight duration in minutes' },
+                        origin: { $ref: '#/components/schemas/Location' },
+                        destination: { $ref: '#/components/schemas/Location' },
+                    },
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Route not found or coordinates missing' }),
+    (0, swagger_1.ApiParam)({ name: 'origin', type: String, description: 'Origin location code' }),
+    (0, swagger_1.ApiParam)({ name: 'destination', type: String, description: 'Destination location code' }),
+    (0, swagger_1.ApiQuery)({ name: 'aircraftType', required: false, enum: ['jet', 'helicopter', 'fixedWing'], description: 'Aircraft type for duration calculation' }),
+    __param(0, (0, common_1.Param)('origin')),
+    __param(1, (0, common_1.Param)('destination')),
+    __param(2, (0, common_1.Query)('aircraftType')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], LocationsController.prototype, "getRouteInfo", null);
+exports.LocationsController = LocationsController = __decorate([
+    (0, swagger_1.ApiTags)('Locations'),
+    (0, common_1.Controller)('locations'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof locations_service_1.LocationsService !== "undefined" && locations_service_1.LocationsService) === "function" ? _a : Object])
+], LocationsController);
+
+
+/***/ }),
+
+/***/ "./src/modules/locations/locations.module.ts":
+/*!***************************************************!*\
+  !*** ./src/modules/locations/locations.module.ts ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocationsModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const locations_controller_1 = __webpack_require__(/*! ./locations.controller */ "./src/modules/locations/locations.controller.ts");
+const locations_service_1 = __webpack_require__(/*! ./locations.service */ "./src/modules/locations/locations.service.ts");
+const location_entity_1 = __webpack_require__(/*! ../../common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+let LocationsModule = class LocationsModule {
+};
+exports.LocationsModule = LocationsModule;
+exports.LocationsModule = LocationsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([location_entity_1.Location])],
+        controllers: [locations_controller_1.LocationsController],
+        providers: [locations_service_1.LocationsService],
+        exports: [locations_service_1.LocationsService],
+    })
+], LocationsModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/locations/locations.service.ts":
+/*!****************************************************!*\
+  !*** ./src/modules/locations/locations.service.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocationsService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const location_entity_1 = __webpack_require__(/*! ../../common/entities/location.entity */ "./src/common/entities/location.entity.ts");
+let LocationsService = class LocationsService {
+    constructor(locationRepository) {
+        this.locationRepository = locationRepository;
+    }
+    async findAll(searchDto) {
+        const query = this.locationRepository.createQueryBuilder('location');
+        if (searchDto?.q) {
+            query.andWhere('(location.name LIKE :search OR location.code LIKE :search OR location.country LIKE :search)', { search: `%${searchDto.q}%` });
+        }
+        if (searchDto?.type) {
+            query.andWhere('location.type = :type', { type: searchDto.type });
+        }
+        if (searchDto?.country) {
+            query.andWhere('location.country LIKE :country', { country: `%${searchDto.country}%` });
+        }
+        const limit = searchDto?.limit || 20;
+        return query.limit(limit).getMany();
+    }
+    async searchLocations(query, limit = 10) {
+        return this.locationRepository.find({
+            where: [
+                { name: (0, typeorm_2.Like)(`%${query}%`) },
+                { code: (0, typeorm_2.Like)(`%${query}%`) },
+                { country: (0, typeorm_2.Like)(`%${query}%`) },
+            ],
+            take: limit,
+            order: {
+                name: 'ASC',
+            },
+        });
+    }
+    async findById(id) {
+        return this.locationRepository.findOne({ where: { id } });
+    }
+    async findByCode(code) {
+        return this.locationRepository.findOne({ where: { code } });
+    }
+    async getPopularLocations() {
+        return this.locationRepository.find({
+            where: [
+                { type: location_entity_1.LocationType.AIRPORT },
+                { type: location_entity_1.LocationType.CITY },
+            ],
+            order: {
+                name: 'ASC',
+            },
+        });
+    }
+    async getLocationsByCountry(country) {
+        return this.locationRepository.find({
+            where: { country: (0, typeorm_2.Like)(`%${country}%`) },
+            order: {
+                name: 'ASC',
+            },
+        });
+    }
+    calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = this.toRadians(lat2 - lat1);
+        const dLon = this.toRadians(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.toRadians(lat1)) *
+                Math.cos(this.toRadians(lat2)) *
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    calculateFlightDuration(distance, aircraftType = 'jet') {
+        const speeds = {
+            jet: 800,
+            helicopter: 300,
+            fixedWing: 500,
+        };
+        const speed = speeds[aircraftType];
+        return Math.ceil(distance / speed * 60);
+    }
+    async getRouteInfo(originCode, destinationCode, aircraftType = 'jet') {
+        const origin = await this.findByCode(originCode);
+        const destination = await this.findByCode(destinationCode);
+        if (!origin || !destination || !origin.latitude || !destination.latitude) {
+            return null;
+        }
+        const distance = this.calculateDistance(origin.latitude, origin.longitude, destination.latitude, destination.longitude);
+        const duration = this.calculateFlightDuration(distance, aircraftType);
+        return {
+            distance: Math.round(distance),
+            duration,
+            origin,
+            destination,
+        };
+    }
+    toRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+};
+exports.LocationsService = LocationsService;
+exports.LocationsService = LocationsService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(location_entity_1.Location)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], LocationsService);
+
+
+/***/ }),
+
 /***/ "./src/modules/passengers/dto/create-passenger.dto.ts":
 /*!************************************************************!*\
   !*** ./src/modules/passengers/dto/create-passenger.dto.ts ***!
@@ -5733,7 +9089,7 @@ let PassengersService = class PassengersService {
     }
     async findAll() {
         return await this.passengerRepository.find({
-            order: { createdAt: 'DESC' },
+            order: { created_at: 'DESC' },
         });
     }
     async findOne(id) {
@@ -5747,25 +9103,23 @@ let PassengersService = class PassengersService {
     }
     async findByBookingId(bookingId) {
         return await this.passengerRepository.find({
-            where: { bookingId },
-            order: { createdAt: 'ASC' },
+            where: { booking_id: bookingId },
+            order: { created_at: 'ASC' },
         });
     }
     async update(id, updatePassengerDto) {
-        const passenger = await this.findOne(id);
-        Object.assign(passenger, updatePassengerDto);
-        return await this.passengerRepository.save(passenger);
+        await this.passengerRepository.update(id, updatePassengerDto);
+        return await this.findOne(id);
     }
     async remove(id) {
-        const passenger = await this.findOne(id);
-        await this.passengerRepository.remove(passenger);
+        await this.passengerRepository.delete(id);
     }
     async removeByBookingId(bookingId) {
-        await this.passengerRepository.delete({ bookingId });
+        await this.passengerRepository.delete({ booking_id: bookingId });
     }
     async countByBookingId(bookingId) {
         return await this.passengerRepository.count({
-            where: { bookingId },
+            where: { booking_id: bookingId },
         });
     }
 };
@@ -5898,6 +9252,82 @@ var PaymentProviderType;
 
 /***/ }),
 
+/***/ "./src/modules/payments/mpesa-callback.controller.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/payments/mpesa-callback.controller.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MpesaCallbackController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const mpesa_provider_1 = __webpack_require__(/*! ./providers/mpesa.provider */ "./src/modules/payments/providers/mpesa.provider.ts");
+const payments_service_1 = __webpack_require__(/*! ./payments.service */ "./src/modules/payments/payments.service.ts");
+const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+let MpesaCallbackController = class MpesaCallbackController {
+    constructor(mpesaProvider, paymentsService) {
+        this.mpesaProvider = mpesaProvider;
+        this.paymentsService = paymentsService;
+    }
+    async mpesaCallback(callbackData) {
+        try {
+            const paymentResult = await this.mpesaProvider.processCallback(callbackData);
+            if (paymentResult.status === 'succeeded') {
+                await this.paymentsService.updateStatus(paymentResult.id, payment_entity_1.PaymentStatus.COMPLETED, paymentResult.transactionId);
+            }
+            else if (paymentResult.status === 'failed') {
+                await this.paymentsService.updateStatus(paymentResult.id, payment_entity_1.PaymentStatus.FAILED);
+            }
+            return {
+                success: true,
+                message: 'M-Pesa callback processed successfully',
+                data: paymentResult,
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to process M-Pesa callback',
+                error: error.message,
+            };
+        }
+    }
+};
+exports.MpesaCallbackController = MpesaCallbackController;
+__decorate([
+    (0, common_1.Post)('callback'),
+    (0, common_1.HttpCode)(200),
+    (0, swagger_1.ApiOperation)({ summary: 'M-Pesa payment callback' }),
+    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Callback processed successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof mpesa_provider_1.MpesaCallbackData !== "undefined" && mpesa_provider_1.MpesaCallbackData) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], MpesaCallbackController.prototype, "mpesaCallback", null);
+exports.MpesaCallbackController = MpesaCallbackController = __decorate([
+    (0, swagger_1.ApiTags)('mpesa-callbacks'),
+    (0, common_1.Controller)('mpesa-callbacks'),
+    __metadata("design:paramtypes", [typeof (_a = typeof mpesa_provider_1.MpesaProvider !== "undefined" && mpesa_provider_1.MpesaProvider) === "function" ? _a : Object, typeof (_b = typeof payments_service_1.PaymentsService !== "undefined" && payments_service_1.PaymentsService) === "function" ? _b : Object])
+], MpesaCallbackController);
+
+
+/***/ }),
+
 /***/ "./src/modules/payments/payments.controller.ts":
 /*!*****************************************************!*\
   !*** ./src/modules/payments/payments.controller.ts ***!
@@ -5917,7 +9347,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaymentsController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -5929,10 +9359,12 @@ const dto_1 = __webpack_require__(/*! ./dto */ "./src/modules/payments/dto/index
 const current_user_decorator_1 = __webpack_require__(/*! ../../common/decorators/current-user.decorator */ "./src/common/decorators/current-user.decorator.ts");
 const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
 const payment_provider_interface_1 = __webpack_require__(/*! ./interfaces/payment-provider.interface */ "./src/modules/payments/interfaces/payment-provider.interface.ts");
+const mpesa_provider_1 = __webpack_require__(/*! ./providers/mpesa.provider */ "./src/modules/payments/providers/mpesa.provider.ts");
 let PaymentsController = class PaymentsController {
-    constructor(paymentsService, paymentProviderService) {
+    constructor(paymentsService, paymentProviderService, mpesaProvider) {
         this.paymentsService = paymentsService;
         this.paymentProviderService = paymentProviderService;
+        this.mpesaProvider = mpesaProvider;
     }
     async createPaymentIntent(user, body) {
         const paymentIntent = await this.paymentProviderService.createPaymentIntent({
@@ -5994,8 +9426,8 @@ let PaymentsController = class PaymentsController {
             data: refund,
         };
     }
-    async create(user, createPaymentDto, companyId) {
-        const payment = await this.paymentsService.create(user.id, companyId, createPaymentDto);
+    async create(user, createPaymentDto) {
+        const payment = await this.paymentsService.createFromBooking(user.id, createPaymentDto);
         return {
             success: true,
             message: 'Payment created successfully',
@@ -6054,6 +9486,28 @@ let PaymentsController = class PaymentsController {
             data: payment,
         };
     }
+    async initiateMpesaPayment(user, body) {
+        const paymentIntent = await this.paymentProviderService.createPaymentIntent({
+            amount: body.amount,
+            currency: 'KES',
+            bookingId: body.bookingId,
+            userId: user.id,
+            description: body.description || `Payment for booking ${body.bookingId}`,
+            metadata: {
+                phoneNumber: body.phoneNumber,
+            },
+        }, payment_provider_interface_1.PaymentProviderType.MPESA);
+        return {
+            success: true,
+            message: 'M-Pesa STK Push initiated successfully',
+            data: {
+                paymentIntentId: paymentIntent.id,
+                status: paymentIntent.status,
+                requiresAction: paymentIntent.requiresAction,
+                nextAction: paymentIntent.nextAction,
+            },
+        };
+    }
 };
 exports.PaymentsController = PaymentsController;
 __decorate([
@@ -6064,7 +9518,7 @@ __decorate([
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _c : Object, Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _d : Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "createPaymentIntent", null);
 __decorate([
@@ -6075,7 +9529,7 @@ __decorate([
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _d : Object, Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _e : Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "confirmPayment", null);
 __decorate([
@@ -6112,9 +9566,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Invalid payment data' }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Query)('companyId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _e : Object, typeof (_f = typeof dto_1.CreatePaymentDto !== "undefined" && dto_1.CreatePaymentDto) === "function" ? _f : Object, Number]),
+    __metadata("design:paramtypes", [typeof (_f = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _f : Object, typeof (_g = typeof dto_1.CreatePaymentDto !== "undefined" && dto_1.CreatePaymentDto) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "create", null);
 __decorate([
@@ -6123,7 +9576,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Payments retrieved successfully' }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "findUserPayments", null);
 __decorate([
@@ -6185,12 +9638,23 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "refund", null);
+__decorate([
+    (0, common_1.Post)('mpesa/stk-push'),
+    (0, swagger_1.ApiOperation)({ summary: 'Initiate M-Pesa STK Push payment' }),
+    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CREATED, description: 'STK Push initiated successfully' }),
+    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'STK Push failed' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof user_entity_1.User !== "undefined" && user_entity_1.User) === "function" ? _j : Object, Object]),
+    __metadata("design:returntype", Promise)
+], PaymentsController.prototype, "initiateMpesaPayment", null);
 exports.PaymentsController = PaymentsController = __decorate([
     (0, swagger_1.ApiTags)('payments'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('payments'),
-    __metadata("design:paramtypes", [typeof (_a = typeof payments_service_1.PaymentsService !== "undefined" && payments_service_1.PaymentsService) === "function" ? _a : Object, typeof (_b = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof payments_service_1.PaymentsService !== "undefined" && payments_service_1.PaymentsService) === "function" ? _a : Object, typeof (_b = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _b : Object, typeof (_c = typeof mpesa_provider_1.MpesaProvider !== "undefined" && mpesa_provider_1.MpesaProvider) === "function" ? _c : Object])
 ], PaymentsController);
 
 
@@ -6214,30 +9678,37 @@ exports.PaymentsModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const axios_1 = __webpack_require__(/*! @nestjs/axios */ "@nestjs/axios");
 const payments_controller_1 = __webpack_require__(/*! ./payments.controller */ "./src/modules/payments/payments.controller.ts");
+const mpesa_callback_controller_1 = __webpack_require__(/*! ./mpesa-callback.controller */ "./src/modules/payments/mpesa-callback.controller.ts");
 const payments_service_1 = __webpack_require__(/*! ./payments.service */ "./src/modules/payments/payments.service.ts");
 const payment_provider_service_1 = __webpack_require__(/*! ./services/payment-provider.service */ "./src/modules/payments/services/payment-provider.service.ts");
 const stripe_provider_1 = __webpack_require__(/*! ./providers/stripe.provider */ "./src/modules/payments/providers/stripe.provider.ts");
+const mpesa_provider_1 = __webpack_require__(/*! ./providers/mpesa.provider */ "./src/modules/payments/providers/mpesa.provider.ts");
 const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
 let PaymentsModule = class PaymentsModule {
 };
 exports.PaymentsModule = PaymentsModule;
 exports.PaymentsModule = PaymentsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([payment_entity_1.Payment]),
+            typeorm_1.TypeOrmModule.forFeature([payment_entity_1.Payment, booking_entity_1.Booking]),
             config_1.ConfigModule,
+            axios_1.HttpModule,
         ],
-        controllers: [payments_controller_1.PaymentsController],
+        controllers: [payments_controller_1.PaymentsController, mpesa_callback_controller_1.MpesaCallbackController],
         providers: [
             payments_service_1.PaymentsService,
             payment_provider_service_1.PaymentProviderService,
             stripe_provider_1.StripeProvider,
+            mpesa_provider_1.MpesaProvider,
         ],
         exports: [
             payments_service_1.PaymentsService,
             payment_provider_service_1.PaymentProviderService,
             stripe_provider_1.StripeProvider,
+            mpesa_provider_1.MpesaProvider,
         ],
     })
 ], PaymentsModule);
@@ -6264,16 +9735,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaymentsService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
 const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.entity */ "./src/common/entities/payment.entity.ts");
+const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
 let PaymentsService = class PaymentsService {
-    constructor(paymentRepository) {
+    constructor(paymentRepository, bookingRepository) {
         this.paymentRepository = paymentRepository;
+        this.bookingRepository = bookingRepository;
     }
     async create(userId, companyId, createPaymentDto) {
         const paymentId = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -6290,6 +9763,16 @@ let PaymentsService = class PaymentsService {
             ...createPaymentDto,
         });
         return await this.paymentRepository.save(payment);
+    }
+    async createFromBooking(userId, createPaymentDto) {
+        const booking = await this.bookingRepository.findOne({
+            where: { id: createPaymentDto.bookingId },
+            select: ['id', 'company_id']
+        });
+        if (!booking) {
+            throw new common_1.NotFoundException('Booking not found');
+        }
+        return this.create(userId, booking.company_id, createPaymentDto);
     }
     async findAll() {
         return await this.paymentRepository.find({
@@ -6374,8 +9857,219 @@ exports.PaymentsService = PaymentsService;
 exports.PaymentsService = PaymentsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(payment_entity_1.Payment)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+    __param(1, (0, typeorm_1.InjectRepository)(booking_entity_1.Booking)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
 ], PaymentsService);
+
+
+/***/ }),
+
+/***/ "./src/modules/payments/providers/mpesa.provider.ts":
+/*!**********************************************************!*\
+  !*** ./src/modules/payments/providers/mpesa.provider.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var MpesaProvider_1;
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MpesaProvider = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const axios_1 = __webpack_require__(/*! @nestjs/axios */ "@nestjs/axios");
+const rxjs_1 = __webpack_require__(/*! rxjs */ "rxjs");
+let MpesaProvider = MpesaProvider_1 = class MpesaProvider {
+    constructor(configService, httpService) {
+        this.configService = configService;
+        this.httpService = httpService;
+        this.logger = new common_1.Logger(MpesaProvider_1.name);
+        this.accessToken = null;
+        this.tokenExpiry = 0;
+        this.name = 'M-Pesa';
+        this.supportedCurrencies = ['KES'];
+        this.supportedPaymentMethods = ['mobile_money'];
+        this.config = {
+            consumerKey: this.configService.get('MPESA_CONSUMER_KEY'),
+            consumerSecret: this.configService.get('MPESA_CONSUMER_SECRET'),
+            passkey: this.configService.get('MPESA_PASSKEY'),
+            businessShortCode: this.configService.get('MPESA_BUSINESS_SHORT_CODE'),
+            environment: this.configService.get('MPESA_ENVIRONMENT') || 'sandbox',
+        };
+        this.validateConfig();
+    }
+    validateConfig() {
+        const requiredFields = ['consumerKey', 'consumerSecret', 'passkey', 'businessShortCode'];
+        for (const field of requiredFields) {
+            if (!this.config[field]) {
+                throw new Error(`M-Pesa ${field} is not configured`);
+            }
+        }
+    }
+    getBaseUrl() {
+        return this.config.environment === 'live'
+            ? 'https://api.safaricom.co.ke'
+            : 'https://sandbox.safaricom.co.ke';
+    }
+    async getAccessToken() {
+        const now = Date.now();
+        if (this.accessToken && now < this.tokenExpiry) {
+            return this.accessToken;
+        }
+        try {
+            const authUrl = `${this.getBaseUrl()}/oauth/v1/generate?grant_type=client_credentials`;
+            const authString = Buffer.from(`${this.config.consumerKey}:${this.config.consumerSecret}`).toString('base64');
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(authUrl, {
+                headers: {
+                    Authorization: `Basic ${authString}`,
+                },
+            }));
+            this.accessToken = response.data.access_token;
+            this.tokenExpiry = now + (response.data.expires_in * 1000) - 60000;
+            this.logger.log('M-Pesa access token refreshed');
+            return this.accessToken;
+        }
+        catch (error) {
+            this.logger.error('Failed to get M-Pesa access token', error);
+            throw new common_1.HttpException('Failed to authenticate with M-Pesa', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    generatePassword() {
+        const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+        const password = Buffer.from(`${this.config.businessShortCode}${this.config.passkey}${timestamp}`).toString('base64');
+        return password;
+    }
+    async createPaymentIntent(request) {
+        try {
+            const accessToken = await this.getAccessToken();
+            const password = this.generatePassword();
+            const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+            const phoneNumber = request.metadata?.phoneNumber || request.metadata?.phone || '254700000000';
+            const formattedPhone = phoneNumber.replace(/^\+/, '').replace(/^0/, '254');
+            const stkPushRequest = {
+                BusinessShortCode: this.config.businessShortCode,
+                Password: password,
+                Timestamp: timestamp,
+                TransactionType: 'CustomerPayBillOnline',
+                Amount: Math.round(request.amount),
+                PartyA: formattedPhone,
+                PartyB: this.config.businessShortCode,
+                PhoneNumber: formattedPhone,
+                CallBackURL: `${this.configService.get('APP_URL')}/api/payments/mpesa/callback`,
+                AccountReference: request.bookingId,
+                TransactionDesc: request.description,
+            };
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.getBaseUrl()}/mpesa/stkpush/v1/processrequest`, stkPushRequest, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            }));
+            const result = response.data;
+            if (result.ResponseCode !== '0') {
+                throw new common_1.HttpException(`M-Pesa STK Push failed: ${result.ResponseDescription}`, common_1.HttpStatus.BAD_REQUEST);
+            }
+            this.logger.log(`M-Pesa STK Push initiated: ${result.CheckoutRequestID}`);
+            return {
+                id: result.CheckoutRequestID,
+                status: 'pending',
+                amount: request.amount,
+                currency: request.currency,
+                paymentMethod: 'mobile_money',
+                requiresAction: true,
+                nextAction: {
+                    type: 'mpesa_stk_push',
+                    message: result.CustomerMessage,
+                    checkoutRequestId: result.CheckoutRequestID,
+                },
+            };
+        }
+        catch (error) {
+            this.logger.error('Failed to create M-Pesa payment intent', error);
+            throw error;
+        }
+    }
+    async confirmPayment(request) {
+        return this.getPaymentStatus(request.paymentIntentId);
+    }
+    async getPaymentStatus(paymentIntentId) {
+        try {
+            return {
+                id: paymentIntentId,
+                status: 'pending',
+                amount: 0,
+                currency: 'KES',
+                transactionId: paymentIntentId,
+                paymentMethod: 'mobile_money',
+            };
+        }
+        catch (error) {
+            this.logger.error('Failed to get M-Pesa payment status', error);
+            throw error;
+        }
+    }
+    async processCallback(callbackData) {
+        const stkCallback = callbackData.Body.stkCallback;
+        this.logger.log(`M-Pesa callback received: ${stkCallback.CheckoutRequestID}`);
+        if (stkCallback.ResultCode === 0) {
+            const metadata = stkCallback.CallbackMetadata?.Item.reduce((acc, item) => {
+                acc[item.Name] = item.Value;
+                return acc;
+            }, {});
+            return {
+                id: stkCallback.CheckoutRequestID,
+                status: 'succeeded',
+                amount: metadata?.Amount || 0,
+                currency: 'KES',
+                transactionId: metadata?.MpesaReceiptNumber || stkCallback.CheckoutRequestID,
+                paymentMethod: 'mobile_money',
+                metadata: {
+                    mpesaReceiptNumber: metadata?.MpesaReceiptNumber,
+                    transactionDate: metadata?.TransactionDate,
+                    phoneNumber: metadata?.PhoneNumber,
+                },
+            };
+        }
+        else {
+            return {
+                id: stkCallback.CheckoutRequestID,
+                status: 'failed',
+                amount: 0,
+                currency: 'KES',
+                transactionId: stkCallback.CheckoutRequestID,
+                paymentMethod: 'mobile_money',
+                metadata: {
+                    errorCode: stkCallback.ResultCode,
+                    errorDescription: stkCallback.ResultDesc,
+                },
+            };
+        }
+    }
+    async createRefund(paymentIntentId, amount, reason) {
+        this.logger.log(`M-Pesa refund requested for: ${paymentIntentId}`);
+        return {
+            id: `refund_${Date.now()}`,
+            status: 'pending',
+            amount: amount || 0,
+            currency: 'KES',
+            reason: reason || 'Customer request',
+        };
+    }
+};
+exports.MpesaProvider = MpesaProvider;
+exports.MpesaProvider = MpesaProvider = MpesaProvider_1 = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof axios_1.HttpService !== "undefined" && axios_1.HttpService) === "function" ? _b : Object])
+], MpesaProvider);
 
 
 /***/ }),
@@ -6438,12 +10132,6 @@ let StripeProvider = StripeProvider_1 = class StripeProvider {
                 automatic_payment_methods: {
                     enabled: true,
                 },
-                payment_method_types: [
-                    'card',
-                    'apple_pay',
-                    'google_pay',
-                    'us_bank_account',
-                ],
             });
             return {
                 id: paymentIntent.id,
@@ -6604,23 +10292,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var PaymentProviderService_1;
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaymentProviderService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const payment_provider_interface_1 = __webpack_require__(/*! ../interfaces/payment-provider.interface */ "./src/modules/payments/interfaces/payment-provider.interface.ts");
 const stripe_provider_1 = __webpack_require__(/*! ../providers/stripe.provider */ "./src/modules/payments/providers/stripe.provider.ts");
+const mpesa_provider_1 = __webpack_require__(/*! ../providers/mpesa.provider */ "./src/modules/payments/providers/mpesa.provider.ts");
 let PaymentProviderService = PaymentProviderService_1 = class PaymentProviderService {
-    constructor(configService, stripeProvider) {
+    constructor(configService, stripeProvider, mpesaProvider) {
         this.configService = configService;
         this.stripeProvider = stripeProvider;
+        this.mpesaProvider = mpesaProvider;
         this.logger = new common_1.Logger(PaymentProviderService_1.name);
         this.providers = new Map();
         this.initializeProviders();
     }
     initializeProviders() {
         this.providers.set(payment_provider_interface_1.PaymentProviderType.STRIPE, this.stripeProvider);
+        this.providers.set(payment_provider_interface_1.PaymentProviderType.MPESA, this.mpesaProvider);
     }
     getProvider(type) {
         const provider = this.providers.get(type);
@@ -6704,7 +10395,7 @@ let PaymentProviderService = PaymentProviderService_1 = class PaymentProviderSer
 exports.PaymentProviderService = PaymentProviderService;
 exports.PaymentProviderService = PaymentProviderService = PaymentProviderService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof stripe_provider_1.StripeProvider !== "undefined" && stripe_provider_1.StripeProvider) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof stripe_provider_1.StripeProvider !== "undefined" && stripe_provider_1.StripeProvider) === "function" ? _b : Object, typeof (_c = typeof mpesa_provider_1.MpesaProvider !== "undefined" && mpesa_provider_1.MpesaProvider) === "function" ? _c : Object])
 ], PaymentProviderService);
 
 
@@ -7161,6 +10852,7 @@ let TripsService = class TripsService {
         const userTrips = await this.userTripRepository
             .createQueryBuilder('userTrip')
             .leftJoinAndSelect('userTrip.booking', 'booking')
+            .leftJoinAndSelect('booking.passengers', 'passengers')
             .leftJoinAndSelect('booking.deal', 'deal')
             .leftJoinAndSelect('deal.company', 'company')
             .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -7174,6 +10866,7 @@ let TripsService = class TripsService {
         const userTrips = await this.userTripRepository
             .createQueryBuilder('userTrip')
             .leftJoinAndSelect('userTrip.booking', 'booking')
+            .leftJoinAndSelect('booking.passengers', 'passengers')
             .leftJoinAndSelect('booking.deal', 'deal')
             .leftJoinAndSelect('deal.company', 'company')
             .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -7188,6 +10881,7 @@ let TripsService = class TripsService {
         const userTrip = await this.userTripRepository
             .createQueryBuilder('userTrip')
             .leftJoinAndSelect('userTrip.booking', 'booking')
+            .leftJoinAndSelect('booking.passengers', 'passengers')
             .leftJoinAndSelect('booking.deal', 'deal')
             .leftJoinAndSelect('deal.company', 'company')
             .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -7277,6 +10971,7 @@ let TripsService = class TripsService {
         const route = deal?.fixedRoute;
         return {
             id: userTrip.id,
+            userId: userTrip.userId,
             bookingId: userTrip.bookingId,
             status: userTrip.status,
             rating: userTrip.rating,
@@ -7289,11 +10984,13 @@ let TripsService = class TripsService {
             cancelledAt: userTrip.cancelledAt,
             booking: booking ? {
                 id: booking.id,
+                userId: booking.userId,
                 referenceNumber: booking.referenceNumber,
                 totalPrice: booking.totalPrice,
                 bookingStatus: booking.bookingStatus,
                 paymentStatus: booking.paymentStatus,
                 createdAt: booking.createdAt,
+                passengers: booking.passengers || [],
                 deal: deal ? {
                     id: deal.id,
                     date: deal.date,
@@ -7335,6 +11032,99 @@ exports.TripsService = TripsService = __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/users/dto/change-password.dto.ts":
+/*!******************************************************!*\
+  !*** ./src/modules/users/dto/change-password.dto.ts ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ChangePasswordDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class ChangePasswordDto {
+}
+exports.ChangePasswordDto = ChangePasswordDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Current password',
+        example: 'currentPassword123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ChangePasswordDto.prototype, "currentPassword", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'New password (minimum 8 characters)',
+        example: 'newPassword123',
+        minLength: 8,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MinLength)(8),
+    __metadata("design:type", String)
+], ChangePasswordDto.prototype, "newPassword", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/users/dto/delete-account.dto.ts":
+/*!*****************************************************!*\
+  !*** ./src/modules/users/dto/delete-account.dto.ts ***!
+  \*****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DeleteAccountDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class DeleteAccountDto {
+}
+exports.DeleteAccountDto = DeleteAccountDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'User password for confirmation',
+        example: 'userPassword123',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], DeleteAccountDto.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Reason for account deletion (optional)',
+        example: 'No longer using the service',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], DeleteAccountDto.prototype, "reason", void 0);
+
+
+/***/ }),
+
 /***/ "./src/modules/users/dto/index.ts":
 /*!****************************************!*\
   !*** ./src/modules/users/dto/index.ts ***!
@@ -7359,6 +11149,96 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(/*! ./update-user-profile.dto */ "./src/modules/users/dto/update-user-profile.dto.ts"), exports);
 __exportStar(__webpack_require__(/*! ./update-user-preferences.dto */ "./src/modules/users/dto/update-user-preferences.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./change-password.dto */ "./src/modules/users/dto/change-password.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./delete-account.dto */ "./src/modules/users/dto/delete-account.dto.ts"), exports);
+__exportStar(__webpack_require__(/*! ./privacy-settings.dto */ "./src/modules/users/dto/privacy-settings.dto.ts"), exports);
+
+
+/***/ }),
+
+/***/ "./src/modules/users/dto/privacy-settings.dto.ts":
+/*!*******************************************************!*\
+  !*** ./src/modules/users/dto/privacy-settings.dto.ts ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PrivacySettingsDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class PrivacySettingsDto {
+}
+exports.PrivacySettingsDto = PrivacySettingsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Allow data sharing with third parties',
+        example: false,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PrivacySettingsDto.prototype, "dataSharing", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Receive marketing emails',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PrivacySettingsDto.prototype, "marketingEmails", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Receive SMS notifications',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PrivacySettingsDto.prototype, "smsNotifications", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Receive push notifications',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PrivacySettingsDto.prototype, "pushNotifications", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Profile visibility to other users',
+        example: false,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PrivacySettingsDto.prototype, "profileVisible", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Allow location tracking',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PrivacySettingsDto.prototype, "locationTracking", void 0);
 
 
 /***/ }),
@@ -7408,6 +11288,17 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateUserPreferencesDto.prototype, "currency", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'User preferred theme',
+        required: false,
+        example: 'light',
+        enum: ['light', 'dark', 'system'],
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateUserPreferencesDto.prototype, "theme", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'User notification preferences',
@@ -7732,7 +11623,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -7822,6 +11713,73 @@ let UsersController = class UsersController {
             currency: 'USD',
             lastTransaction: user.updated_at,
         };
+    }
+    async changePassword(req, changePasswordDto) {
+        const userId = req.user.sub;
+        try {
+            await this.usersService.changePassword(userId, changePasswordDto);
+            return {
+                message: 'Password changed successfully',
+            };
+        }
+        catch (error) {
+            if (error.message === 'Invalid current password') {
+                throw new common_1.UnauthorizedException('Invalid current password');
+            }
+            throw new common_1.BadRequestException(`Failed to change password: ${error.message}`);
+        }
+    }
+    async deleteAccount(req, deleteAccountDto) {
+        const userId = req.user.sub;
+        try {
+            await this.usersService.deleteAccount(userId, deleteAccountDto);
+            return {
+                message: 'Account deleted successfully',
+            };
+        }
+        catch (error) {
+            if (error.message === 'Invalid password') {
+                throw new common_1.UnauthorizedException('Invalid password');
+            }
+            throw new common_1.BadRequestException(`Failed to delete account: ${error.message}`);
+        }
+    }
+    async exportUserData(req) {
+        const userId = req.user.sub;
+        try {
+            const userData = await this.usersService.exportUserData(userId);
+            return {
+                userData,
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Failed to export user data: ${error.message}`);
+        }
+    }
+    async updatePrivacySettings(req, privacySettingsDto) {
+        const userId = req.user.sub;
+        try {
+            const updatedSettings = await this.usersService.updatePrivacySettings(userId, privacySettingsDto);
+            return {
+                message: 'Privacy settings updated successfully',
+                privacySettings: updatedSettings,
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Failed to update privacy settings: ${error.message}`);
+        }
+    }
+    async getPrivacySettings(req) {
+        const userId = req.user.sub;
+        try {
+            const privacySettings = await this.usersService.getPrivacySettings(userId);
+            return {
+                privacySettings,
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Failed to get privacy settings: ${error.message}`);
+        }
     }
 };
 exports.UsersController = UsersController;
@@ -7970,6 +11928,150 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getWalletInfo", null);
+__decorate([
+    (0, common_1.Put)('password'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Change user password' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Password changed successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                message: { type: 'string' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid password data' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized or invalid current password' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, typeof (_d = typeof dto_1.ChangePasswordDto !== "undefined" && dto_1.ChangePasswordDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Delete)('account'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete user account' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Account deleted successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                message: { type: 'string' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid request data' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized or invalid password' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, typeof (_e = typeof dto_1.DeleteAccountDto !== "undefined" && dto_1.DeleteAccountDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "deleteAccount", null);
+__decorate([
+    (0, common_1.Get)('export'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Export user data' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'User data exported successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                userData: {
+                    type: 'object',
+                    properties: {
+                        profile: { type: 'object' },
+                        preferences: { type: 'object' },
+                        bookings: { type: 'array' },
+                        transactions: { type: 'array' },
+                        exportDate: { type: 'string', format: 'date-time' },
+                    },
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "exportUserData", null);
+__decorate([
+    (0, common_1.Put)('privacy'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Update privacy settings' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Privacy settings updated successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                message: { type: 'string' },
+                privacySettings: {
+                    type: 'object',
+                    properties: {
+                        dataSharing: { type: 'boolean' },
+                        marketingEmails: { type: 'boolean' },
+                        smsNotifications: { type: 'boolean' },
+                        pushNotifications: { type: 'boolean' },
+                        profileVisible: { type: 'boolean' },
+                        locationTracking: { type: 'boolean' },
+                    },
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid privacy settings data' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, typeof (_f = typeof dto_1.PrivacySettingsDto !== "undefined" && dto_1.PrivacySettingsDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updatePrivacySettings", null);
+__decorate([
+    (0, common_1.Get)('privacy'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get privacy settings' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Privacy settings retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                privacySettings: {
+                    type: 'object',
+                    properties: {
+                        dataSharing: { type: 'boolean' },
+                        marketingEmails: { type: 'boolean' },
+                        smsNotifications: { type: 'boolean' },
+                        pushNotifications: { type: 'boolean' },
+                        profileVisible: { type: 'boolean' },
+                        locationTracking: { type: 'boolean' },
+                    },
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getPrivacySettings", null);
 exports.UsersController = UsersController = __decorate([
     (0, swagger_1.ApiTags)('Users'),
     (0, common_1.Controller)('users'),
@@ -8048,6 +12150,7 @@ const user_entity_1 = __webpack_require__(/*! @/common/entities/user.entity */ "
 const user_profile_entity_1 = __webpack_require__(/*! @/common/entities/user-profile.entity */ "./src/common/entities/user-profile.entity.ts");
 const wallet_transaction_entity_1 = __webpack_require__(/*! @/common/entities/wallet-transaction.entity */ "./src/common/entities/wallet-transaction.entity.ts");
 const user_profile_service_1 = __webpack_require__(/*! ./services/user-profile.service */ "./src/modules/users/services/user-profile.service.ts");
+const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
 let UsersService = class UsersService {
     constructor(userRepository, userProfileRepository, walletTransactionRepository, userProfileService) {
         this.userRepository = userRepository;
@@ -8119,6 +12222,143 @@ let UsersService = class UsersService {
         user.loyalty_points = transaction.pointsAfter;
         await this.userRepository.save(user);
         return await this.walletTransactionRepository.save(transaction);
+    }
+    async changePassword(userId, changePasswordDto) {
+        const user = await this.getUserById(userId);
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const isCurrentPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+        if (!isCurrentPasswordValid) {
+            throw new common_1.UnauthorizedException('Invalid current password');
+        }
+        const saltRounds = 10;
+        const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, saltRounds);
+        user.password = hashedNewPassword;
+        await this.userRepository.save(user);
+    }
+    async deleteAccount(userId, deleteAccountDto) {
+        const user = await this.getUserById(userId);
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const isPasswordValid = await bcrypt.compare(deleteAccountDto.password, user.password);
+        if (!isPasswordValid) {
+            throw new common_1.UnauthorizedException('Invalid password');
+        }
+        user.is_active = false;
+        user.deleted_at = new Date();
+        user.deletion_reason = deleteAccountDto.reason || 'User requested deletion';
+        await this.userRepository.save(user);
+    }
+    async exportUserData(userId) {
+        const user = await this.getUserById(userId);
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const preferences = await this.getUserPreferences(userId);
+        const bookings = [];
+        const transactions = await this.walletTransactionRepository.find({
+            where: { userId: userId },
+            order: { createdAt: 'DESC' },
+        });
+        return {
+            profile: {
+                id: user.id,
+                email: user.email,
+                phoneNumber: user.phone_number,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                countryCode: user.country_code,
+                profileImageUrl: user.profile_image_url,
+                loyaltyPoints: user.loyalty_points,
+                walletBalance: user.wallet_balance,
+                isActive: user.is_active,
+                emailVerified: user.email_verified,
+                phoneVerified: user.phone_verified,
+                createdAt: user.created_at,
+                updatedAt: user.updated_at,
+            },
+            preferences,
+            bookings,
+            transactions: transactions.map(tx => ({
+                id: tx.id,
+                type: tx.transactionType,
+                amount: tx.amount,
+                pointsAmount: tx.pointsAmount,
+                description: tx.description,
+                status: tx.status,
+                createdAt: tx.createdAt,
+                completedAt: tx.completedAt,
+            })),
+            exportDate: new Date().toISOString(),
+        };
+    }
+    async updatePrivacySettings(userId, privacySettingsDto) {
+        let profile = await this.userProfileRepository.findOne({
+            where: { userId: userId },
+        });
+        if (!profile) {
+            profile = this.userProfileRepository.create({
+                userId: userId,
+                seatPreference: user_profile_entity_1.SeatPreference.ANY,
+                emailNotifications: true,
+                smsNotifications: true,
+                pushNotifications: true,
+                marketingEmails: true,
+                profileVisible: false,
+            });
+        }
+        if (privacySettingsDto.dataSharing !== undefined) {
+            profile.dataSharing = privacySettingsDto.dataSharing;
+        }
+        if (privacySettingsDto.marketingEmails !== undefined) {
+            profile.marketingEmails = privacySettingsDto.marketingEmails;
+        }
+        if (privacySettingsDto.smsNotifications !== undefined) {
+            profile.smsNotifications = privacySettingsDto.smsNotifications;
+        }
+        if (privacySettingsDto.pushNotifications !== undefined) {
+            profile.pushNotifications = privacySettingsDto.pushNotifications;
+        }
+        if (privacySettingsDto.profileVisible !== undefined) {
+            profile.profileVisible = privacySettingsDto.profileVisible;
+        }
+        if (privacySettingsDto.locationTracking !== undefined) {
+            profile.locationTracking = privacySettingsDto.locationTracking;
+        }
+        const savedProfile = await this.userProfileRepository.save(profile);
+        return {
+            dataSharing: savedProfile.dataSharing,
+            marketingEmails: savedProfile.marketingEmails,
+            smsNotifications: savedProfile.smsNotifications,
+            pushNotifications: savedProfile.pushNotifications,
+            profileVisible: savedProfile.profileVisible,
+            locationTracking: savedProfile.locationTracking,
+        };
+    }
+    async getPrivacySettings(userId) {
+        const profile = await this.userProfileRepository.findOne({
+            where: { userId: userId },
+        });
+        if (!profile) {
+            return {
+                dataSharing: false,
+                marketingEmails: true,
+                smsNotifications: true,
+                pushNotifications: true,
+                profileVisible: false,
+                locationTracking: true,
+            };
+        }
+        return {
+            dataSharing: profile.dataSharing,
+            marketingEmails: profile.marketingEmails,
+            smsNotifications: profile.smsNotifications,
+            pushNotifications: profile.pushNotifications,
+            profileVisible: profile.profileVisible,
+            locationTracking: profile.locationTracking,
+        };
     }
 };
 exports.UsersService = UsersService;
@@ -8680,6 +12920,16 @@ exports.WalletService = WalletService = __decorate([
 
 /***/ }),
 
+/***/ "@nestjs/axios":
+/*!********************************!*\
+  !*** external "@nestjs/axios" ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/axios");
+
+/***/ }),
+
 /***/ "@nestjs/common":
 /*!*********************************!*\
   !*** external "@nestjs/common" ***!
@@ -8717,6 +12967,16 @@ module.exports = require("@nestjs/core");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/jwt");
+
+/***/ }),
+
+/***/ "@nestjs/mapped-types":
+/*!***************************************!*\
+  !*** external "@nestjs/mapped-types" ***!
+  \***************************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/mapped-types");
 
 /***/ }),
 
@@ -8787,6 +13047,16 @@ module.exports = require("class-validator");
 /***/ ((module) => {
 
 module.exports = require("passport-jwt");
+
+/***/ }),
+
+/***/ "rxjs":
+/*!***********************!*\
+  !*** external "rxjs" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("rxjs");
 
 /***/ }),
 

@@ -111,33 +111,31 @@ export class BookingsService {
         id: bookingId,
         userId,
         dealId: createBookingDto.dealId,
-        companyId: deal.companyId, // Populate company ID from deal
+        company_id: createBookingDto.companyId,
         totalPrice: createBookingDto.totalPrice,
         onboardDining: createBookingDto.onboardDining || false,
         groundTransportation: createBookingDto.groundTransportation || false,
-        specialRequirements: createBookingDto.specialRequirements,
         billingRegion: createBookingDto.billingRegion,
-        paymentMethod: createBookingDto.paymentMethod as PaymentMethod,
-        referenceNumber: referenceNumber, // Generate reference number for booking
+        paymentMethod: createBookingDto.paymentMethod,
+        referenceNumber: referenceNumber,
         bookingStatus: BookingStatus.PENDING,
         paymentStatus: PaymentStatus.PENDING,
-        loyaltyPointsEarned: 0, // Will be calculated when payment is made
-        loyaltyPointsRedeemed: 0, // No points redeemed initially
-        walletAmountUsed: 0, // No wallet amount used initially
+        specialRequirements: createBookingDto.specialRequirements,
       });
 
       const savedBooking = await queryRunner.manager.save(booking);
 
-      // Create passengers and associate with booking
+      // Create passengers
+      const passengersToCreate = createBookingDto.passengers || [];
       for (const passengerData of passengersToCreate) {
         const passenger = this.passengerRepository.create({
-          bookingId: bookingId,
-          firstName: passengerData.firstName,
-          lastName: passengerData.lastName,
+          booking_id: bookingId,
+          first_name: passengerData.firstName,
+          last_name: passengerData.lastName,
           age: passengerData.age,
           nationality: passengerData.nationality,
-          idPassportNumber: passengerData.idPassportNumber,
-          isUser: passengerData.isUser || false,
+          id_passport_number: passengerData.idPassportNumber,
+          is_user: passengerData.isUser || false,
         });
 
         await queryRunner.manager.save(passenger);
@@ -194,7 +192,7 @@ export class BookingsService {
           bookingId: booking.id,
           referenceNumber: booking.referenceNumber,
           dealId: booking.dealId,
-          companyId: booking.companyId,
+          company_id: booking.company_id,
         },
       }, PaymentProviderType.STRIPE);
 

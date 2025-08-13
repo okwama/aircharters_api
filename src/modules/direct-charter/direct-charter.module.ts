@@ -1,0 +1,29 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DirectCharterController } from './direct-charter.controller';
+import { DirectCharterService } from './direct-charter.service';
+import { Aircraft } from '../../common/entities/aircraft.entity';
+import { AircraftCalendar } from '../../common/entities/aircraft-calendar.entity';
+import { Booking } from '../../common/entities/booking.entity';
+import { ChartersCompany } from '../../common/entities/charters-company.entity';
+import { Passenger } from '../../common/entities/passenger.entity';
+import { Payment } from '../../common/entities/payment.entity';
+import { PaymentsModule } from '../payments/payments.module';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      Aircraft,
+      AircraftCalendar,
+      Booking,
+      ChartersCompany,
+      Passenger,
+      Payment,
+    ]),
+    PaymentsModule,
+  ],
+  controllers: [DirectCharterController],
+  providers: [DirectCharterService],
+  exports: [DirectCharterService],
+})
+export class DirectCharterModule {} 

@@ -33,6 +33,7 @@ export class TripsService {
     const userTrips = await this.userTripRepository
       .createQueryBuilder('userTrip')
       .leftJoinAndSelect('userTrip.booking', 'booking')
+      .leftJoinAndSelect('booking.passengers', 'passengers')
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('deal.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -51,6 +52,7 @@ export class TripsService {
     const userTrips = await this.userTripRepository
       .createQueryBuilder('userTrip')
       .leftJoinAndSelect('userTrip.booking', 'booking')
+      .leftJoinAndSelect('booking.passengers', 'passengers')
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('deal.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -70,6 +72,7 @@ export class TripsService {
     const userTrip = await this.userTripRepository
       .createQueryBuilder('userTrip')
       .leftJoinAndSelect('userTrip.booking', 'booking')
+      .leftJoinAndSelect('booking.passengers', 'passengers')
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('deal.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -213,6 +216,7 @@ export class TripsService {
 
     return {
       id: userTrip.id,
+      userId: userTrip.userId, // Add missing userId field
       bookingId: userTrip.bookingId,
       status: userTrip.status,
       rating: userTrip.rating,
@@ -225,11 +229,13 @@ export class TripsService {
       cancelledAt: userTrip.cancelledAt,
       booking: booking ? {
         id: booking.id,
+        userId: booking.userId,
         referenceNumber: booking.referenceNumber,
         totalPrice: booking.totalPrice,
         bookingStatus: booking.bookingStatus,
         paymentStatus: booking.paymentStatus,
         createdAt: booking.createdAt,
+        passengers: booking.passengers || [],
         deal: deal ? {
           id: deal.id,
           date: deal.date,

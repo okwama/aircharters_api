@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment, PaymentStatus } from '../../common/entities/payment.entity';
+import { Booking } from '../../common/entities/booking.entity';
 import { CreatePaymentDto } from './dto';
 
 @Injectable()
@@ -9,6 +10,8 @@ export class PaymentsService {
   constructor(
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+    @InjectRepository(Booking)
+    private bookingRepository: Repository<Booking>,
   ) {}
 
   async create(userId: string, companyId: number, createPaymentDto: CreatePaymentDto): Promise<Payment> {
@@ -32,6 +35,21 @@ export class PaymentsService {
     });
 
     return await this.paymentRepository.save(payment);
+  }
+
+  async createFromBooking(userId: string, createPaymentDto: CreatePaymentDto): Promise<Payment> {
+    // Find the booking to get the company ID
+    const booking = await this.bookingRepository.findOne({
+      where: { id: createPaymentDto.bookingId },
+      select: ['id', 'company_id']
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    // Use the booking's company ID
+    return this.create(userId, booking.company_id, createPaymentDto);
   }
 
   async findAll(): Promise<Payment[]> {

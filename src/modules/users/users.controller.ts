@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Put,
+  Post,
+  Delete,
   Body,
   Request,
   UseGuards,
@@ -9,11 +11,18 @@ import {
   HttpStatus,
   BadRequestException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { UpdateUserProfileDto, UpdateUserPreferencesDto } from './dto';
+import { 
+  UpdateUserProfileDto, 
+  UpdateUserPreferencesDto, 
+  ChangePasswordDto, 
+  DeleteAccountDto, 
+  PrivacySettingsDto 
+} from './dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -228,5 +237,193 @@ export class UsersController {
       currency: 'USD', // Default currency
       lastTransaction: user.updated_at,
     };
+  }
+
+  @Put('password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password changed successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Invalid password data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized or invalid current password' })
+  async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
+    const userId = req.user.sub;
+    
+    try {
+      await this.usersService.changePassword(userId, changePasswordDto);
+      
+      return {
+        message: 'Password changed successfully',
+      };
+    } catch (error) {
+      if (error.message === 'Invalid current password') {
+        throw new UnauthorizedException('Invalid current password');
+      }
+      throw new BadRequestException(`Failed to change password: ${error.message}`);
+    }
+  }
+
+  @Delete('account')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete user account' })
+  @ApiResponse({
+    status: 200,
+    description: 'Account deleted successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Invalid request data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized or invalid password' })
+  async deleteAccount(@Request() req, @Body() deleteAccountDto: DeleteAccountDto) {
+    const userId = req.user.sub;
+    
+    try {
+      await this.usersService.deleteAccount(userId, deleteAccountDto);
+      
+      return {
+        message: 'Account deleted successfully',
+      };
+    } catch (error) {
+      if (error.message === 'Invalid password') {
+        throw new UnauthorizedException('Invalid password');
+      }
+      throw new BadRequestException(`Failed to delete account: ${error.message}`);
+    }
+  }
+
+  @Get('export')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Export user data' })
+  @ApiResponse({
+    status: 200,
+    description: 'User data exported successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        userData: {
+          type: 'object',
+          properties: {
+            profile: { type: 'object' },
+            preferences: { type: 'object' },
+            bookings: { type: 'array' },
+            transactions: { type: 'array' },
+            exportDate: { type: 'string', format: 'date-time' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async exportUserData(@Request() req) {
+    const userId = req.user.sub;
+    
+    try {
+      const userData = await this.usersService.exportUserData(userId);
+      
+      return {
+        userData,
+      };
+    } catch (error) {
+      throw new BadRequestException(`Failed to export user data: ${error.message}`);
+    }
+  }
+
+  @Put('privacy')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update privacy settings' })
+  @ApiResponse({
+    status: 200,
+    description: 'Privacy settings updated successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        privacySettings: {
+          type: 'object',
+          properties: {
+            dataSharing: { type: 'boolean' },
+            marketingEmails: { type: 'boolean' },
+            smsNotifications: { type: 'boolean' },
+            pushNotifications: { type: 'boolean' },
+            profileVisible: { type: 'boolean' },
+            locationTracking: { type: 'boolean' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Invalid privacy settings data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async updatePrivacySettings(@Request() req, @Body() privacySettingsDto: PrivacySettingsDto) {
+    const userId = req.user.sub;
+    
+    try {
+      const updatedSettings = await this.usersService.updatePrivacySettings(userId, privacySettingsDto);
+      
+      return {
+        message: 'Privacy settings updated successfully',
+        privacySettings: updatedSettings,
+      };
+    } catch (error) {
+      throw new BadRequestException(`Failed to update privacy settings: ${error.message}`);
+    }
+  }
+
+  @Get('privacy')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get privacy settings' })
+  @ApiResponse({
+    status: 200,
+    description: 'Privacy settings retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        privacySettings: {
+          type: 'object',
+          properties: {
+            dataSharing: { type: 'boolean' },
+            marketingEmails: { type: 'boolean' },
+            smsNotifications: { type: 'boolean' },
+            pushNotifications: { type: 'boolean' },
+            profileVisible: { type: 'boolean' },
+            locationTracking: { type: 'boolean' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getPrivacySettings(@Request() req) {
+    const userId = req.user.sub;
+    
+    try {
+      const privacySettings = await this.usersService.getPrivacySettings(userId);
+      
+      return {
+        privacySettings,
+      };
+    } catch (error) {
+      throw new BadRequestException(`Failed to get privacy settings: ${error.message}`);
+    }
   }
 } 

@@ -30,6 +30,7 @@
     "test:db": "node test-db.js"
   },
   "dependencies": {
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
@@ -43,6 +44,7 @@
     "@nestjs/websockets": "^10.0.0",
     "@types/stripe": "^8.0.416",
     "aws-sdk": "^2.1490.0",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "bull": "^4.12.0",

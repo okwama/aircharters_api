@@ -92,6 +92,12 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })
+  deleted_at?: Date;
+
+  @Column({ name: 'deletion_reason', type: 'text', nullable: true })
+  deletion_reason?: string;
+
   // Computed properties
   get fullName(): string {
     return `${this.first_name || ''} ${this.last_name || ''}`.trim();

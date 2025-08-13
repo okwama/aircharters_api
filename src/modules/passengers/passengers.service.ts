@@ -18,7 +18,7 @@ export class PassengersService {
 
   async findAll(): Promise<Passenger[]> {
     return await this.passengerRepository.find({
-      order: { createdAt: 'DESC' },
+      order: { created_at: 'DESC' },
     });
   }
 
@@ -36,31 +36,27 @@ export class PassengersService {
 
   async findByBookingId(bookingId: string): Promise<Passenger[]> {
     return await this.passengerRepository.find({
-      where: { bookingId },
-      order: { createdAt: 'ASC' },
+      where: { booking_id: bookingId },
+      order: { created_at: 'ASC' },
     });
   }
 
   async update(id: number, updatePassengerDto: UpdatePassengerDto): Promise<Passenger> {
-    const passenger = await this.findOne(id);
-    
-    Object.assign(passenger, updatePassengerDto);
-    
-    return await this.passengerRepository.save(passenger);
+    await this.passengerRepository.update(id, updatePassengerDto);
+    return await this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
-    const passenger = await this.findOne(id);
-    await this.passengerRepository.remove(passenger);
+    await this.passengerRepository.delete(id);
   }
 
   async removeByBookingId(bookingId: string): Promise<void> {
-    await this.passengerRepository.delete({ bookingId });
+    await this.passengerRepository.delete({ booking_id: bookingId });
   }
 
   async countByBookingId(bookingId: string): Promise<number> {
     return await this.passengerRepository.count({
-      where: { bookingId },
+      where: { booking_id: bookingId },
     });
   }
 } 

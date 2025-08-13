@@ -41,6 +41,7 @@ export class PassengerDataDto {
   @IsOptional()
   @IsString()
   idPassportNumber?: string;
+  isUser: boolean;
 }
 
 export class CreateBookingDto {
@@ -87,4 +88,5 @@ export class CreateBookingDto {
   @ValidateNested({ each: true })
   @Type(() => PassengerDataDto)
   passengers?: PassengerDataDto[];
+  companyId: number;
 } 

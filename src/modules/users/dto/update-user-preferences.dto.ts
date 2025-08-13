@@ -23,6 +23,16 @@ export class UpdateUserPreferencesDto {
   currency?: string;
 
   @ApiProperty({
+    description: 'User preferred theme',
+    required: false,
+    example: 'light',
+    enum: ['light', 'dark', 'system'],
+  })
+  @IsOptional()
+  @IsString()
+  theme?: string;
+
+  @ApiProperty({
     description: 'User notification preferences',
     required: false,
     example: true,

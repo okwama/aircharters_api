@@ -45,7 +45,7 @@ export class Booking {
   dealId: number;
 
   @Column({ name: 'company_id', type: 'int' })
-  companyId: number;
+  company_id: number;
 
   @Column({ name: 'totalPrice', type: 'decimal', precision: 10, scale: 2 })
   totalPrice: number;

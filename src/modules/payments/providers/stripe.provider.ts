@@ -50,12 +50,6 @@ export class StripeProvider implements PaymentProvider {
         automatic_payment_methods: {
           enabled: true,
         },
-        payment_method_types: [
-          'card',
-          'apple_pay',
-          'google_pay',
-          'us_bank_account',
-        ],
       });
 
       return {

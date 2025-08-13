@@ -9,6 +9,7 @@ import {
   PaymentProviderType,
 } from '../interfaces/payment-provider.interface';
 import { StripeProvider } from '../providers/stripe.provider';
+import { MpesaProvider } from '../providers/mpesa.provider';
 
 @Injectable()
 export class PaymentProviderService {
@@ -18,6 +19,7 @@ export class PaymentProviderService {
   constructor(
     private configService: ConfigService,
     private stripeProvider: StripeProvider,
+    private mpesaProvider: MpesaProvider,
   ) {
     this.initializeProviders();
   }
@@ -26,8 +28,10 @@ export class PaymentProviderService {
     // Register Stripe provider
     this.providers.set(PaymentProviderType.STRIPE, this.stripeProvider);
     
+    // Register M-Pesa provider
+    this.providers.set(PaymentProviderType.MPESA, this.mpesaProvider);
+    
     // Future providers can be added here
-    // this.providers.set(PaymentProviderType.MPESA, this.mpesaProvider);
     // this.providers.set(PaymentProviderType.PAYPAL, this.paypalProvider);
   }
 

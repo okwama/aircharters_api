@@ -10,6 +10,7 @@ import {
   HttpStatus, 
   ParseIntPipe,
   Request,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -20,6 +21,7 @@ import { PaymentStatus } from '../../common/entities/payment.entity';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../common/entities/user.entity';
 import { PaymentProviderType } from './interfaces/payment-provider.interface';
+import { MpesaProvider, MpesaCallbackData } from './providers/mpesa.provider';
 
 @ApiTags('payments')
 @ApiBearerAuth()
@@ -29,6 +31,7 @@ export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly paymentProviderService: PaymentProviderService,
+    private readonly mpesaProvider: MpesaProvider,
   ) {}
 
   @Post('create-intent')
@@ -152,9 +155,8 @@ export class PaymentsController {
   async create(
     @CurrentUser() user: User,
     @Body() createPaymentDto: CreatePaymentDto,
-    @Query('companyId', ParseIntPipe) companyId: number,
   ) {
-    const payment = await this.paymentsService.create(user.id, companyId, createPaymentDto);
+    const payment = await this.paymentsService.createFromBooking(user.id, createPaymentDto);
     return {
       success: true,
       message: 'Payment created successfully',
@@ -252,6 +254,48 @@ export class PaymentsController {
       success: true,
       message: 'Refund processed successfully',
       data: payment,
+    };
+  }
+
+
+
+  // M-Pesa STK Push Endpoint
+  @Post('mpesa/stk-push')
+  @ApiOperation({ summary: 'Initiate M-Pesa STK Push payment' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'STK Push initiated successfully' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'STK Push failed' })
+  async initiateMpesaPayment(
+    @CurrentUser() user: User,
+    @Body() body: {
+      bookingId: string;
+      amount: number;
+      phoneNumber: string;
+      description?: string;
+    },
+  ) {
+    const paymentIntent = await this.paymentProviderService.createPaymentIntent(
+      {
+        amount: body.amount,
+        currency: 'KES',
+        bookingId: body.bookingId,
+        userId: user.id,
+        description: body.description || `Payment for booking ${body.bookingId}`,
+        metadata: {
+          phoneNumber: body.phoneNumber,
+        },
+      },
+      PaymentProviderType.MPESA
+    );
+
+    return {
+      success: true,
+      message: 'M-Pesa STK Push initiated successfully',
+      data: {
+        paymentIntentId: paymentIntent.id,
+        status: paymentIntent.status,
+        requiresAction: paymentIntent.requiresAction,
+        nextAction: paymentIntent.nextAction,
+      },
     };
   }
 } 

@@ -36,6 +36,12 @@ export class UserProfile {
   @Column({ name: 'profile_visible', type: 'boolean', default: false })
   profileVisible: boolean;
 
+  @Column({ name: 'data_sharing', type: 'boolean', default: false })
+  dataSharing: boolean;
+
+  @Column({ name: 'location_tracking', type: 'boolean', default: true })
+  locationTracking: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
