@@ -463,7 +463,6 @@ export class BookingsService {
       Your booking has been confirmed!
       
       Booking Reference: ${booking.referenceNumber}
-      Flight: ${booking.deal.fixedRoute.origin} → ${booking.deal.fixedRoute.destination}
       Date: ${booking.deal.date}
       Time: ${booking.deal.time}
       Aircraft: ${booking.deal.aircraft.name}

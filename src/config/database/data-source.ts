@@ -10,7 +10,7 @@ export const dataSource = new DataSource({
   database: process.env.DB_DATABASE || 'impulsep_air_charters',
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
-  synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: false, // Disabled to prevent schema conflicts
   logging: process.env.NODE_ENV === 'development',
   charset: 'utf8mb4',
   timezone: '+00:00',
@@ -73,7 +73,7 @@ export const getDataSource = (configService: ConfigService) => {
     database: configService.get('DB_DATABASE', 'impulsep_air_charters'),
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/database/migrations/*{.ts,.js}'],
-    synchronize: configService.get('NODE_ENV') !== 'production',
+    synchronize: false, // Disabled to prevent schema conflicts
     logging: configService.get('NODE_ENV') === 'development',
     charset: 'utf8mb4',
     timezone: '+00:00', 

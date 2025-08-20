@@ -2,6 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { CharterDeal } from './charter-deal.entity';
 import { ChartersCompany } from './charters-company.entity';
 import { AircraftImage } from './aircraft-image.entity';
+import { AircraftAmenity } from './aircraft-amenity.entity';
+import { AircraftTypeImagePlaceholder } from './aircraft-type-image-placeholder.entity';
 
 @Entity('aircrafts')
 export class Aircraft {
@@ -55,6 +57,9 @@ export class Aircraft {
   @Column({ name: 'baseCity', type: 'varchar', length: 100, nullable: true })
   baseCity: string;
 
+  @Column({ name: 'aircraftTypeImagePlaceholderId', type: 'int', nullable: true })
+  aircraftTypeImagePlaceholderId: number;
+
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
@@ -71,4 +76,11 @@ export class Aircraft {
 
   @OneToMany(() => AircraftImage, image => image.aircraft)
   images: AircraftImage[];
+
+  @OneToMany(() => AircraftAmenity, aircraftAmenity => aircraftAmenity.aircraft)
+  aircraftAmenities: AircraftAmenity[];
+
+  @ManyToOne(() => AircraftTypeImagePlaceholder, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'aircraftTypeImagePlaceholderId' })
+  aircraftTypeImagePlaceholder: AircraftTypeImagePlaceholder;
 } 

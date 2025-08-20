@@ -6,7 +6,6 @@ import { Booking } from '../../common/entities/booking.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
 import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { Aircraft } from '../../common/entities/aircraft.entity';
-import { FixedRoute } from '../../common/entities/fixed-route.entity';
 
 @Injectable()
 export class TripsService {
@@ -21,8 +20,6 @@ export class TripsService {
     private readonly companyRepository: Repository<ChartersCompany>,
     @InjectRepository(Aircraft)
     private readonly aircraftRepository: Repository<Aircraft>,
-    @InjectRepository(FixedRoute)
-    private readonly routeRepository: Repository<FixedRoute>,
     private readonly dataSource: DataSource,
   ) {}
 

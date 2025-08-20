@@ -15,11 +15,13 @@ import { AircraftAvailabilityModule } from './modules/aircraft-availability/airc
 import { DirectCharterModule } from './modules/direct-charter/direct-charter.module';
 import { BookingInquiriesModule } from './modules/booking-inquiries/booking-inquiries.module';
 import { GoogleEarthEngineModule } from './modules/google-earth-engine/google-earth-engine.module';
+import { AmenitiesModule } from './modules/amenities/amenities.module';
+import { CommissionModule } from './modules/commission/commission.module';
 import { HealthController } from './health.controller';
 import { User } from './common/entities/user.entity';
 import { CharterDeal } from './common/entities/charter-deal.entity';
 import { ChartersCompany } from './common/entities/charters-company.entity';
-import { FixedRoute } from './common/entities/fixed-route.entity';
+// FixedRoute import removed - no longer used
 import { Aircraft as CharterAircraft } from './common/entities/aircraft.entity';
 import { Aircraft } from './common/entities/aircraft-booking.entity';
 import { Company } from './common/entities/company.entity';
@@ -38,6 +40,16 @@ import { AircraftImage } from './common/entities/aircraft-image.entity';
 import { AircraftCalendar } from './common/entities/aircraft-calendar.entity';
 import { BookingInquiry } from './common/entities/booking-inquiry.entity';
 import { InquiryStop } from './common/entities/inquiry-stop.entity';
+import { Amenity } from './common/entities/amenity.entity';
+import { AircraftAmenity } from './common/entities/aircraft-amenity.entity';
+import { CharterDealAmenity } from './common/entities/charter-deal-amenity.entity';
+import { AircraftTypeImagePlaceholder } from './common/entities/aircraft-type-image-placeholder.entity';
+import { PlatformCommission } from './common/entities/platform-commission.entity';
+import { CommissionTier } from './common/entities/commission-tier.entity';
+import { CompanyCommission } from './common/entities/company-commission.entity';
+import { CommissionHistory } from './common/entities/commission-history.entity';
+import { CompanyPaymentAccount } from './common/entities/company-payment-account.entity';
+import { TransactionLedger } from './common/entities/transaction-ledger.entity';
 
 @Module({
   imports: [
@@ -55,7 +67,7 @@ import { InquiryStop } from './common/entities/inquiry-stop.entity';
         User, 
         CharterDeal,
         ChartersCompany,
-        FixedRoute,
+        // FixedRoute removed - no longer used
         CharterAircraft,
         Aircraft,
         Company,
@@ -74,6 +86,16 @@ import { InquiryStop } from './common/entities/inquiry-stop.entity';
         AircraftCalendar,
         BookingInquiry,
         InquiryStop,
+        Amenity,
+        AircraftAmenity,
+        CharterDealAmenity,
+        AircraftTypeImagePlaceholder,
+        PlatformCommission,
+                            CommissionTier,
+                    CompanyCommission,
+                    CommissionHistory,
+                    CompanyPaymentAccount,
+                    TransactionLedger,
       ],
       synchronize: false,
       logging: false,
@@ -133,7 +155,9 @@ import { InquiryStop } from './common/entities/inquiry-stop.entity';
     AircraftAvailabilityModule,
             DirectCharterModule,
         BookingInquiriesModule,
-        GoogleEarthEngineModule,
+                                GoogleEarthEngineModule,
+                        AmenitiesModule,
+                        CommissionModule,
       ],
   controllers: [HealthController],
 })

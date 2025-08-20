@@ -2,6 +2,7 @@ import { Controller, Get, Query, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { CharterDealsService } from './charter-deals.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { FilterCharterDealsDto } from './dto/filter-charter-deals.dto';
 
 @ApiTags('Charter Deals')
 @Controller('charter-deals')
@@ -63,6 +64,12 @@ export class CharterDealsController {
   @ApiQuery({ name: 'dealType', required: false, enum: ['privateCharter', 'jetSharing'], description: 'Filter by deal type' })
   @ApiQuery({ name: 'fromDate', required: false, type: String, description: 'Filter deals from this date (YYYY-MM-DD)' })
   @ApiQuery({ name: 'toDate', required: false, type: String, description: 'Filter deals to this date (YYYY-MM-DD)' })
+  @ApiQuery({ name: 'aircraftTypeImagePlaceholderId', required: false, type: Number, description: 'Filter by aircraft type image placeholder ID' })
+  @ApiQuery({ name: 'origin', required: false, type: String, description: 'Filter by route origin' })
+  @ApiQuery({ name: 'destination', required: false, type: String, description: 'Filter by route destination' })
+  @ApiQuery({ name: 'userLat', required: false, type: Number, description: 'User latitude for proximity sorting' })
+  @ApiQuery({ name: 'userLng', required: false, type: Number, description: 'User longitude for proximity sorting' })
+  @ApiQuery({ name: 'groupBy', required: false, type: Boolean, description: 'Group by aircraft type and route' })
   async getCharterDeals(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
@@ -70,6 +77,12 @@ export class CharterDealsController {
     @Query('dealType') dealType?: string,
     @Query('fromDate') fromDate?: string,
     @Query('toDate') toDate?: string,
+    @Query('aircraftTypeImagePlaceholderId') aircraftTypeImagePlaceholderId?: string,
+    @Query('origin') origin?: string,
+    @Query('destination') destination?: string,
+    @Query('userLat') userLat?: string,
+    @Query('userLng') userLng?: string,
+    @Query('groupBy') groupBy?: string,
   ) {
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
@@ -77,22 +90,45 @@ export class CharterDealsController {
     const fromDateObj = fromDate ? new Date(fromDate) : undefined;
     const toDateObj = toDate ? new Date(toDate) : undefined;
 
-    const result = await this.charterDealsService.findAllWithRelations(
-      pageNum,
-      limitNum,
-      search,
-      dealType,
-      fromDateObj,
-      toDateObj,
-    );
+    // Use enhanced filters if any new parameters are provided
+    const hasEnhancedFilters = aircraftTypeImagePlaceholderId || origin || destination || userLat || userLng || groupBy;
+    
+    if (hasEnhancedFilters) {
+      const filters: FilterCharterDealsDto = {
+        page: pageNum,
+        limit: limitNum,
+        search,
+        dealType,
+        fromDate,
+        toDate,
+        aircraftTypeImagePlaceholderId: aircraftTypeImagePlaceholderId ? parseInt(aircraftTypeImagePlaceholderId) : undefined,
+        origin,
+        destination,
+        userLat: userLat ? parseFloat(userLat) : undefined,
+        userLng: userLng ? parseFloat(userLng) : undefined,
+        groupBy: groupBy === 'true',
+      };
 
-    return {
-      success: true,
-      data: result.deals,
-      total: result.total,
-      page: pageNum,
-      limit: limitNum,
-    };
+      return await this.charterDealsService.findAllWithEnhancedFilters(filters);
+    } else {
+      // Use original method for backward compatibility
+      const result = await this.charterDealsService.findAllWithRelations(
+        pageNum,
+        limitNum,
+        search,
+        dealType,
+        fromDateObj,
+        toDateObj,
+      );
+
+      return {
+        success: true,
+        data: result.deals,
+        total: result.total,
+        page: pageNum,
+        limit: limitNum,
+      };
+    }
   }
 
   @Get(':id')

@@ -7,7 +7,6 @@ import { Booking } from '../../common/entities/booking.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
 import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { Aircraft } from '../../common/entities/aircraft.entity';
-import { FixedRoute } from '../../common/entities/fixed-route.entity';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { FixedRoute } from '../../common/entities/fixed-route.entity';
       CharterDeal,
       ChartersCompany,
       Aircraft,
-      FixedRoute,
     ]),
   ],
   controllers: [TripsController],

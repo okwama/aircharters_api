@@ -22,7 +22,6 @@ export class BookingQueryService {
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('booking.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
-      .leftJoinAndSelect('deal.fixedRoute', 'fixedRoute');
 
     if (userId) {
       query.where('booking.userId = :userId', { userId });
@@ -44,7 +43,6 @@ export class BookingQueryService {
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('booking.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
-      .leftJoinAndSelect('deal.fixedRoute', 'fixedRoute')
       .where('booking.id = :id', { id })
       .getOne();
 
@@ -66,7 +64,6 @@ export class BookingQueryService {
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('booking.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
-      .leftJoinAndSelect('deal.fixedRoute', 'fixedRoute')
       .where('booking.referenceNumber = :referenceNumber', { referenceNumber })
       .getOne();
 
@@ -91,7 +88,6 @@ export class BookingQueryService {
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('booking.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
-      .leftJoinAndSelect('deal.fixedRoute', 'fixedRoute')
       .where('booking.userId = :userId', { userId });
 
     // Filter by upcoming/past bookings
@@ -125,7 +121,6 @@ export class BookingQueryService {
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('deal.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
-      .leftJoinAndSelect('deal.fixedRoute', 'fixedRoute')
       .where('booking.userId = :userId', { userId })
       .andWhere('booking.paymentStatus = :paymentStatus', { 
         paymentStatus: PaymentStatus.PENDING 
@@ -146,7 +141,6 @@ export class BookingQueryService {
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('deal.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')
-      .leftJoinAndSelect('deal.fixedRoute', 'fixedRoute')
       .leftJoinAndSelect('booking.passengers', 'passengers')
       .where('booking.referenceNumber = :referenceNumber', { referenceNumber })
       .getOne();
@@ -161,8 +155,8 @@ export class BookingQueryService {
       paymentStatus: booking.paymentStatus,
       flightDate: booking.deal.date.toString(),
       flightTime: booking.deal.time.toString(),
-      origin: booking.deal.fixedRoute.origin,
-      destination: booking.deal.fixedRoute.destination,
+      origin: booking.deal.originName,
+      destination: booking.deal.destinationName,
       aircraftName: booking.deal.aircraft.name,
       companyName: booking.deal.company.companyName,
       totalPrice: booking.totalPrice.toString(),
