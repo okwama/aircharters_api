@@ -263,6 +263,16 @@ export class CharterDealsController {
     };
   }
 
+  @Get('debug/database')
+  @ApiOperation({ summary: 'Debug database connection and data' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns database debug information',
+  })
+  async debugDatabase() {
+    return await this.charterDealsService.debugDatabaseConnection();
+  }
+
   @Get('route/:origin/:destination')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get charter deals by route' })

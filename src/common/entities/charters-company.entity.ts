@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { CharterDeal } from './charter-deal.entity';
+import { ExperienceTemplate } from './experience-template.entity';
 
 @Entity('charters_companies')
 export class ChartersCompany {
@@ -76,4 +77,7 @@ export class ChartersCompany {
   // Relations
   @OneToMany(() => CharterDeal, deal => deal.company)
   deals: CharterDeal[];
+
+  @OneToMany(() => ExperienceTemplate, experience => experience.company)
+  experienceTemplates: ExperienceTemplate[];
 } 

@@ -35,6 +35,8 @@ const booking_inquiries_module_1 = __webpack_require__(/*! ./modules/booking-inq
 const google_earth_engine_module_1 = __webpack_require__(/*! ./modules/google-earth-engine/google-earth-engine.module */ "./src/modules/google-earth-engine/google-earth-engine.module.ts");
 const amenities_module_1 = __webpack_require__(/*! ./modules/amenities/amenities.module */ "./src/modules/amenities/amenities.module.ts");
 const commission_module_1 = __webpack_require__(/*! ./modules/commission/commission.module */ "./src/modules/commission/commission.module.ts");
+const experiences_module_1 = __webpack_require__(/*! ./modules/experiences/experiences.module */ "./src/modules/experiences/experiences.module.ts");
+const sms_module_1 = __webpack_require__(/*! ./modules/sms/sms.module */ "./src/modules/sms/sms.module.ts");
 const health_controller_1 = __webpack_require__(/*! ./health.controller */ "./src/health.controller.ts");
 const user_entity_1 = __webpack_require__(/*! ./common/entities/user.entity */ "./src/common/entities/user.entity.ts");
 const charter_deal_entity_1 = __webpack_require__(/*! ./common/entities/charter-deal.entity */ "./src/common/entities/charter-deal.entity.ts");
@@ -67,6 +69,9 @@ const company_commission_entity_1 = __webpack_require__(/*! ./common/entities/co
 const commission_history_entity_1 = __webpack_require__(/*! ./common/entities/commission-history.entity */ "./src/common/entities/commission-history.entity.ts");
 const company_payment_account_entity_1 = __webpack_require__(/*! ./common/entities/company-payment-account.entity */ "./src/common/entities/company-payment-account.entity.ts");
 const transaction_ledger_entity_1 = __webpack_require__(/*! ./common/entities/transaction-ledger.entity */ "./src/common/entities/transaction-ledger.entity.ts");
+const experience_template_entity_1 = __webpack_require__(/*! ./common/entities/experience-template.entity */ "./src/common/entities/experience-template.entity.ts");
+const experience_image_entity_1 = __webpack_require__(/*! ./common/entities/experience-image.entity */ "./src/common/entities/experience-image.entity.ts");
+const experience_schedule_entity_1 = __webpack_require__(/*! ./common/entities/experience-schedule.entity */ "./src/common/entities/experience-schedule.entity.ts");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -75,73 +80,71 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
+                envFilePath: '.env',
             }),
-            typeorm_1.TypeOrmModule.forRoot({
-                type: 'mysql',
-                host: process.env.DB_HOST || 'localhost',
-                port: parseInt(process.env.DB_PORT) || 3306,
-                username: process.env.DB_USERNAME || 'root',
-                password: process.env.DB_PASSWORD || '',
-                database: process.env.DB_DATABASE || 'citlogis_air_charters',
-                entities: [
-                    user_entity_1.User,
-                    charter_deal_entity_1.CharterDeal,
-                    charters_company_entity_1.ChartersCompany,
-                    aircraft_entity_1.Aircraft,
-                    aircraft_booking_entity_1.Aircraft,
-                    company_entity_1.Company,
-                    passenger_entity_1.Passenger,
-                    booking_entity_1.Booking,
-                    payment_entity_1.Payment,
-                    wallet_transaction_entity_1.WalletTransaction,
-                    user_profile_entity_1.UserProfile,
-                    user_trips_entity_1.UserTrip,
-                    user_files_entity_1.UserFile,
-                    user_events_entity_1.UserEvent,
-                    booking_timeline_entity_1.BookingTimeline,
-                    location_entity_1.Location,
-                    aircraft_availability_entity_1.AircraftAvailability,
-                    aircraft_image_entity_1.AircraftImage,
-                    aircraft_calendar_entity_1.AircraftCalendar,
-                    booking_inquiry_entity_1.BookingInquiry,
-                    inquiry_stop_entity_1.InquiryStop,
-                    amenity_entity_1.Amenity,
-                    aircraft_amenity_entity_1.AircraftAmenity,
-                    charter_deal_amenity_entity_1.CharterDealAmenity,
-                    aircraft_type_image_placeholder_entity_1.AircraftTypeImagePlaceholder,
-                    platform_commission_entity_1.PlatformCommission,
-                    commission_tier_entity_1.CommissionTier,
-                    company_commission_entity_1.CompanyCommission,
-                    commission_history_entity_1.CommissionHistory,
-                    company_payment_account_entity_1.CompanyPaymentAccount,
-                    transaction_ledger_entity_1.TransactionLedger,
-                ],
-                synchronize: false,
-                logging: false,
-                extra: {
-                    connectionLimit: 20,
-                    acquireTimeout: 60000,
-                    timeout: 60000,
-                    charset: 'utf8mb4_unicode_ci',
-                    lockWaitTimeout: 10,
-                    innodbLockWaitTimeout: 10,
-                    transactionIsolation: 'READ_COMMITTED',
-                    autocommit: false,
-                    queryTimeout: 30000,
-                    connectTimeout: 60000,
-                    multipleStatements: false,
-                    dateStrings: true,
-                    supportBigNumbers: true,
-                    bigNumberStrings: true,
-                    deadlockRetryCount: 3,
-                    deadlockRetryDelay: 1000,
-                    enableKeepAlive: true,
-                    keepAliveInitialDelay: 10000,
-                },
-                maxQueryExecutionTime: 30000,
-                cache: {
-                    duration: 30000,
-                },
+            typeorm_1.TypeOrmModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: (configService) => ({
+                    type: 'mysql',
+                    host: configService.get('DB_HOST'),
+                    port: configService.get('DB_PORT'),
+                    username: configService.get('DB_USERNAME'),
+                    password: configService.get('DB_PASSWORD'),
+                    database: configService.get('DB_DATABASE'),
+                    entities: [
+                        user_entity_1.User,
+                        charter_deal_entity_1.CharterDeal,
+                        charters_company_entity_1.ChartersCompany,
+                        aircraft_entity_1.Aircraft,
+                        aircraft_booking_entity_1.Aircraft,
+                        company_entity_1.Company,
+                        passenger_entity_1.Passenger,
+                        booking_entity_1.Booking,
+                        payment_entity_1.Payment,
+                        wallet_transaction_entity_1.WalletTransaction,
+                        user_profile_entity_1.UserProfile,
+                        user_trips_entity_1.UserTrip,
+                        user_files_entity_1.UserFile,
+                        user_events_entity_1.UserEvent,
+                        booking_timeline_entity_1.BookingTimeline,
+                        location_entity_1.Location,
+                        aircraft_availability_entity_1.AircraftAvailability,
+                        aircraft_image_entity_1.AircraftImage,
+                        aircraft_calendar_entity_1.AircraftCalendar,
+                        booking_inquiry_entity_1.BookingInquiry,
+                        inquiry_stop_entity_1.InquiryStop,
+                        amenity_entity_1.Amenity,
+                        aircraft_amenity_entity_1.AircraftAmenity,
+                        charter_deal_amenity_entity_1.CharterDealAmenity,
+                        aircraft_type_image_placeholder_entity_1.AircraftTypeImagePlaceholder,
+                        platform_commission_entity_1.PlatformCommission,
+                        commission_tier_entity_1.CommissionTier,
+                        company_commission_entity_1.CompanyCommission,
+                        commission_history_entity_1.CommissionHistory,
+                        company_payment_account_entity_1.CompanyPaymentAccount,
+                        transaction_ledger_entity_1.TransactionLedger,
+                        experience_template_entity_1.ExperienceTemplate,
+                        experience_image_entity_1.ExperienceImage,
+                        experience_schedule_entity_1.ExperienceSchedule,
+                    ],
+                    synchronize: false,
+                    logging: false,
+                    extra: {
+                        connectionLimit: 20,
+                        charset: 'utf8mb4_unicode_ci',
+                        multipleStatements: false,
+                        dateStrings: true,
+                        supportBigNumbers: true,
+                        bigNumberStrings: true,
+                        enableKeepAlive: true,
+                        keepAliveInitialDelay: 10000,
+                    },
+                    maxQueryExecutionTime: 30000,
+                    cache: {
+                        duration: 30000,
+                    },
+                }),
+                inject: [config_1.ConfigService],
             }),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
@@ -158,6 +161,8 @@ exports.AppModule = AppModule = __decorate([
             google_earth_engine_module_1.GoogleEarthEngineModule,
             amenities_module_1.AmenitiesModule,
             commission_module_1.CommissionModule,
+            experiences_module_1.ExperiencesModule,
+            sms_module_1.SmsModule,
         ],
         controllers: [health_controller_1.HealthController],
     })
@@ -1505,6 +1510,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ChartersCompany = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const charter_deal_entity_1 = __webpack_require__(/*! ./charter-deal.entity */ "./src/common/entities/charter-deal.entity.ts");
+const experience_template_entity_1 = __webpack_require__(/*! ./experience-template.entity */ "./src/common/entities/experience-template.entity.ts");
 let ChartersCompany = class ChartersCompany {
 };
 exports.ChartersCompany = ChartersCompany;
@@ -1604,6 +1610,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => charter_deal_entity_1.CharterDeal, deal => deal.company),
     __metadata("design:type", Array)
 ], ChartersCompany.prototype, "deals", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => experience_template_entity_1.ExperienceTemplate, experience => experience.company),
+    __metadata("design:type", Array)
+], ChartersCompany.prototype, "experienceTemplates", void 0);
 exports.ChartersCompany = ChartersCompany = __decorate([
     (0, typeorm_1.Entity)('charters_companies')
 ], ChartersCompany);
@@ -2144,6 +2154,277 @@ __decorate([
 exports.Company = Company = __decorate([
     (0, typeorm_1.Entity)('companies')
 ], Company);
+
+
+/***/ }),
+
+/***/ "./src/common/entities/experience-image.entity.ts":
+/*!********************************************************!*\
+  !*** ./src/common/entities/experience-image.entity.ts ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperienceImage = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const experience_template_entity_1 = __webpack_require__(/*! ./experience-template.entity */ "./src/common/entities/experience-template.entity.ts");
+let ExperienceImage = class ExperienceImage {
+};
+exports.ExperienceImage = ExperienceImage;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], ExperienceImage.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'experienceId', type: 'int' }),
+    __metadata("design:type", Number)
+], ExperienceImage.prototype, "experienceId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'imageSlot', type: 'varchar', length: 50 }),
+    __metadata("design:type", String)
+], ExperienceImage.prototype, "imageSlot", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], ExperienceImage.prototype, "url", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'publicId', type: 'varchar', length: 255 }),
+    __metadata("design:type", String)
+], ExperienceImage.prototype, "publicId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'sortOrder', type: 'int', default: 0 }),
+    __metadata("design:type", Number)
+], ExperienceImage.prototype, "sortOrder", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'createdAt' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ExperienceImage.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updatedAt' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], ExperienceImage.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => experience_template_entity_1.ExperienceTemplate, experience => experience.images),
+    (0, typeorm_1.JoinColumn)({ name: 'experienceId' }),
+    __metadata("design:type", typeof (_c = typeof experience_template_entity_1.ExperienceTemplate !== "undefined" && experience_template_entity_1.ExperienceTemplate) === "function" ? _c : Object)
+], ExperienceImage.prototype, "experience", void 0);
+exports.ExperienceImage = ExperienceImage = __decorate([
+    (0, typeorm_1.Entity)('experience_images')
+], ExperienceImage);
+
+
+/***/ }),
+
+/***/ "./src/common/entities/experience-schedule.entity.ts":
+/*!***********************************************************!*\
+  !*** ./src/common/entities/experience-schedule.entity.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f, _g;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperienceSchedule = exports.ScheduleStatus = exports.PriceUnit = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const experience_template_entity_1 = __webpack_require__(/*! ./experience-template.entity */ "./src/common/entities/experience-template.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ./charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+const aircraft_entity_1 = __webpack_require__(/*! ./aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+var PriceUnit;
+(function (PriceUnit) {
+    PriceUnit["PER_PERSON"] = "per_person";
+    PriceUnit["PER_GROUP"] = "per_group";
+    PriceUnit["PER_HOUR"] = "per_hour";
+    PriceUnit["PER_FLIGHT"] = "per_flight";
+})(PriceUnit || (exports.PriceUnit = PriceUnit = {}));
+var ScheduleStatus;
+(function (ScheduleStatus) {
+    ScheduleStatus["SCHEDULED"] = "scheduled";
+    ScheduleStatus["CANCELLED"] = "cancelled";
+    ScheduleStatus["COMPLETED"] = "completed";
+})(ScheduleStatus || (exports.ScheduleStatus = ScheduleStatus = {}));
+let ExperienceSchedule = class ExperienceSchedule {
+};
+exports.ExperienceSchedule = ExperienceSchedule;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'experienceId', type: 'int' }),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "experienceId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'companyId', type: 'int' }),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "companyId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'aircraftId', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "aircraftId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'startTime', type: 'datetime' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ExperienceSchedule.prototype, "startTime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'endTime', type: 'datetime', nullable: true }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], ExperienceSchedule.prototype, "endTime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2 }),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "price", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'priceUnit', type: 'enum', enum: PriceUnit, default: PriceUnit.PER_PERSON }),
+    __metadata("design:type", String)
+], ExperienceSchedule.prototype, "priceUnit", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'durationMinutes', type: 'int' }),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "durationMinutes", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'seatsAvailable', type: 'int' }),
+    __metadata("design:type", Number)
+], ExperienceSchedule.prototype, "seatsAvailable", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: ScheduleStatus, default: ScheduleStatus.SCHEDULED }),
+    __metadata("design:type", String)
+], ExperienceSchedule.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'createdAt' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], ExperienceSchedule.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updatedAt' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], ExperienceSchedule.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => experience_template_entity_1.ExperienceTemplate, experience => experience.schedules),
+    (0, typeorm_1.JoinColumn)({ name: 'experienceId' }),
+    __metadata("design:type", typeof (_e = typeof experience_template_entity_1.ExperienceTemplate !== "undefined" && experience_template_entity_1.ExperienceTemplate) === "function" ? _e : Object)
+], ExperienceSchedule.prototype, "experience", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => charters_company_entity_1.ChartersCompany),
+    (0, typeorm_1.JoinColumn)({ name: 'companyId' }),
+    __metadata("design:type", typeof (_f = typeof charters_company_entity_1.ChartersCompany !== "undefined" && charters_company_entity_1.ChartersCompany) === "function" ? _f : Object)
+], ExperienceSchedule.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => aircraft_entity_1.Aircraft),
+    (0, typeorm_1.JoinColumn)({ name: 'aircraftId' }),
+    __metadata("design:type", typeof (_g = typeof aircraft_entity_1.Aircraft !== "undefined" && aircraft_entity_1.Aircraft) === "function" ? _g : Object)
+], ExperienceSchedule.prototype, "aircraft", void 0);
+exports.ExperienceSchedule = ExperienceSchedule = __decorate([
+    (0, typeorm_1.Entity)('experience_schedules')
+], ExperienceSchedule);
+
+
+/***/ }),
+
+/***/ "./src/common/entities/experience-template.entity.ts":
+/*!***********************************************************!*\
+  !*** ./src/common/entities/experience-template.entity.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperienceTemplate = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const experience_image_entity_1 = __webpack_require__(/*! ./experience-image.entity */ "./src/common/entities/experience-image.entity.ts");
+const experience_schedule_entity_1 = __webpack_require__(/*! ./experience-schedule.entity */ "./src/common/entities/experience-schedule.entity.ts");
+const charters_company_entity_1 = __webpack_require__(/*! ./charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
+let ExperienceTemplate = class ExperienceTemplate {
+};
+exports.ExperienceTemplate = ExperienceTemplate;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], ExperienceTemplate.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'companyId', type: 'int' }),
+    __metadata("design:type", Number)
+], ExperienceTemplate.prototype, "companyId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    __metadata("design:type", String)
+], ExperienceTemplate.prototype, "title", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], ExperienceTemplate.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    __metadata("design:type", String)
+], ExperienceTemplate.prototype, "country", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
+    __metadata("design:type", String)
+], ExperienceTemplate.prototype, "city", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'locationName', type: 'varchar', length: 150, nullable: true }),
+    __metadata("design:type", String)
+], ExperienceTemplate.prototype, "locationName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'isActive', type: 'tinyint', default: 1 }),
+    __metadata("design:type", Boolean)
+], ExperienceTemplate.prototype, "isActive", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'termsConditions', type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], ExperienceTemplate.prototype, "termsConditions", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'createdAt' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ExperienceTemplate.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updatedAt' }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], ExperienceTemplate.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => charters_company_entity_1.ChartersCompany, company => company.experienceTemplates),
+    (0, typeorm_1.JoinColumn)({ name: 'companyId' }),
+    __metadata("design:type", typeof (_c = typeof charters_company_entity_1.ChartersCompany !== "undefined" && charters_company_entity_1.ChartersCompany) === "function" ? _c : Object)
+], ExperienceTemplate.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => experience_image_entity_1.ExperienceImage, image => image.experience),
+    __metadata("design:type", Array)
+], ExperienceTemplate.prototype, "images", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => experience_schedule_entity_1.ExperienceSchedule, schedule => schedule.experience),
+    __metadata("design:type", Array)
+], ExperienceTemplate.prototype, "schedules", void 0);
+exports.ExperienceTemplate = ExperienceTemplate = __decorate([
+    (0, typeorm_1.Entity)('experience_templates')
+], ExperienceTemplate);
 
 
 /***/ }),
@@ -7780,6 +8061,9 @@ let CharterDealsController = class CharterDealsController {
             limit: limitNum,
         };
     }
+    async debugDatabase() {
+        return await this.charterDealsService.debugDatabaseConnection();
+    }
     async getCharterDealsByRoute(origin, destination, page = '1', limit = '10', fromDate, toDate) {
         const pageNum = parseInt(page, 10);
         const limitNum = parseInt(limit, 10);
@@ -7979,6 +8263,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], CharterDealsController.prototype, "getCharterDealsByCompany", null);
+__decorate([
+    (0, common_1.Get)('debug/database'),
+    (0, swagger_1.ApiOperation)({ summary: 'Debug database connection and data' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Returns database debug information',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CharterDealsController.prototype, "debugDatabase", null);
 __decorate([
     (0, common_1.Get)('route/:origin/:destination'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
@@ -8657,6 +8952,43 @@ let CharterDealsService = class CharterDealsService {
             limit,
             totalGroups: groupedDeals.length,
         };
+    }
+    async debugDatabaseConnection() {
+        try {
+            const dealsCount = await this.charterDealRepository.count();
+            const companiesCount = await this.companyRepository.count();
+            const aircraftCount = await this.aircraftRepository.count();
+            const sampleDeal = await this.charterDealRepository
+                .createQueryBuilder('deal')
+                .select(['deal.id', 'deal.originName', 'deal.destinationName'])
+                .limit(1)
+                .getOne();
+            const activeCompanies = await this.companyRepository
+                .createQueryBuilder('company')
+                .where('company.status = :status', { status: 'active' })
+                .getCount();
+            const availableAircraft = await this.aircraftRepository
+                .createQueryBuilder('aircraft')
+                .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
+                .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
+                .getCount();
+            return {
+                dealsCount,
+                companiesCount,
+                aircraftCount,
+                activeCompanies,
+                availableAircraft,
+                sampleDeal,
+                timestamp: new Date().toISOString()
+            };
+        }
+        catch (error) {
+            return {
+                error: error.message,
+                stack: error.stack,
+                timestamp: new Date().toISOString()
+            };
+        }
     }
 };
 exports.CharterDealsService = CharterDealsService;
@@ -10029,6 +10361,629 @@ __decorate([
 
 /***/ }),
 
+/***/ "./src/modules/experiences/dto/experience-response.dto.ts":
+/*!****************************************************************!*\
+  !*** ./src/modules/experiences/dto/experience-response.dto.ts ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperienceDetailResponseDto = exports.ExperiencesResponseDto = exports.ExperienceCategoryDto = exports.ExperienceCardDto = exports.ExperienceDetailDto = exports.ExperienceImageDto = exports.ExperienceScheduleDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const experience_schedule_entity_1 = __webpack_require__(/*! ../../../common/entities/experience-schedule.entity */ "./src/common/entities/experience-schedule.entity.ts");
+class ExperienceScheduleDto {
+}
+exports.ExperienceScheduleDto = ExperienceScheduleDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceScheduleDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ExperienceScheduleDto.prototype, "startTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], ExperienceScheduleDto.prototype, "endTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceScheduleDto.prototype, "price", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: experience_schedule_entity_1.PriceUnit }),
+    __metadata("design:type", typeof (_c = typeof experience_schedule_entity_1.PriceUnit !== "undefined" && experience_schedule_entity_1.PriceUnit) === "function" ? _c : Object)
+], ExperienceScheduleDto.prototype, "priceUnit", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceScheduleDto.prototype, "durationMinutes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceScheduleDto.prototype, "seatsAvailable", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: experience_schedule_entity_1.ScheduleStatus }),
+    __metadata("design:type", typeof (_d = typeof experience_schedule_entity_1.ScheduleStatus !== "undefined" && experience_schedule_entity_1.ScheduleStatus) === "function" ? _d : Object)
+], ExperienceScheduleDto.prototype, "status", void 0);
+class ExperienceImageDto {
+}
+exports.ExperienceImageDto = ExperienceImageDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceImageDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceImageDto.prototype, "imageSlot", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceImageDto.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceImageDto.prototype, "sortOrder", void 0);
+class ExperienceDetailDto {
+}
+exports.ExperienceDetailDto = ExperienceDetailDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceDetailDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceDetailDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceDetailDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceDetailDto.prototype, "country", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceDetailDto.prototype, "city", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    __metadata("design:type", String)
+], ExperienceDetailDto.prototype, "locationName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceDetailDto.prototype, "termsConditions", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [ExperienceImageDto] }),
+    __metadata("design:type", Array)
+], ExperienceDetailDto.prototype, "images", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [ExperienceScheduleDto] }),
+    __metadata("design:type", Array)
+], ExperienceDetailDto.prototype, "schedules", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+], ExperienceDetailDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
+], ExperienceDetailDto.prototype, "updatedAt", void 0);
+class ExperienceCardDto {
+}
+exports.ExperienceCardDto = ExperienceCardDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceCardDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCardDto.prototype, "imageUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCardDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCardDto.prototype, "location", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCardDto.prototype, "duration", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCardDto.prototype, "price", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCardDto.prototype, "rating", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ExperienceCardDto.prototype, "seatsAvailable", void 0);
+class ExperienceCategoryDto {
+}
+exports.ExperienceCategoryDto = ExperienceCategoryDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceCategoryDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [ExperienceCardDto] }),
+    __metadata("design:type", Array)
+], ExperienceCategoryDto.prototype, "deals", void 0);
+class ExperiencesResponseDto {
+}
+exports.ExperiencesResponseDto = ExperiencesResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Boolean)
+], ExperiencesResponseDto.prototype, "success", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperiencesResponseDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [ExperienceCategoryDto] }),
+    __metadata("design:type", Object)
+], ExperiencesResponseDto.prototype, "data", void 0);
+class ExperienceDetailResponseDto {
+}
+exports.ExperienceDetailResponseDto = ExperienceDetailResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Boolean)
+], ExperienceDetailResponseDto.prototype, "success", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ExperienceDetailResponseDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: ExperienceDetailDto }),
+    __metadata("design:type", ExperienceDetailDto)
+], ExperienceDetailResponseDto.prototype, "data", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/experiences/experiences.controller.ts":
+/*!***********************************************************!*\
+  !*** ./src/modules/experiences/experiences.controller.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperiencesController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const experiences_service_1 = __webpack_require__(/*! ./experiences.service */ "./src/modules/experiences/experiences.service.ts");
+const experience_response_dto_1 = __webpack_require__(/*! ./dto/experience-response.dto */ "./src/modules/experiences/dto/experience-response.dto.ts");
+let ExperiencesController = class ExperiencesController {
+    constructor(experiencesService) {
+        this.experiencesService = experiencesService;
+    }
+    async getAllExperiences() {
+        const categories = await this.experiencesService.getAllExperiences();
+        return {
+            success: true,
+            message: 'Experiences retrieved successfully',
+            data: {
+                categories,
+            },
+        };
+    }
+    async getExperienceById(id) {
+        const experience = await this.experiencesService.getExperienceById(id);
+        return {
+            success: true,
+            message: 'Experience details retrieved successfully',
+            data: experience,
+        };
+    }
+    async getExperiencesByCategory(category) {
+        const experiences = await this.experiencesService.getExperiencesByCategory(category);
+        return {
+            success: true,
+            message: `Experiences in ${category} category retrieved successfully`,
+            data: experiences,
+        };
+    }
+    async getExperienceSchedules(id, date) {
+        const schedules = await this.experiencesService.getExperienceSchedules(id, date);
+        return {
+            success: true,
+            message: 'Experience schedules retrieved successfully',
+            data: schedules,
+        };
+    }
+};
+exports.ExperiencesController = ExperiencesController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all experiences grouped by category' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Experiences retrieved successfully',
+        type: experience_response_dto_1.ExperiencesResponseDto
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ExperiencesController.prototype, "getAllExperiences", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get experience details by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Experience ID' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Experience details retrieved successfully',
+        type: experience_response_dto_1.ExperienceDetailResponseDto
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Experience not found' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ExperiencesController.prototype, "getExperienceById", null);
+__decorate([
+    (0, common_1.Get)('category/:category'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get experiences by category' }),
+    (0, swagger_1.ApiParam)({ name: 'category', description: 'Experience category' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Experiences by category retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/ExperienceCardDto' }
+                }
+            }
+        }
+    }),
+    __param(0, (0, common_1.Param)('category')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ExperiencesController.prototype, "getExperiencesByCategory", null);
+__decorate([
+    (0, common_1.Get)(':id/schedules'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get experience schedules by ID and date' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Experience ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'date', description: 'Date in YYYY-MM-DD format', required: false }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Experience schedules retrieved successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                data: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'number' },
+                            startTime: { type: 'string', format: 'date-time' },
+                            endTime: { type: 'string', format: 'date-time' },
+                            price: { type: 'number' },
+                            priceUnit: { type: 'string' },
+                            durationMinutes: { type: 'number' },
+                            seatsAvailable: { type: 'number' },
+                            status: { type: 'string' },
+                            time: { type: 'string' },
+                            available: { type: 'boolean' }
+                        }
+                    }
+                }
+            }
+        }
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Experience not found' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('date')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:returntype", Promise)
+], ExperiencesController.prototype, "getExperienceSchedules", null);
+exports.ExperiencesController = ExperiencesController = __decorate([
+    (0, swagger_1.ApiTags)('Experiences'),
+    (0, common_1.Controller)('experiences'),
+    __metadata("design:paramtypes", [typeof (_a = typeof experiences_service_1.ExperiencesService !== "undefined" && experiences_service_1.ExperiencesService) === "function" ? _a : Object])
+], ExperiencesController);
+
+
+/***/ }),
+
+/***/ "./src/modules/experiences/experiences.module.ts":
+/*!*******************************************************!*\
+  !*** ./src/modules/experiences/experiences.module.ts ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperiencesModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const experiences_controller_1 = __webpack_require__(/*! ./experiences.controller */ "./src/modules/experiences/experiences.controller.ts");
+const experiences_service_1 = __webpack_require__(/*! ./experiences.service */ "./src/modules/experiences/experiences.service.ts");
+const experience_template_entity_1 = __webpack_require__(/*! ../../common/entities/experience-template.entity */ "./src/common/entities/experience-template.entity.ts");
+const experience_image_entity_1 = __webpack_require__(/*! ../../common/entities/experience-image.entity */ "./src/common/entities/experience-image.entity.ts");
+const experience_schedule_entity_1 = __webpack_require__(/*! ../../common/entities/experience-schedule.entity */ "./src/common/entities/experience-schedule.entity.ts");
+let ExperiencesModule = class ExperiencesModule {
+};
+exports.ExperiencesModule = ExperiencesModule;
+exports.ExperiencesModule = ExperiencesModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                experience_template_entity_1.ExperienceTemplate,
+                experience_image_entity_1.ExperienceImage,
+                experience_schedule_entity_1.ExperienceSchedule,
+            ]),
+        ],
+        controllers: [experiences_controller_1.ExperiencesController],
+        providers: [experiences_service_1.ExperiencesService],
+        exports: [experiences_service_1.ExperiencesService],
+    })
+], ExperiencesModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/experiences/experiences.service.ts":
+/*!********************************************************!*\
+  !*** ./src/modules/experiences/experiences.service.ts ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExperiencesService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
+const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
+const experience_template_entity_1 = __webpack_require__(/*! ../../common/entities/experience-template.entity */ "./src/common/entities/experience-template.entity.ts");
+const experience_image_entity_1 = __webpack_require__(/*! ../../common/entities/experience-image.entity */ "./src/common/entities/experience-image.entity.ts");
+const experience_schedule_entity_1 = __webpack_require__(/*! ../../common/entities/experience-schedule.entity */ "./src/common/entities/experience-schedule.entity.ts");
+let ExperiencesService = class ExperiencesService {
+    constructor(experienceTemplateRepository, experienceImageRepository, experienceScheduleRepository) {
+        this.experienceTemplateRepository = experienceTemplateRepository;
+        this.experienceImageRepository = experienceImageRepository;
+        this.experienceScheduleRepository = experienceScheduleRepository;
+    }
+    async getAllExperiences() {
+        const experiences = await this.experienceTemplateRepository
+            .createQueryBuilder('et')
+            .leftJoinAndSelect('et.images', 'ei')
+            .leftJoinAndSelect('et.schedules', 'es')
+            .leftJoinAndSelect('et.company', 'c')
+            .where('et.isActive = :isActive', { isActive: true })
+            .orderBy('et.createdAt', 'DESC')
+            .getMany();
+        const categoriesMap = new Map();
+        experiences.forEach(experience => {
+            const category = this.getCategoryFromExperience(experience);
+            if (!categoriesMap.has(category)) {
+                categoriesMap.set(category, []);
+            }
+            categoriesMap.get(category).push(experience);
+        });
+        const categories = [];
+        categoriesMap.forEach((experiences, categoryTitle) => {
+            const deals = experiences.map(exp => this.transformToCardDto(exp));
+            categories.push({
+                title: categoryTitle,
+                deals,
+            });
+        });
+        return categories;
+    }
+    async getExperienceById(id) {
+        const experience = await this.experienceTemplateRepository
+            .createQueryBuilder('et')
+            .leftJoinAndSelect('et.images', 'ei')
+            .leftJoinAndSelect('et.schedules', 'es')
+            .leftJoinAndSelect('et.company', 'c')
+            .where('et.id = :id', { id })
+            .andWhere('et.isActive = :isActive', { isActive: true })
+            .orderBy('ei.sortOrder', 'ASC')
+            .getOne();
+        if (!experience) {
+            throw new common_1.NotFoundException(`Experience with ID ${id} not found`);
+        }
+        return this.transformToDetailDto(experience);
+    }
+    async getExperiencesByCategory(category) {
+        const experiences = await this.experienceTemplateRepository
+            .createQueryBuilder('et')
+            .leftJoinAndSelect('et.images', 'ei')
+            .leftJoinAndSelect('et.schedules', 'es')
+            .leftJoinAndSelect('et.company', 'c')
+            .where('et.isActive = :isActive', { isActive: true })
+            .andWhere('et.city LIKE :category OR et.country LIKE :category', {
+            category: `%${category}%`
+        })
+            .orderBy('et.createdAt', 'DESC')
+            .getMany();
+        return experiences.map(exp => this.transformToCardDto(exp));
+    }
+    async getExperienceSchedules(id, date) {
+        const queryBuilder = this.experienceScheduleRepository
+            .createQueryBuilder('es')
+            .where('es.experienceId = :id', { id })
+            .andWhere('es.status = :status', { status: 'scheduled' });
+        if (date) {
+            const targetDate = new Date(date);
+            const nextDate = new Date(targetDate);
+            nextDate.setDate(nextDate.getDate() + 1);
+            queryBuilder
+                .andWhere('es.startTime >= :startDate', { startDate: targetDate })
+                .andWhere('es.startTime < :endDate', { endDate: nextDate });
+        }
+        const schedules = await queryBuilder
+            .orderBy('es.startTime', 'ASC')
+            .getMany();
+        return schedules.map(schedule => ({
+            id: schedule.id,
+            startTime: schedule.startTime,
+            endTime: schedule.endTime,
+            price: schedule.price,
+            priceUnit: schedule.priceUnit,
+            durationMinutes: schedule.durationMinutes,
+            seatsAvailable: schedule.seatsAvailable,
+            status: schedule.status,
+            time: schedule.startTime.toTimeString().substring(0, 5),
+            available: schedule.seatsAvailable > 0
+        }));
+    }
+    getCategoryFromExperience(experience) {
+        const title = experience.title.toLowerCase();
+        const city = experience.city.toLowerCase();
+        if (title.includes('helicopter') || title.includes('aerial') || title.includes('skyline')) {
+            return 'Aerial Sightseeing Tours';
+        }
+        else if (title.includes('ski') || title.includes('snow')) {
+            return 'Heli Skiing';
+        }
+        else if (title.includes('fish') || title.includes('fishing')) {
+            return 'Fishing';
+        }
+        else if (title.includes('wine') || title.includes('dine') || title.includes('restaurant')) {
+            return 'Fly and Dine';
+        }
+        else if (title.includes('skydive') || title.includes('parachute')) {
+            return 'Skydiving';
+        }
+        else if (title.includes('hike') || title.includes('trek') || title.includes('mountain')) {
+            return 'Hiking';
+        }
+        else if (title.includes('surf') || title.includes('wave')) {
+            return 'Surfing';
+        }
+        else if (title.includes('romantic') || title.includes('sunset') || title.includes('couple')) {
+            return 'Romantic';
+        }
+        else if (title.includes('northern lights') || title.includes('aurora') || title.includes('seasonal')) {
+            return 'Seasonal';
+        }
+        else {
+            return 'Adventure Tours';
+        }
+    }
+    transformToCardDto(experience) {
+        const mainImage = experience.images?.find(img => img.imageSlot === 'image1') ||
+            experience.images?.[0];
+        const firstSchedule = experience.schedules?.[0];
+        const rating = '4.8';
+        return {
+            id: experience.id,
+            imageUrl: mainImage?.url || 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+            title: experience.title,
+            location: `${experience.city}, ${experience.country}`,
+            duration: firstSchedule ? `${firstSchedule.durationMinutes} minutes` : 'Varies',
+            price: firstSchedule ? `$${firstSchedule.price}` : 'Contact for pricing',
+            rating,
+            seatsAvailable: firstSchedule?.seatsAvailable || 0,
+        };
+    }
+    transformToDetailDto(experience) {
+        return {
+            id: experience.id,
+            title: experience.title,
+            description: experience.description,
+            country: experience.country,
+            city: experience.city,
+            locationName: experience.locationName,
+            termsConditions: experience.termsConditions || '',
+            images: experience.images?.map(img => ({
+                id: img.id,
+                imageSlot: img.imageSlot,
+                url: img.url,
+                sortOrder: img.sortOrder,
+            })) || [],
+            schedules: experience.schedules?.map(schedule => ({
+                id: schedule.id,
+                startTime: schedule.startTime,
+                endTime: schedule.endTime,
+                price: schedule.price,
+                priceUnit: schedule.priceUnit,
+                durationMinutes: schedule.durationMinutes,
+                seatsAvailable: schedule.seatsAvailable,
+                status: schedule.status,
+            })) || [],
+            createdAt: experience.createdAt,
+            updatedAt: experience.updatedAt,
+        };
+    }
+};
+exports.ExperiencesService = ExperiencesService;
+exports.ExperiencesService = ExperiencesService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(experience_template_entity_1.ExperienceTemplate)),
+    __param(1, (0, typeorm_1.InjectRepository)(experience_image_entity_1.ExperienceImage)),
+    __param(2, (0, typeorm_1.InjectRepository)(experience_schedule_entity_1.ExperienceSchedule)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object])
+], ExperiencesService);
+
+
+/***/ }),
+
 /***/ "./src/modules/google-earth-engine/dto/google-earth-engine.dto.ts":
 /*!************************************************************************!*\
   !*** ./src/modules/google-earth-engine/dto/google-earth-engine.dto.ts ***!
@@ -10283,6 +11238,9 @@ let GoogleEarthEngineService = class GoogleEarthEngineService {
                     radius: searchDto.radius || 50000,
                 },
             }));
+            if (response.data.status === 'ZERO_RESULTS') {
+                return [];
+            }
             if (response.data.status !== 'OK') {
                 throw new common_1.HttpException(`Google Places API error: ${response.data.status}`, common_1.HttpStatus.BAD_REQUEST);
             }
@@ -15036,6 +15994,242 @@ exports.UnifiedPaymentService = UnifiedPaymentService = UnifiedPaymentService_1 
 
 /***/ }),
 
+/***/ "./src/modules/sms/sms.controller.ts":
+/*!*******************************************!*\
+  !*** ./src/modules/sms/sms.controller.ts ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SmsController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const sms_service_1 = __webpack_require__(/*! ./sms.service */ "./src/modules/sms/sms.service.ts");
+let SmsController = class SmsController {
+    constructor(smsService) {
+        this.smsService = smsService;
+    }
+    async sendVerificationCode(body) {
+        const { phoneNumber } = body;
+        if (!phoneNumber) {
+            return {
+                success: false,
+                message: 'Phone number is required',
+            };
+        }
+        return await this.smsService.sendVerificationCode(phoneNumber);
+    }
+    async verifyCode(body) {
+        const { phoneNumber, code } = body;
+        if (!phoneNumber || !code) {
+            return {
+                success: false,
+                message: 'Phone number and code are required',
+            };
+        }
+        return await this.smsService.verifyCode(phoneNumber, code);
+    }
+};
+exports.SmsController = SmsController;
+__decorate([
+    (0, common_1.Post)('send-verification'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Send SMS verification code' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Verification code sent successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid phone number' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SmsController.prototype, "sendVerificationCode", null);
+__decorate([
+    (0, common_1.Post)('verify-code'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify SMS code' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Code verified successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid verification code' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SmsController.prototype, "verifyCode", null);
+exports.SmsController = SmsController = __decorate([
+    (0, swagger_1.ApiTags)('SMS Verification'),
+    (0, common_1.Controller)('sms'),
+    __metadata("design:paramtypes", [typeof (_a = typeof sms_service_1.SmsService !== "undefined" && sms_service_1.SmsService) === "function" ? _a : Object])
+], SmsController);
+
+
+/***/ }),
+
+/***/ "./src/modules/sms/sms.module.ts":
+/*!***************************************!*\
+  !*** ./src/modules/sms/sms.module.ts ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SmsModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const sms_controller_1 = __webpack_require__(/*! ./sms.controller */ "./src/modules/sms/sms.controller.ts");
+const sms_service_1 = __webpack_require__(/*! ./sms.service */ "./src/modules/sms/sms.service.ts");
+let SmsModule = class SmsModule {
+};
+exports.SmsModule = SmsModule;
+exports.SmsModule = SmsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [config_1.ConfigModule],
+        controllers: [sms_controller_1.SmsController],
+        providers: [sms_service_1.SmsService],
+        exports: [sms_service_1.SmsService],
+    })
+], SmsModule);
+
+
+/***/ }),
+
+/***/ "./src/modules/sms/sms.service.ts":
+/*!****************************************!*\
+  !*** ./src/modules/sms/sms.service.ts ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SmsService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const twilio = __webpack_require__(/*! twilio */ "twilio");
+let SmsService = class SmsService {
+    constructor(configService) {
+        this.configService = configService;
+        const accountSid = this.configService.get('TWILIO_ACCOUNT_SID');
+        const authToken = this.configService.get('TWILIO_AUTH_TOKEN');
+        this.verifyServiceSid = this.configService.get('TWILIO_VERIFY_SERVICE_SID');
+        if (!accountSid || !authToken || !this.verifyServiceSid) {
+            throw new Error('Twilio credentials not configured. Please set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_VERIFY_SERVICE_SID');
+        }
+        this.client = twilio(accountSid, authToken);
+    }
+    async sendVerificationCode(phoneNumber) {
+        try {
+            console.log(`Sending verification code to: ${phoneNumber}`);
+            console.log(`Using Verify Service SID: ${this.verifyServiceSid}`);
+            const verification = await this.client.verify.v2
+                .services(this.verifyServiceSid)
+                .verifications
+                .create({
+                to: phoneNumber,
+                channel: 'sms'
+            });
+            console.log(`Verification sent successfully. Status: ${verification.status}`);
+            return {
+                success: true,
+                message: 'Verification code sent successfully',
+            };
+        }
+        catch (error) {
+            console.error('Twilio Verify error:', error);
+            return {
+                success: false,
+                message: `Failed to send verification code: ${error.message}`,
+            };
+        }
+    }
+    async verifyCode(phoneNumber, code) {
+        try {
+            console.log(`Verifying code ${code} for phone: ${phoneNumber}`);
+            const verificationCheck = await this.client.verify.v2
+                .services(this.verifyServiceSid)
+                .verificationChecks
+                .create({
+                to: phoneNumber,
+                code: code
+            });
+            console.log(`Verification check result. Status: ${verificationCheck.status}`);
+            if (verificationCheck.status === 'approved') {
+                return {
+                    success: true,
+                    message: 'Code verified successfully',
+                };
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'Invalid verification code',
+                };
+            }
+        }
+        catch (error) {
+            console.error('Twilio Verify check error:', error);
+            return {
+                success: false,
+                message: `Verification failed: ${error.message}`,
+            };
+        }
+    }
+};
+exports.SmsService = SmsService;
+exports.SmsService = SmsService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+], SmsService);
+
+
+/***/ }),
+
 /***/ "./src/modules/trips/trips.controller.ts":
 /*!***********************************************!*\
   !*** ./src/modules/trips/trips.controller.ts ***!
@@ -17717,6 +18911,16 @@ module.exports = require("rxjs");
 /***/ ((module) => {
 
 module.exports = require("stripe");
+
+/***/ }),
+
+/***/ "twilio":
+/*!*************************!*\
+  !*** external "twilio" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("twilio");
 
 /***/ }),
 

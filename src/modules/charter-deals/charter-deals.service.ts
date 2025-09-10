@@ -424,6 +424,7 @@ export class CharterDealsService {
         return `${minutes}m`;
       }
     } catch (error) {
+      // Log the error but don't let it break the entire request
       console.error('Error calculating flight duration:', error);
       // Fallback: Provide estimated duration based on aircraft type
       return this.getEstimatedDuration(aircraftType);
@@ -471,7 +472,9 @@ export class CharterDealsService {
       
       return null;
     } catch (error) {
+      // Log the error but don't let it break the entire request
       console.error(`Error getting coordinates for ${locationName}:`, error);
+      // Return null to indicate coordinates couldn't be found, but don't throw
       return null;
     }
   }
@@ -492,6 +495,7 @@ export class CharterDealsService {
         name: amenity.name
       }));
     } catch (error) {
+      // Log the error but don't let it break the entire request
       console.error('Error fetching aircraft amenities:', error);
       // Return empty array instead of hardcoded fallback
       return [];
@@ -689,7 +693,9 @@ export class CharterDealsService {
             );
           }
         } catch (error) {
+          // Log the error but don't let it break the entire request
           console.error('Error calculating distance from user:', error);
+          // Continue without distance calculation
         }
       }
 
@@ -749,5 +755,55 @@ export class CharterDealsService {
       limit,
       totalGroups: groupedDeals.length,
     };
+  }
+
+  // Debug method to check database connectivity and data
+  async debugDatabaseConnection(): Promise<any> {
+    try {
+      // Check if charter_deals table has data
+      const dealsCount = await this.charterDealRepository.count();
+      
+      // Check if companies table has data
+      const companiesCount = await this.companyRepository.count();
+      
+      // Check if aircraft table has data
+      const aircraftCount = await this.aircraftRepository.count();
+      
+      // Get a sample deal with basic query
+      const sampleDeal = await this.charterDealRepository
+        .createQueryBuilder('deal')
+        .select(['deal.id', 'deal.originName', 'deal.destinationName'])
+        .limit(1)
+        .getOne();
+      
+      // Check if there are any active companies
+      const activeCompanies = await this.companyRepository
+        .createQueryBuilder('company')
+        .where('company.status = :status', { status: 'active' })
+        .getCount();
+      
+      // Check if there are any available aircraft
+      const availableAircraft = await this.aircraftRepository
+        .createQueryBuilder('aircraft')
+        .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
+        .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
+        .getCount();
+      
+      return {
+        dealsCount,
+        companiesCount,
+        aircraftCount,
+        activeCompanies,
+        availableAircraft,
+        sampleDeal,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 } 

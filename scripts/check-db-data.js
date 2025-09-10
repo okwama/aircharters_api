@@ -1,13 +1,14 @@
 const { DataSource } = require('typeorm');
+require('dotenv').config();
 
 // Database configuration (same as in your app)
 const dataSource = new DataSource({
   type: 'mysql',
-  host: '102.218.215.35',
-  port: 3306,
-  username: 'citlogis_bryan',
-  password: '@bo9511221.qwerty',
-  database: 'citlogis_air_charters',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   synchronize: false,
   logging: true,
   entities: ['src/**/*.entity.ts'],

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 16, 2025 at 07:56 PM
+-- Generation Time: Aug 21, 2025 at 11:05 AM
 -- Server version: 10.6.22-MariaDB-cll-lve
 -- PHP Version: 8.4.10
 
@@ -54,101 +54,45 @@ INSERT INTO `adminNotifications` (`id`, `target`, `title`, `message`, `read`, `c
 (77, '', 'Vehicle company approved', 'Your vehicle company \"Example Vehicle Co.\" has been approved', 0, '2025-07-23 11:39:15', '2025-07-23 11:39:15', 33),
 (83, '', 'Vehicle company approved', 'Your vehicle company \"Aston executive\" has been approved', 0, '2025-08-04 13:09:45', '2025-08-04 13:09:45', 35),
 (85, '', 'Vehicle company approved', 'Your vehicle company \"Company 1\" has been approved', 0, '2025-08-06 08:37:49', '2025-08-06 08:37:49', 36),
-(86, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Yellow Wings\" has been submitted for review.', 0, '2025-08-07 08:20:01', '2025-08-07 08:20:01', 37),
-(88, 'citAdmin', 'Company approved', 'Company \"Yellow Wings\" you onboarded has been approved', 0, '2025-08-07 08:21:08', '2025-08-07 08:21:08', 37),
 (89, 'companyAdmin', 'Company approved', 'Your company \"Yellow Wings\" has been approved', 0, '2025-08-07 08:21:08', '2025-08-07 08:21:08', 38),
-(90, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Transonic Aviation\" has been submitted for review.', 0, '2025-08-07 09:18:24', '2025-08-07 09:18:24', 37),
-(92, 'citAdmin', 'Company approved', 'Company \"Transonic Aviation\" you onboarded has been approved', 0, '2025-08-07 09:19:00', '2025-08-07 09:19:00', 37),
 (93, 'companyAdmin', 'Company approved', 'Your company \"Transonic Aviation\" has been approved', 0, '2025-08-07 09:19:00', '2025-08-07 09:19:00', 39),
-(94, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Scenic Air Safaris\" has been submitted for review.', 0, '2025-08-07 10:11:53', '2025-08-07 10:11:53', 37),
-(96, 'citAdmin', 'Company approved', 'Company \"Scenic Air Safaris\" you onboarded has been approved', 0, '2025-08-07 10:13:23', '2025-08-07 10:13:23', 37),
 (97, 'companyAdmin', 'Company approved', 'Your company \"Scenic Air Safaris\" has been approved', 0, '2025-08-07 10:13:23', '2025-08-07 10:13:23', 40),
-(98, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Aberdair Aviation\" has been submitted for review.', 0, '2025-08-07 12:28:01', '2025-08-07 12:28:01', 37),
-(100, 'citAdmin', 'Company approved', 'Company \"Aberdair Aviation\" you onboarded has been approved', 0, '2025-08-07 12:28:34', '2025-08-07 12:28:34', 37),
 (101, 'companyAdmin', 'Company approved', 'Your company \"Aberdair Aviation\" has been approved', 0, '2025-08-07 12:28:34', '2025-08-07 12:28:34', 41),
-(102, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Tropicair\" has been submitted for review.', 0, '2025-08-07 14:00:52', '2025-08-07 14:00:52', 37),
-(104, 'citAdmin', 'Company approved', 'Company \"Tropicair\" you onboarded has been approved', 0, '2025-08-07 14:01:39', '2025-08-07 14:01:39', 37),
 (105, 'companyAdmin', 'Company approved', 'Your company \"Tropicair\" has been approved', 0, '2025-08-07 14:01:39', '2025-08-07 14:01:39', 42),
-(106, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"AirKenya\" has been submitted for review.', 0, '2025-08-08 07:51:50', '2025-08-08 07:51:50', 37),
-(108, 'citAdmin', 'Company approved', 'Company \"AirKenya\" you onboarded has been approved', 0, '2025-08-08 07:52:19', '2025-08-08 07:52:19', 37),
 (109, 'companyAdmin', 'Company approved', 'Your company \"AirKenya\" has been approved', 0, '2025-08-08 07:52:19', '2025-08-08 07:52:19', 43),
-(110, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Aero Link\" has been submitted for review.', 0, '2025-08-08 09:40:58', '2025-08-08 09:40:58', 37),
-(112, 'citAdmin', 'Company approved', 'Company \"Aero Link\" you onboarded has been approved', 0, '2025-08-08 09:42:00', '2025-08-08 09:42:00', 37),
 (113, 'companyAdmin', 'Company approved', 'Your company \"Aero Link\" has been approved', 0, '2025-08-08 09:42:00', '2025-08-08 09:42:00', 44),
-(114, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Safarilink\" has been submitted for review.', 0, '2025-08-08 10:26:23', '2025-08-08 10:26:23', 37),
-(116, 'citAdmin', 'Company approved', 'Company \"Safarilink\" you onboarded has been approved', 0, '2025-08-08 10:26:59', '2025-08-08 10:26:59', 37),
 (117, 'companyAdmin', 'Company approved', 'Your company \"Safarilink\" has been approved', 0, '2025-08-08 10:26:59', '2025-08-08 10:26:59', 45),
-(118, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"AMREF Aviation\" has been submitted for review.', 0, '2025-08-08 11:36:43', '2025-08-08 11:36:43', 37),
-(120, 'citAdmin', 'Company approved', 'Company \"AMREF Aviation\" you onboarded has been approved', 0, '2025-08-08 11:37:10', '2025-08-08 11:37:10', 37),
 (121, 'companyAdmin', 'Company approved', 'Your company \"AMREF Aviation\" has been approved', 0, '2025-08-08 11:37:10', '2025-08-08 11:37:10', 46),
-(122, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"748 Air Services\" has been submitted for review.', 0, '2025-08-08 12:03:47', '2025-08-08 12:03:47', 37),
-(124, 'citAdmin', 'Company approved', 'Company \"748 Air Services\" you onboarded has been approved', 0, '2025-08-08 12:04:12', '2025-08-08 12:04:12', 37),
 (125, 'companyAdmin', 'Company approved', 'Your company \"748 Air Services\" has been approved', 0, '2025-08-08 12:04:12', '2025-08-08 12:04:12', 47),
-(126, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Phoenix Aviation\" has been submitted for review.', 0, '2025-08-11 06:57:32', '2025-08-11 06:57:32', 37),
-(128, 'citAdmin', 'Company approved', 'Company \"Phoenix Aviation\" you onboarded has been approved', 0, '2025-08-11 06:58:16', '2025-08-11 06:58:16', 37),
 (129, 'companyAdmin', 'Company approved', 'Your company \"Phoenix Aviation\" has been approved', 0, '2025-08-11 06:58:16', '2025-08-11 06:58:16', 48),
-(130, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Misk Air\" has been submitted for review.', 0, '2025-08-11 07:37:34', '2025-08-11 07:37:34', 37),
-(132, 'citAdmin', 'Company approved', 'Company \"Misk Air\" you onboarded has been approved', 0, '2025-08-11 07:38:05', '2025-08-11 07:38:05', 37),
 (133, 'companyAdmin', 'Company approved', 'Your company \"Misk Air\" has been approved', 0, '2025-08-11 07:38:05', '2025-08-11 07:38:05', 49),
-(134, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Bar Aviation\" has been submitted for review.', 0, '2025-08-11 08:28:55', '2025-08-11 08:28:55', 37),
-(136, 'citAdmin', 'Company approved', 'Company \"Bar Aviation\" you onboarded has been approved', 0, '2025-08-11 08:31:22', '2025-08-11 08:31:22', 37),
 (137, 'companyAdmin', 'Company approved', 'Your company \"Bar Aviation\" has been approved', 0, '2025-08-11 08:31:22', '2025-08-11 08:31:22', 50),
-(138, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Fly KEA\" has been submitted for review.', 0, '2025-08-11 08:58:45', '2025-08-11 08:58:45', 37),
-(140, 'citAdmin', 'Company approved', 'Company \"Fly KEA\" you onboarded has been approved', 0, '2025-08-11 09:24:13', '2025-08-11 09:24:13', 37),
 (141, 'companyAdmin', 'Company approved', 'Your company \"Fly KEA\" has been approved', 0, '2025-08-11 09:24:13', '2025-08-11 09:24:13', 51),
-(142, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Eagle Air\" has been submitted for review.', 0, '2025-08-11 10:44:13', '2025-08-11 10:44:13', 37),
-(144, 'citAdmin', 'Company approved', 'Company \"Eagle Air\" you onboarded has been approved', 0, '2025-08-11 10:45:34', '2025-08-11 10:45:34', 37),
 (145, 'companyAdmin', 'Company approved', 'Your company \"Eagle Air\" has been approved', 0, '2025-08-11 10:45:34', '2025-08-11 10:45:34', 52),
-(146, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Skyward Express\" has been submitted for review.', 0, '2025-08-11 13:36:09', '2025-08-11 13:36:09', 37),
-(148, 'citAdmin', 'Company approved', 'Company \"Skyward Express\" you onboarded has been approved', 0, '2025-08-11 13:41:33', '2025-08-11 13:41:33', 37),
 (149, 'companyAdmin', 'Company approved', 'Your company \"Skyward Express\" has been approved', 0, '2025-08-11 13:41:33', '2025-08-11 13:41:33', 58),
 (150, 'companyAdmin', 'Company terminated', 'Company \"Aib Aviation\" you onboarded has been terminated', 0, '2025-08-11 14:10:03', '2025-08-11 14:10:03', 34),
 (151, 'companyAdmin', 'Company approved', 'Company \"Aib Aviation\" you onboarded has been approved', 0, '2025-08-11 14:23:32', '2025-08-11 14:23:32', 34),
 (152, 'companyAdmin', 'Company approved', 'Your company \"Aib Aviation\" has been approved', 0, '2025-08-11 14:23:32', '2025-08-11 14:23:32', 60),
-(153, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Helicopters Charter\" has been submitted for review.', 0, '2025-08-12 10:04:23', '2025-08-12 10:04:23', 37),
 (154, 'superadmin', 'New charter company awaiting review', 'Company \"Helicopters Charter\" has been submitted by Jane.', 1, '2025-08-12 10:04:23', '2025-08-13 10:33:58', NULL),
-(155, 'citAdmin', 'Company approved', 'Company \"Helicopters Charter\" you onboarded has been approved', 0, '2025-08-12 10:05:16', '2025-08-12 10:05:16', 37),
 (156, 'companyAdmin', 'Company approved', 'Your company \"Helicopters Charter\" has been approved', 0, '2025-08-12 10:05:16', '2025-08-12 10:05:16', 61),
-(157, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Bukhaavia\" has been submitted for review.', 0, '2025-08-13 11:22:58', '2025-08-13 11:22:58', 37),
-(158, 'superadmin', 'New charter company awaiting review', 'Company \"Bukhaavia\" has been submitted by Jane.', 0, '2025-08-13 11:22:58', '2025-08-13 11:22:58', NULL),
-(159, 'citAdmin', 'Company approved', 'Company \"Bukhaavia\" you onboarded has been approved', 0, '2025-08-13 11:23:52', '2025-08-13 11:23:52', 37),
+(158, 'superadmin', 'New charter company awaiting review', 'Company \"Bukhaavia\" has been submitted by Jane.', 1, '2025-08-13 11:22:58', '2025-08-19 13:54:09', NULL),
 (160, 'companyAdmin', 'Company approved', 'Your company \"Bukhaavia\" has been approved', 0, '2025-08-13 11:23:52', '2025-08-13 11:23:52', 62),
-(161, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Astral Aviation\" has been submitted for review.', 0, '2025-08-13 12:06:34', '2025-08-13 12:06:34', 37),
-(162, 'superadmin', 'New charter company awaiting review', 'Company \"Astral Aviation\" has been submitted by Jane.', 0, '2025-08-13 12:06:34', '2025-08-13 12:06:34', NULL),
-(163, 'citAdmin', 'Company approved', 'Company \"Astral Aviation\" you onboarded has been approved', 0, '2025-08-13 12:07:03', '2025-08-13 12:07:03', 37),
-(164, 'companyAdmin', 'Company approved', 'Your company \"Astral Aviation\" has been approved', 0, '2025-08-13 12:07:03', '2025-08-13 12:07:03', 63),
-(165, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Africa Eco Adventures\" has been submitted for review.', 0, '2025-08-14 06:48:08', '2025-08-14 06:48:08', 37),
-(166, 'superadmin', 'New charter company awaiting review', 'Company \"Africa Eco Adventures\" has been submitted by Jane.', 0, '2025-08-14 06:48:08', '2025-08-14 06:48:08', NULL),
-(167, 'citAdmin', 'Company approved', 'Company \"Africa Eco Adventures\" you onboarded has been approved', 0, '2025-08-14 06:48:49', '2025-08-14 06:48:49', 37),
+(162, 'superadmin', 'New charter company awaiting review', 'Company \"Astral Aviation\" has been submitted by Jane.', 1, '2025-08-13 12:06:34', '2025-08-19 13:54:07', NULL),
+(164, 'companyAdmin', 'Company approved', 'Your company \"Astral Aviation\" has been approved', 1, '2025-08-13 12:07:03', '2025-08-20 07:44:54', 63),
+(166, 'superadmin', 'New charter company awaiting review', 'Company \"Africa Eco Adventures\" has been submitted by Jane.', 1, '2025-08-14 06:48:08', '2025-08-19 13:54:05', NULL),
 (168, 'companyAdmin', 'Company approved', 'Your company \"Africa Eco Adventures\" has been approved', 0, '2025-08-14 06:48:49', '2025-08-14 06:48:49', 64),
-(169, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Balloon Safaris Ltd\" has been submitted for review.', 0, '2025-08-14 07:03:56', '2025-08-14 07:03:56', 37),
-(170, 'superadmin', 'New charter company awaiting review', 'Company \"Balloon Safaris Ltd\" has been submitted by Jane.', 0, '2025-08-14 07:03:56', '2025-08-14 07:03:56', NULL),
-(171, 'citAdmin', 'Company approved', 'Company \"Balloon Safaris Ltd\" you onboarded has been approved', 0, '2025-08-14 07:04:46', '2025-08-14 07:04:46', 37),
 (172, 'companyAdmin', 'Company approved', 'Your company \"Balloon Safaris Ltd\" has been approved', 0, '2025-08-14 07:04:46', '2025-08-14 07:04:46', 65),
-(173, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Kilimanjaro Balloon Safaris\" has been submitted for review.', 0, '2025-08-14 07:08:23', '2025-08-14 07:08:23', 37),
-(174, 'superadmin', 'New charter company awaiting review', 'Company \"Kilimanjaro Balloon Safaris\" has been submitted by Jane.', 0, '2025-08-14 07:08:23', '2025-08-14 07:08:23', NULL),
-(175, 'citAdmin', 'Company approved', 'Company \"Kilimanjaro Balloon Safaris\" you onboarded has been approved', 0, '2025-08-14 07:08:55', '2025-08-14 07:08:55', 37),
 (176, 'companyAdmin', 'Company approved', 'Your company \"Kilimanjaro Balloon Safaris\" has been approved', 0, '2025-08-14 07:08:55', '2025-08-14 07:08:55', 66),
-(177, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Governor\'s Balloon Safaris\" has been submitted for review.', 0, '2025-08-14 07:13:12', '2025-08-14 07:13:12', 37),
-(178, 'superadmin', 'New charter company awaiting review', 'Company \"Governor\'s Balloon Safaris\" has been submitted by Jane.', 0, '2025-08-14 07:13:12', '2025-08-14 07:13:12', NULL),
-(179, 'citAdmin', 'Company approved', 'Company \"Governor\'s Balloon Safaris\" you onboarded has been approved', 0, '2025-08-14 07:14:45', '2025-08-14 07:14:45', 37),
 (180, 'companyAdmin', 'Company approved', 'Your company \"Governor\'s Balloon Safaris\" has been approved', 0, '2025-08-14 07:14:45', '2025-08-14 07:14:45', 67),
-(181, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Adventures Aloft\" has been submitted for review.', 0, '2025-08-14 07:19:20', '2025-08-14 07:19:20', 37),
-(182, 'superadmin', 'New charter company awaiting review', 'Company \"Adventures Aloft\" has been submitted by Jane.', 0, '2025-08-14 07:19:20', '2025-08-14 07:19:20', NULL),
-(183, 'citAdmin', 'Company approved', 'Company \"Adventures Aloft\" you onboarded has been approved', 0, '2025-08-14 07:19:51', '2025-08-14 07:19:51', 37),
 (184, 'companyAdmin', 'Company approved', 'Your company \"Adventures Aloft\" has been approved', 0, '2025-08-14 07:19:51', '2025-08-14 07:19:51', 68),
-(185, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Masai Mara Balloon Safaris \" has been submitted for review.', 0, '2025-08-14 07:23:44', '2025-08-14 07:23:44', 37),
-(186, 'superadmin', 'New charter company awaiting review', 'Company \"Masai Mara Balloon Safaris \" has been submitted by Jane.', 0, '2025-08-14 07:23:44', '2025-08-14 07:23:44', NULL),
-(187, 'citAdmin', 'Company approved', 'Company \"Masai Mara Balloon Safaris \" you onboarded has been approved', 0, '2025-08-14 07:24:10', '2025-08-14 07:24:10', 37),
 (188, 'companyAdmin', 'Company approved', 'Your company \"Masai Mara Balloon Safaris \" has been approved', 0, '2025-08-14 07:24:10', '2025-08-14 07:24:10', 69),
-(189, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Skyship\" has been submitted for review.', 0, '2025-08-14 07:31:26', '2025-08-14 07:31:26', 37),
-(190, 'superadmin', 'New charter company awaiting review', 'Company \"Skyship\" has been submitted by Jane.', 0, '2025-08-14 07:31:26', '2025-08-14 07:31:26', NULL),
-(191, 'citAdmin', 'Company approved', 'Company \"Skyship\" you onboarded has been approved', 0, '2025-08-14 07:31:57', '2025-08-14 07:31:57', 37),
 (192, 'companyAdmin', 'Company approved', 'Your company \"Skyship\" has been approved', 0, '2025-08-14 07:31:57', '2025-08-14 07:31:57', 70),
-(193, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"East African Charters\" has been submitted for review.', 0, '2025-08-14 07:37:24', '2025-08-14 07:37:24', 37),
-(194, 'superadmin', 'New charter company awaiting review', 'Company \"East African Charters\" has been submitted by Jane.', 0, '2025-08-14 07:37:24', '2025-08-14 07:37:24', NULL),
-(195, 'citAdmin', 'Company approved', 'Company \"East African Charters\" you onboarded has been approved', 0, '2025-08-14 07:38:07', '2025-08-14 07:38:07', 37),
-(196, 'companyAdmin', 'Company approved', 'Your company \"East African Charters\" has been approved', 0, '2025-08-14 07:38:07', '2025-08-14 07:38:07', 71);
+(196, 'companyAdmin', 'Company approved', 'Your company \"East African Charters\" has been approved', 0, '2025-08-14 07:38:07', '2025-08-14 07:38:07', 71),
+(197, 'citAdmin', 'Company terminated', 'Company \"Misk Air\" you onboarded has been terminated', 0, '2025-08-20 12:13:31', '2025-08-20 12:13:31', 37),
+(198, 'citAdmin', 'Company submitted for review', 'Jane, your charter company \"Auric Air\" has been submitted for review.', 0, '2025-08-21 08:16:32', '2025-08-21 08:16:32', 37),
+(199, 'superadmin', 'New charter company awaiting review', 'Company \"Auric Air\" has been submitted by Jane.', 0, '2025-08-21 08:16:32', '2025-08-21 08:16:32', NULL),
+(200, 'citAdmin', 'Company approved', 'Company \"Auric Air\" you onboarded has been approved', 0, '2025-08-21 08:17:18', '2025-08-21 08:17:18', 37),
+(201, 'companyAdmin', 'Company approved', 'Your company \"Auric Air\" has been approved', 0, '2025-08-21 08:17:18', '2025-08-21 08:17:18', 73);
 
 -- --------------------------------------------------------
 
@@ -240,7 +184,7 @@ INSERT INTO `aircrafts` (`id`, `companyId`, `name`, `registrationNumber`, `type`
 (29, 18, 'Eurocopter AS350B2', '6789', 'fixedWing', '', '', 0, 5, 1, 'operational', '2025-08-07 12:54:22.000000', '2025-08-10 03:09:23.320791', 0.00, 'Wilson Airport', 'Nairobi', 4),
 (30, 18, 'Bell 505', '34567', 'helicopter', '', '', 0, 4, 1, 'operational', '2025-08-07 13:10:14.000000', '2025-08-10 03:09:23.320791', 0.00, 'Wilson Airport', 'Nairobi', 3),
 (31, 12, '737-5 ', '1234', 'jet', '', '', 0, 132, 1, 'operational', '2025-08-07 13:48:16.000000', '2025-08-11 11:52:18.000000', 0.00, 'Entebbe International Airport', 'Entebbe', 5),
-(32, 12, '777-200ER', '99990', 'jet', '', '', 0, 341, 1, 'operational', '2025-08-07 13:53:44.000000', '2025-08-11 11:52:01.000000', 9000.00, 'Entebbe International Airport', 'Entebbe', 5),
+(32, 12, '777-200ER', '5X-OMR', 'jet', '', 'The Boeing', 2000, 341, 1, 'operational', '2025-08-07 13:53:44.000000', '2025-08-20 11:52:39.000000', 9000.00, 'Entebbe International Airport', 'Entebbe', 5),
 (33, 19, 'Airbus H125', '5Y-CCP', 'helicopter', '', '', 0, 5, 1, 'operational', '2025-08-07 14:14:17.000000', '2025-08-10 03:09:23.320791', 0.00, 'Wilson Airport', 'Nairobi', 3),
 (34, 19, 'Airbus H125', '5Y-BMV', 'helicopter', '', '', 0, 7, 1, 'operational', '2025-08-07 14:20:48.000000', '2025-08-10 03:09:23.320791', 0.00, 'Wilson Airport', 'Nairobi', 3),
 (35, 19, 'Airbus H125', '5Y-BXE', 'helicopter', '', '', 0, 5, 1, 'operational', '2025-08-08 03:40:23.000000', '2025-08-10 03:09:23.320791', 0.00, 'Wilson Airport', 'Nairobi', 3),
@@ -300,7 +244,12 @@ INSERT INTO `aircrafts` (`id`, `companyId`, `name`, `registrationNumber`, `type`
 (89, 35, 'Hot Air Balloon', '444444', 'balloon', '', '', 0, 7, 1, 'operational', '2025-08-14 08:37:36.000000', '2025-08-14 08:37:36.000000', 0.00, 'Maasai Mara', 'Nairobi', 7),
 (90, 34, 'Hot Air Balloon', '666666', 'balloon', '', '', 0, 5, 1, 'operational', '2025-08-14 08:43:24.000000', '2025-08-14 08:43:24.000000', 0.00, 'Maasai Mara', 'Nairobi', 7),
 (91, 36, 'Hot Air Balloon', '7777777', 'balloon', '', '', 0, 5, 1, 'operational', '2025-08-14 08:47:30.000000', '2025-08-14 08:47:30.000000', 0.00, 'Maasai Mara', 'Nairobi', 7),
-(92, 37, 'Hot Air Balloon', '9999999', 'balloon', '', '', 0, 3, 1, 'operational', '2025-08-14 09:44:45.000000', '2025-08-14 09:44:45.000000', 0.00, 'Maasai Mara', 'Nairobi', 7);
+(92, 37, 'Hot Air Balloon', '9999999', 'balloon', '', '', 0, 3, 1, 'operational', '2025-08-14 09:44:45.000000', '2025-08-14 09:44:45.000000', 0.00, 'Maasai Mara', 'Nairobi', 7),
+(93, 12, 'Boeing', '111111', 'fixedWing', 'B737-45D', 'The Boeing', 0, 6, 1, 'operational', '2025-08-20 12:00:30.000000', '2025-08-20 12:00:30.000000', 6500.00, 'Entebbe International Airport', 'Entebbe', 4),
+(94, 26, 'Cessna', '5x-KEB', 'fixedWing', '208B', 'Cessna', 2013, 12, 1, 'operational', '2025-08-20 12:15:21.000000', '2025-08-20 12:15:21.000000', 3000.00, 'Entebbe International Airport', 'Entebbe', 4),
+(95, 43, 'Cessna Caravan C2O8B/EX', '5H-AAK', 'fixedWing', '', '', 0, 12, 1, 'operational', '2025-08-21 08:27:19.000000', '2025-08-21 08:27:19.000000', 0.00, 'Tanzania ', 'Dar es Saalam', 4),
+(96, 43, 'Pilatus PC12', '5H-NAR', 'fixedWing', '', '', 0, 8, 1, 'operational', '2025-08-21 08:37:03.000000', '2025-08-21 08:37:03.000000', 0.00, 'Tanzania ', 'Dar es Saalam', 4),
+(97, 43, 'DHC Dash 8-103', 'XX667859', 'jet', '', '', 0, 39, 1, 'operational', '2025-08-21 08:41:35.000000', '2025-08-21 08:41:35.000000', 0.00, 'Tanzania ', 'Dar es Saalam', 5);
 
 -- --------------------------------------------------------
 
@@ -367,7 +316,14 @@ INSERT INTO `aircraft_amenities` (`id`, `aircraftId`, `amenityId`) VALUES
 (46, 89, 23),
 (47, 90, 23),
 (48, 91, 23),
-(49, 92, 23);
+(49, 92, 23),
+(50, 32, 5),
+(51, 32, 10),
+(52, 93, 11),
+(53, 94, 14),
+(54, 95, 1),
+(55, 96, 1),
+(56, 97, 1);
 
 -- --------------------------------------------------------
 
@@ -790,7 +746,27 @@ INSERT INTO `aircraft_images` (`id`, `aircraftId`, `category`, `url`, `publicId`
 (365, 92, 'exterior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755164680/aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/exterior/ltt9lskhymef54y5k79d.webp', 'aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/exterior/ltt9lskhymef54y5k79d', '2025-08-14 09:44:45', '2025-08-14 09:44:45'),
 (366, 92, 'interior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755164681/aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/interior/di6b8joejr5604egyiy1.webp', 'aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/interior/di6b8joejr5604egyiy1', '2025-08-14 09:44:45', '2025-08-14 09:44:45'),
 (367, 92, 'cockpit', 'https://res.cloudinary.com/otienobryan/image/upload/v1755164682/aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/cockpit/peh38wb0obrppbnv6cv8.webp', 'aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/cockpit/peh38wb0obrppbnv6cv8', '2025-08-14 09:44:45', '2025-08-14 09:44:45'),
-(368, 92, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755164682/aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/seating/pypron9r9jfjuyp4vhjt.webp', 'aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/seating/pypron9r9jfjuyp4vhjt', '2025-08-14 09:44:45', '2025-08-14 09:44:45');
+(368, 92, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755164682/aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/seating/pypron9r9jfjuyp4vhjt.webp', 'aircrafts/ac_fe6bf6a9-2cfe-4760-88a3-621eb3455a0b/seating/pypron9r9jfjuyp4vhjt', '2025-08-14 09:44:45', '2025-08-14 09:44:45'),
+(369, 93, 'exterior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755691215/aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/exterior/rhs7czn7iukelxxo0vws.jpg', 'aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/exterior/rhs7czn7iukelxxo0vws', '2025-08-20 12:00:30', '2025-08-20 12:00:30'),
+(370, 93, 'interior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755691219/aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/interior/hwuhxe6el2ovbejgp9tu.jpg', 'aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/interior/hwuhxe6el2ovbejgp9tu', '2025-08-20 12:00:30', '2025-08-20 12:00:30'),
+(371, 93, 'cockpit', 'https://res.cloudinary.com/otienobryan/image/upload/v1755691223/aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/cockpit/uwtqbwz1echiutcbepms.jpg', 'aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/cockpit/uwtqbwz1echiutcbepms', '2025-08-20 12:00:30', '2025-08-20 12:00:30'),
+(372, 93, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755691227/aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/seating/tfzytzxzbm4fkes5n8uk.jpg', 'aircrafts/ac_02124d0a-b3c1-4377-80ab-a3a0eecc3a6f/seating/tfzytzxzbm4fkes5n8uk', '2025-08-20 12:00:30', '2025-08-20 12:00:30'),
+(373, 94, 'exterior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755692116/aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/exterior/d6xpywkk12gsqltvgnnz.jpg', 'aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/exterior/d6xpywkk12gsqltvgnnz', '2025-08-20 12:15:21', '2025-08-20 12:15:21'),
+(374, 94, 'interior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755692117/aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/interior/lkf2ipwx6sfqwigcejn7.jpg', 'aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/interior/lkf2ipwx6sfqwigcejn7', '2025-08-20 12:15:21', '2025-08-20 12:15:21'),
+(375, 94, 'cockpit', 'https://res.cloudinary.com/otienobryan/image/upload/v1755692119/aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/cockpit/cbiefry13phtmmdfpsqp.jpg', 'aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/cockpit/cbiefry13phtmmdfpsqp', '2025-08-20 12:15:21', '2025-08-20 12:15:21'),
+(376, 94, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755692119/aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/seating/bmoqebhx9rckqukadhus.jpg', 'aircrafts/ac_a5b39c77-2189-428d-b160-7b646d60fac0/seating/bmoqebhx9rckqukadhus', '2025-08-20 12:15:21', '2025-08-20 12:15:21'),
+(377, 95, 'exterior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755764834/aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/exterior/o9wy7ldzwknma0cad6wt.jpg', 'aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/exterior/o9wy7ldzwknma0cad6wt', '2025-08-21 08:27:20', '2025-08-21 08:27:20'),
+(378, 95, 'interior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755764835/aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/interior/giblgcasnejxebgl5j3v.jpg', 'aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/interior/giblgcasnejxebgl5j3v', '2025-08-21 08:27:20', '2025-08-21 08:27:20'),
+(379, 95, 'cockpit', 'https://res.cloudinary.com/otienobryan/image/upload/v1755764836/aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/cockpit/hhz61k7pa2hqxxquluk4.jpg', 'aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/cockpit/hhz61k7pa2hqxxquluk4', '2025-08-21 08:27:20', '2025-08-21 08:27:20'),
+(380, 95, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755764837/aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/seating/uvteltwkb88lc2hs8tsm.jpg', 'aircrafts/ac_b7efb894-4401-40bc-81d3-096c72becafe/seating/uvteltwkb88lc2hs8tsm', '2025-08-21 08:27:20', '2025-08-21 08:27:20'),
+(381, 96, 'exterior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765418/aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/exterior/po88vvmd0lsl6hqfpbiz.jpg', 'aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/exterior/po88vvmd0lsl6hqfpbiz', '2025-08-21 08:37:03', '2025-08-21 08:37:03'),
+(382, 96, 'interior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765419/aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/interior/cy7mufcl76jmdg2iv6l9.jpg', 'aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/interior/cy7mufcl76jmdg2iv6l9', '2025-08-21 08:37:03', '2025-08-21 08:37:03'),
+(383, 96, 'cockpit', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765420/aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/cockpit/abdrc6j8ojaghsvczop7.jpg', 'aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/cockpit/abdrc6j8ojaghsvczop7', '2025-08-21 08:37:03', '2025-08-21 08:37:03'),
+(384, 96, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765421/aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/seating/zz7674n343r7z618krpn.png', 'aircrafts/ac_026e0df9-a659-4578-ab11-34f13803a795/seating/zz7674n343r7z618krpn', '2025-08-21 08:37:03', '2025-08-21 08:37:03'),
+(385, 97, 'exterior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765688/aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/exterior/zha080o3krrbsxpqzkzw.jpg', 'aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/exterior/zha080o3krrbsxpqzkzw', '2025-08-21 08:41:35', '2025-08-21 08:41:35'),
+(386, 97, 'interior', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765689/aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/interior/zypocvx59x7lqlljot0b.jpg', 'aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/interior/zypocvx59x7lqlljot0b', '2025-08-21 08:41:35', '2025-08-21 08:41:35'),
+(387, 97, 'cockpit', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765690/aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/cockpit/zr4hv6gcgbacalgikmqg.jpg', 'aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/cockpit/zr4hv6gcgbacalgikmqg', '2025-08-21 08:41:35', '2025-08-21 08:41:35'),
+(388, 97, 'seating', 'https://res.cloudinary.com/otienobryan/image/upload/v1755765692/aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/seating/pdjuoinuqxkugfoczif3.png', 'aircrafts/ac_537be158-8c22-44c9-ab4f-16947880d25d/seating/pdjuoinuqxkugfoczif3', '2025-08-21 08:41:35', '2025-08-21 08:41:35');
 
 -- --------------------------------------------------------
 
@@ -899,6 +875,8 @@ INSERT INTO `bookings` (`id`, `userId`, `dealId`, `company_id`, `totalPrice`, `o
 ('BK-17JUL25-142809-QLO07', 'user_1752533042834_nsyj4iqyf', 11, 11, 336.00, 0, 0, 'United States', 'card', 'confirmed', 'paid', 'AC689944M7Z', 'ch_3Rlpz2Io90LS4Ah42qkvCS1J', 1680, 0, 0.00, NULL, '2025-07-17 13:28:06.801023', '2025-07-17 13:28:51.000000'),
 ('BK-17JUL25-144502-PFB08', 'user_1752533042834_nsyj4iqyf', 4, 9, 84.00, 0, 0, 'United States', 'card', 'confirmed', 'paid', 'AC702787U7M', 'ch_3RlqFMIo90LS4Ah41OULraR6', 420, 0, 0.00, NULL, '2025-07-17 13:44:59.481124', '2025-07-17 13:45:28.000000'),
 ('BK-17JUL25-144932-03109', 'user_1752533042834_nsyj4iqyf', 8, 9, 95.20, 0, 0, 'United States', 'card', 'confirmed', 'paid', 'AC973122K2I', 'ch_3RlqJuIo90LS4Ah418hOpzYM', 476, 0, 0.00, NULL, '2025-07-17 13:49:29.754321', '2025-07-17 13:50:29.000000'),
+('BK-18AUG25-125816-JWO01', '', 3, 0, 448.00, 0, 0, 'United States', 'card', 'pending', 'pending', 'AC096927VZY', NULL, 0, 0, 0.00, NULL, '2025-08-18 11:58:17.190988', '2025-08-18 11:58:17.190988'),
+('BK-18AUG25-170152-BMN02', '', 2, 0, 1500.00, 1, 0, 'US', 'card', 'pending', 'pending', 'AC7129414W9', NULL, 0, 0, 0.00, 'Test booking for payment system', '2025-08-18 16:01:53.205178', '2025-08-18 16:01:53.205178'),
 ('BK-20250806-112505-GVL', 'user_1752093294468_5lug3jt2p', 0, 11, 5700.00, 0, 0, NULL, NULL, 'pending', 'pending', 'ACT693ELH2', NULL, 0, 0, 0.00, NULL, '2025-08-06 10:25:05.434403', '2025-08-06 10:25:05.434403'),
 ('BK-24JUL25-190952-RM401', 'user_1752093294468_5lug3jt2p', 10, 0, 560.00, 0, 1, 'United States', 'card', 'pending', 'pending', 'AC392916XK9', NULL, 0, 0, 0.00, NULL, '2025-07-24 18:09:52.372292', '2025-07-24 18:09:52.372292');
 
@@ -993,7 +971,11 @@ INSERT INTO `booking_timeline` (`id`, `bookingId`, `eventType`, `title`, `descri
 (29, 'BK-17JUL25-144932-03109', 'payment_status_changed', 'Payment Processed', 'Payment of $95.2 processed successfully. 476 loyalty points earned.', NULL, 'paid', '{\"paymentTransactionId\":\"ch_3RlqJuIo90LS4Ah418hOpzYM\",\"paymentMethod\":\"card\",\"amount\":95.2,\"loyaltyPointsEarned\":476,\"referenceNumber\":\"AC973122K2I\"}', '2025-07-17 14:50:33.129000'),
 (30, 'BK-17JUL25-144932-03109', 'booking_confirmed', 'Booking Confirmed', 'Booking confirmed after successful payment. Reference: AC973122K2I', NULL, NULL, '{\"paymentTransactionId\":\"ch_3RlqJuIo90LS4Ah418hOpzYM\",\"referenceNumber\":\"AC973122K2I\"}', '2025-07-17 14:50:33.280000'),
 (31, 'BK-24JUL25-190952-RM401', 'booking_created', 'Booking Created', 'Booking AC392916XK9 has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":11,\"referenceNumber\":\"AC392916XK9\",\"totalPrice\":560,\"userIncluded\":false}', '2025-07-24 18:09:53.095621'),
-(32, 'BK-06AUG25-121530-86I01', 'booking_created', 'Booking Created', 'Booking AC730481JY9 has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":12,\"referenceNumber\":\"AC730481JY9\",\"totalPrice\":0,\"userIncluded\":false}', '2025-08-06 11:15:31.086395');
+(32, 'BK-06AUG25-121530-86I01', 'booking_created', 'Booking Created', 'Booking AC730481JY9 has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":12,\"referenceNumber\":\"AC730481JY9\",\"totalPrice\":0,\"userIncluded\":false}', '2025-08-06 11:15:31.086395'),
+(33, 'BK-17AUG25-103805-ZM501', 'booking_created', 'Booking Created', 'Booking AC285733FZO has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":12,\"referenceNumber\":\"AC285733FZO\",\"totalPrice\":336,\"userIncluded\":false}', '2025-08-17 09:38:06.242591'),
+(34, 'BK-18AUG25-125816-JWO01', 'booking_created', 'Booking Created', 'Booking AC096927VZY has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":11,\"referenceNumber\":\"AC096927VZY\",\"totalPrice\":448,\"userIncluded\":false}', '2025-08-18 11:58:18.215341'),
+(35, 'BK-18AUG25-135311-SFG03', 'booking_created', 'Booking Created', 'Booking AC39203941Q has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":12,\"referenceNumber\":\"AC39203941Q\",\"totalPrice\":1500,\"userIncluded\":true}', '2025-08-18 12:53:13.120119'),
+(36, 'BK-18AUG25-170152-BMN02', 'booking_created', 'Booking Created', 'Booking AC7129414W9 has been created successfully with 1 passengers. Loyalty points will be earned upon payment.', NULL, NULL, '{\"passengerCount\":1,\"companyId\":12,\"referenceNumber\":\"AC7129414W9\",\"totalPrice\":1500,\"userIncluded\":true}', '2025-08-18 16:01:54.170329');
 
 -- --------------------------------------------------------
 
@@ -1045,7 +1027,7 @@ INSERT INTO `charters_admins` (`id`, `firstName`, `middleName`, `lastName`, `ema
 (46, 'Amy', NULL, 'Rev', 'admin@amref.com', '$2b$10$ki5aKf75d0gheMS7sxmO1.f4JLs6EfRL4cxF2NUMjsoSre.hYl92a', 0, 'companyAdmin', 23, NULL, 'active', '2025-08-08 11:37:09', '2025-08-08 11:38:11', NULL),
 (47, 'Air', NULL, 'Serv', 'admin@748air.com', '$2b$10$WDZ.DPrS5jQz7pdWtQn4DO1QShjQVrUAfElwg7EU.bbBlURLNP/Ae', 0, 'companyAdmin', 24, NULL, 'active', '2025-08-08 12:04:12', '2025-08-08 12:05:46', NULL),
 (48, 'Felix', NULL, 'Good', 'admin@phoenixaviation.com', '$2b$10$g0QPM0be5xqfJ6.Fn.2QM.5COa6yZA/CQd5j562e7xdFqw/TBOt4G', 0, 'companyAdmin', 25, NULL, 'active', '2025-08-11 06:58:15', '2025-08-11 06:59:04', NULL),
-(49, 'Milly', NULL, 'Aire', 'admin@miskair.com', '$2b$10$.jjx/1Qsdfr54t8LtZ93HOP/KtqPxAwcShPwYANGTGklB2R.A1k3G', 0, 'companyAdmin', 26, NULL, 'active', '2025-08-11 07:38:04', '2025-08-11 07:39:21', NULL),
+(49, 'Milly', NULL, 'Aire', 'admin@miskair.com', '$2b$10$.jjx/1Qsdfr54t8LtZ93HOP/KtqPxAwcShPwYANGTGklB2R.A1k3G', 0, 'companyAdmin', 26, NULL, 'inactive', '2025-08-11 07:38:04', '2025-08-20 12:13:31', NULL),
 (50, 'Bear', NULL, 'Ave', 'admin@baraviation.com', '$2b$10$Klk6VVQCbsF69TzwoZqfue.AH2w9NCl1vH5pBQC4cgl5DuD4lCm5C', 0, 'companyAdmin', 27, NULL, 'active', '2025-08-11 08:31:22', '2025-08-11 08:32:27', NULL),
 (51, 'Fred', NULL, 'Keo', 'admin@flykea.com', '$2b$10$7dntVMVtSNmdWJ/DjkbKpufOnaPmNNt4vJOldZ2.zl8wndX8TiHbW', 0, 'companyAdmin', 28, NULL, 'active', '2025-08-11 09:24:13', '2025-08-11 09:25:00', NULL),
 (52, 'Earl', NULL, 'Air', 'admin@eagleair.com', '$2b$10$AUaXa2ENIjI.jzKXXWx9eO9UbdS15OilSHq/J5LmMb3KAKfb3WXkq', 0, 'companyAdmin', 29, NULL, 'active', '2025-08-11 10:45:33', '2025-08-11 10:46:38', NULL),
@@ -1061,7 +1043,8 @@ INSERT INTO `charters_admins` (`id`, `firstName`, `middleName`, `lastName`, `ema
 (69, 'Hot', NULL, 'Maa', 'admin@masaimaraballonsafaris.com', '$2b$10$FizoCMdLbUrDv4YFOD7Sr.84o4AZZrYTw4/iB2k3m49apoFv9NzsG', 0, 'companyAdmin', 39, NULL, 'active', '2025-08-14 07:24:10', '2025-08-14 07:24:49', NULL),
 (70, 'Sky', NULL, 'Hale', 'admin@skyshipsky.com', '$2b$10$N8bnQ3BWzaqZmlxHCSpqI.mddeZ6ncCrWsQfcUwnsf53Se55VBnnu', 0, 'companyAdmin', 40, NULL, 'active', '2025-08-14 07:31:56', '2025-08-14 07:32:49', NULL),
 (71, 'East', NULL, 'Ria', 'admin@eastafricancharters.com', '$2b$10$F3DNi0ML8nXwDc5tsp.WZOB8/0jmLbSaoRdcYLFjXuUN2D33MgbS.', 0, 'companyAdmin', 41, NULL, 'active', '2025-08-14 07:38:06', '2025-08-14 07:38:48', NULL),
-(72, 'gov', NULL, 'admin', 'admin@governorsballoonsafaris.com', '$2b$10$.J9l4gs6tmSbC8ivzon/Vu9JoOuAKnsETakPBN0d.ZYc.MPRfYgi2', 0, 'companyAdmin', 37, NULL, 'active', '2025-08-14 08:54:07', '2025-08-14 08:54:07', NULL);
+(72, 'gov', NULL, 'admin', 'admin@governorsballoonsafaris.com', '$2b$10$.J9l4gs6tmSbC8ivzon/Vu9JoOuAKnsETakPBN0d.ZYc.MPRfYgi2', 0, 'companyAdmin', 37, NULL, 'active', '2025-08-14 08:54:07', '2025-08-14 08:54:07', NULL),
+(73, 'John', NULL, 'Doe', 'janeowino68@yahoo.com', '$2b$10$eZ8qTjpLGlgFaGDlvgZEX.7uL.XjXCXjVI4eA6M4B8holKm/Ysoxm', 0, 'companyAdmin', 43, NULL, 'active', '2025-08-21 08:17:18', '2025-08-21 08:18:06', NULL);
 
 -- --------------------------------------------------------
 
@@ -1116,7 +1099,7 @@ INSERT INTO `charters_companies` (`id`, `companyName`, `email`, `contactPersonFi
 (23, 'AMREF Aviation', 'admin@amref.com', 'Amy', 'Rev', '0799324571', 'https://res.cloudinary.com/otienobryan/image/upload/v1754652979/charters_logos/o2un3fpszw39xnqzpvhu.png', 'Kenya', '5531709', NULL, NULL, 'charters_logos/o2un3fpszw39xnqzpvhu', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754652994/charters_documents/amref_aviation/amref_aviation_agreementForm.pdf', 'charters_documents/amref_aviation/amref_aviation_agreementForm.pdf', 'charters SuperAdmin', '2025-08-08 11:37:09', 'Successfully approved', 0.00, '2025-08-08 11:36:19.000000', '2025-08-08 13:39:07.152677'),
 (24, '748 Air Services', 'admin@748air.com', 'Air', 'Serv', '0766987341', 'https://res.cloudinary.com/otienobryan/image/upload/v1754654606/charters_logos/y4wfxmnon2togmksdkcz.png', 'Kenya', '1115672', NULL, NULL, 'charters_logos/y4wfxmnon2togmksdkcz', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754654620/charters_documents/748_air_services/748_air_services_agreementForm.pdf', 'charters_documents/748_air_services/748_air_services_agreementForm.pdf', 'charters SuperAdmin', '2025-08-08 12:04:11', 'Successfully approved', 0.00, '2025-08-08 12:03:27.000000', '2025-08-08 14:07:54.650875'),
 (25, 'Phoenix Aviation', 'admin@phoenixaviation.com', 'Felix', 'Good', '0722156789', 'https://res.cloudinary.com/otienobryan/image/upload/v1754895423/charters_logos/u5cltlojwk10uezqvqfv.png', 'Kenya', '665780', NULL, NULL, 'charters_logos/u5cltlojwk10uezqvqfv', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754895441/charters_documents/phoenix_aviation/phoenix_aviation_agreementForm.pdf', 'charters_documents/phoenix_aviation/phoenix_aviation_agreementForm.pdf', 'charters SuperAdmin', '2025-08-11 06:58:15', 'Successfully approved', 0.00, '2025-08-11 06:57:04.000000', '2025-08-11 09:26:39.434180'),
-(26, 'Misk Air', 'admin@miskair.com', 'Milly', 'Aire', '0789653412', 'https://res.cloudinary.com/otienobryan/image/upload/v1754897822/charters_logos/dhhkwwfgxtjukaibkfjh.png', 'Kenya', '8845673', NULL, NULL, 'charters_logos/dhhkwwfgxtjukaibkfjh', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754897838/charters_documents/misk_air/misk_air_agreementForm.pdf', 'charters_documents/misk_air/misk_air_agreementForm.pdf', 'charters SuperAdmin', '2025-08-11 07:38:04', 'Successfully approved', 0.00, '2025-08-11 07:37:02.000000', '2025-08-11 09:58:17.338630'),
+(26, 'Misk Air', 'admin@miskair.com', 'Milly', 'Aire', '0789653412', 'https://res.cloudinary.com/otienobryan/image/upload/v1754897822/charters_logos/dhhkwwfgxtjukaibkfjh.png', 'Kenya', '8845673', NULL, NULL, 'charters_logos/dhhkwwfgxtjukaibkfjh', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755692186/charters_documents/misk_air/misk_air_agreementForm.pdf', 'charters_documents/misk_air/misk_air_agreementForm.pdf', 'charters SuperAdmin', '2025-08-20 12:13:30', 'Testing', 0.00, '2025-08-11 07:37:02.000000', '2025-08-20 14:17:28.951769'),
 (27, 'Bar Aviation', 'admin@baraviation.com', 'Bear', 'Ave', '0765107432', 'https://res.cloudinary.com/otienobryan/image/upload/v1754900552/charters_logos/zgx72coaudykzbh64b3t.png', 'Kenya', '7110243', NULL, NULL, 'charters_logos/zgx72coaudykzbh64b3t', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754900926/charters_documents/bar_aviation/bar_aviation_agreementForm.pdf', 'charters_documents/bar_aviation/bar_aviation_agreementForm.pdf', 'charters SuperAdmin', '2025-08-11 08:31:21', 'Successfully approved', 0.00, '2025-08-11 08:22:33.000000', '2025-08-11 10:54:38.037482'),
 (28, 'Fly KEA', 'admin@flykea.com', 'Fred', 'Keo', '0799445566', 'https://res.cloudinary.com/otienobryan/image/upload/v1754902684/charters_logos/godw34bthmznny3ycx8l.jpg', 'Uganda', '7765483', NULL, NULL, 'charters_logos/godw34bthmznny3ycx8l', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754902719/charters_documents/fly_kea/fly_kea_agreementForm.pdf', 'charters_documents/fly_kea/fly_kea_agreementForm.pdf', 'charters SuperAdmin', '2025-08-11 09:24:12', 'Successfully approved', 0.00, '2025-08-11 08:58:04.000000', '2025-08-11 12:17:33.312186'),
 (29, 'Eagle Air', 'admin@eagleair.com', 'Earl', 'Air', '0799654321', 'https://res.cloudinary.com/otienobryan/image/upload/v1754909017/charters_logos/pzthcui73ueebrpbhqzv.png', 'Uganda', '118905', NULL, NULL, 'charters_logos/pzthcui73ueebrpbhqzv', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1754909045/charters_documents/eagle_air/eagle_air_agreementForm.pdf', 'charters_documents/eagle_air/eagle_air_agreementForm.pdf', 'charters SuperAdmin', '2025-08-11 10:45:33', 'Successfully approved', 0.00, '2025-08-11 10:43:38.000000', '2025-08-11 12:59:09.245840'),
@@ -1131,7 +1114,9 @@ INSERT INTO `charters_companies` (`id`, `companyName`, `email`, `contactPersonFi
 (38, 'Adventures Aloft', 'admin@adventuresaloft.com', 'Advent', 'Loft', '0799834762', 'https://res.cloudinary.com/otienobryan/image/upload/v1755155940/charters_logos/oilemsonkkolz7qkgnaq.jpg', 'Kenya', '7820374', NULL, NULL, 'charters_logos/oilemsonkkolz7qkgnaq', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755155954/charters_documents/adventures_aloft/adventures_aloft_agreementForm.pdf', 'charters_documents/adventures_aloft/adventures_aloft_agreementForm.pdf', 'charters SuperAdmin', '2025-08-14 07:19:50', 'Successfully approved', 10.00, '2025-08-14 07:19:00.000000', '2025-08-14 09:21:57.396822'),
 (39, 'Masai Mara Balloon Safaris ', 'admin@masaimaraballonsafaris.com', 'Hot', 'Maa', '0756894354', 'https://res.cloudinary.com/otienobryan/image/upload/v1755156204/charters_logos/qweg14yniruclkgmdbdb.png', 'Kenya', '4678923', NULL, NULL, 'charters_logos/qweg14yniruclkgmdbdb', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755156219/charters_documents/masai_mara_balloon_safaris_/masai_mara_balloon_safaris__agreementForm.pdf', 'charters_documents/masai_mara_balloon_safaris_/masai_mara_balloon_safaris__agreementForm.pdf', 'charters SuperAdmin', '2025-08-14 07:24:09', 'Successfully approved', 10.00, '2025-08-14 07:23:24.000000', '2025-08-14 09:27:08.319185'),
 (40, 'Skyship', 'admin@skyshipsky.com', 'Sky', 'Hale', '0756432987', 'https://res.cloudinary.com/otienobryan/image/upload/v1755156653/charters_logos/l93webeaouho12mfn7un.webp', 'Kenya', '4890355', NULL, NULL, 'charters_logos/l93webeaouho12mfn7un', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755156681/charters_documents/skyship/skyship_agreementForm.pdf', 'charters_documents/skyship/skyship_agreementForm.pdf', 'charters SuperAdmin', '2025-08-14 07:31:56', 'Successfully approved', 10.00, '2025-08-14 07:30:53.000000', '2025-08-14 09:33:53.556365'),
-(41, 'East African Charters', 'admin@eastafricancharters.com', 'East', 'Ria', '0789567321', 'https://res.cloudinary.com/otienobryan/image/upload/v1755156937/charters_logos/wt6de899ureblwqppddg.png', 'Kenya', '3900045', NULL, NULL, 'charters_logos/wt6de899ureblwqppddg', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755156960/charters_documents/east_african_charters/east_african_charters_agreementForm.pdf', 'charters_documents/east_african_charters/east_african_charters_agreementForm.pdf', 'charters SuperAdmin', '2025-08-14 07:38:06', 'Successfully approved', 10.00, '2025-08-14 07:35:37.000000', '2025-08-14 09:40:11.878774');
+(41, 'East African Charters', 'admin@eastafricancharters.com', 'East', 'Ria', '0789567321', 'https://res.cloudinary.com/otienobryan/image/upload/v1755156937/charters_logos/wt6de899ureblwqppddg.png', 'Kenya', '3900045', NULL, NULL, 'charters_logos/wt6de899ureblwqppddg', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755156960/charters_documents/east_african_charters/east_african_charters_agreementForm.pdf', 'charters_documents/east_african_charters/east_african_charters_agreementForm.pdf', 'charters SuperAdmin', '2025-08-14 07:38:06', 'Successfully approved', 10.00, '2025-08-14 07:35:37.000000', '2025-08-14 09:40:11.878774'),
+(42, 'test company', 'testcompany@gmail.com', 'testname', 'testphone', '071465757', 'https://res.cloudinary.com/otienobryan/image/upload/v1755685582/charters_logos/gue3gbgjcgqv5u8gxlex.webp', 'Kenya', '466464', NULL, NULL, 'charters_logos/gue3gbgjcgqv5u8gxlex', 'Jane Owino', 37, 'draft', NULL, NULL, NULL, NULL, NULL, 0.00, '2025-08-20 10:26:22.000000', '2025-08-20 10:26:22.000000'),
+(43, 'Auric Air', 'janeowino68@yahoo.com', 'John', 'Doe', '0746578993', 'https://res.cloudinary.com/otienobryan/image/upload/v1755764033/charters_logos/a4b3ddvt3ep2mixyqncy.jpg', 'Tanzania, United Republic of', '000235', NULL, NULL, 'charters_logos/a4b3ddvt3ep2mixyqncy', 'Jane Owino', 37, 'active', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755764181/charters_documents/auric_air/auric_air_agreementForm.pdf', 'charters_documents/auric_air/auric_air_agreementForm.pdf', 'charters SuperAdmin', '2025-08-21 08:17:17', 'Successfully approved', 10.00, '2025-08-21 08:13:54.000000', '2025-08-21 08:17:17.000000');
 
 -- --------------------------------------------------------
 
@@ -1165,10 +1150,12 @@ CREATE TABLE `charter_deals` (
 --
 
 INSERT INTO `charter_deals` (`id`, `companyId`, `aircraftId`, `originName`, `originLatitude`, `originLongitude`, `destinationName`, `destinationLatitude`, `destinationLongitude`, `date`, `time`, `pricePerSeat`, `discountPerSeat`, `availableSeats`, `pilotId`, `createdAt`, `updatedAt`, `fixedRouteId`) VALUES
-(2, 12, 32, 'wilson airport', -1.3241213, 36.8112497, 'Pwani university', -3.6199601, 39.8462317, '2025-08-12', '16:42:00', 300.00, 5, 300, 20, '2025-08-11 11:43:16', '2025-08-11 11:43:16', NULL),
-(3, 11, 10, 'moi international airport', -4.0265226, 39.6007207, 'wilson airport', -1.3241213, 36.8112497, '2025-08-15', '17:00:00', 400.00, 5, 6, 12, '2025-08-11 11:58:06', '2025-08-11 13:36:22', NULL),
-(4, 11, 11, 'Pwani university', -3.6199601, 39.8462317, 'wilson airport', -1.3241213, 36.8112497, '2025-08-21', '19:00:00', 500.00, 4, 14, 9, '2025-08-11 11:59:18', '2025-08-11 11:59:18', NULL),
-(5, 11, 8, 'pwani university', -3.6199601, 39.8462317, 'wilson airport', 29.1589961, -98.1251465, '2025-09-06', '19:00:00', 500.00, 5, 8, 10, '2025-08-11 13:35:35', '2025-08-11 13:35:35', NULL);
+(2, 12, 32, 'wilson airport', -1.3241213, 36.8112497, 'Pwani university', -3.6199601, 39.8462317, '2025-08-12', '16:42:00', 300.00, 5, 297, 20, '2025-08-11 11:43:16', '2025-08-18 16:01:53', NULL),
+(3, 11, 10, 'moi international airport', -4.0265226, 39.6007207, 'wilson airport', -1.3241213, 36.8112497, '2025-08-15', '17:00:00', 400.00, 5, 5, 12, '2025-08-11 11:58:06', '2025-08-18 11:58:17', NULL),
+(4, 11, 11, 'malindi airport', -3.2208611, 40.1000498, 'wilson airport', -1.3241213, 36.8112497, '2025-08-21', '19:00:00', 500.00, 4, 14, 9, '2025-08-11 11:59:18', '2025-08-19 08:52:44', NULL),
+(5, 11, 8, 'pwani university', -3.6199601, 39.8462317, 'wilson airport', 29.1589961, -98.1251465, '2025-09-06', '19:00:00', 500.00, 5, 8, 10, '2025-08-11 13:35:35', '2025-08-11 13:35:35', NULL),
+(6, 11, 10, 'vipigo ridge', -5.0790803, 39.0930428, 'wilson airport', -1.3241213, 36.8112497, '2025-08-27', '13:00:00', 300.00, 5, 6, 11, '2025-08-19 08:51:18', '2025-08-19 08:51:18', NULL),
+(7, 11, 12, 'pwani university', -3.6199601, 39.8462317, 'wilson airport', -1.3241213, 36.8112497, '2025-08-22', '18:48:00', 300.00, 5, 4, 19, '2025-08-19 13:49:07', '2025-08-19 13:49:07', NULL);
 
 -- --------------------------------------------------------
 
@@ -1246,6 +1233,38 @@ INSERT INTO `charter_deal_amenities` (`id`, `dealId`, `amenityId`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `company_payment_accounts`
+--
+
+CREATE TABLE `company_payment_accounts` (
+  `id` int(11) NOT NULL,
+  `companyId` int(11) NOT NULL,
+  `paymentProvider` enum('stripe','mpesa') NOT NULL,
+  `accountType` enum('express','custom','standard') NOT NULL DEFAULT 'express',
+  `accountId` varchar(255) NOT NULL,
+  `accountStatus` enum('pending','active','suspended','rejected') NOT NULL DEFAULT 'pending',
+  `verificationStatus` varchar(50) NOT NULL DEFAULT 'pending',
+  `country` varchar(2) NOT NULL,
+  `currency` varchar(3) NOT NULL DEFAULT 'USD',
+  `capabilities` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`capabilities`)),
+  `requirements` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`requirements`)),
+  `businessProfile` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`businessProfile`)),
+  `bankAccountInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`bankAccountInfo`)),
+  `onboardingUrl` varchar(500) DEFAULT NULL,
+  `dashboardUrl` varchar(500) DEFAULT NULL,
+  `lastPayoutDate` datetime DEFAULT NULL,
+  `totalPayouts` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `pendingBalance` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `availableBalance` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
+  `isActive` tinyint(1) NOT NULL DEFAULT 1,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `drivers`
 --
 
@@ -1269,6 +1288,108 @@ CREATE TABLE `drivers` (
 
 INSERT INTO `drivers` (`id`, `name`, `idNumber`, `email`, `phone`, `imageUrl`, `imagePublicId`, `rate`, `companyId`, `createdAt`, `updatedAt`) VALUES
 (1, 'Jim', 'Tim', 'jim.tim@gmail.com', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1753363728/vehicle_drivers_images/p6o83qrey6bs0tmm4rwm.jpg', 'vehicle_drivers_images/p6o83qrey6bs0tmm4rwm', 300, 1, '2025-07-24 13:28:48', '2025-07-24 13:32:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `experience_images`
+--
+
+CREATE TABLE `experience_images` (
+  `id` int(11) NOT NULL,
+  `experienceId` int(11) NOT NULL,
+  `imageSlot` varchar(50) NOT NULL COMMENT 'eg: image1, image2, image3 etc.',
+  `url` text NOT NULL,
+  `publicId` varchar(255) NOT NULL,
+  `sortOrder` int(11) DEFAULT 0 COMMENT 'For controlling display sequence',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `experience_images`
+--
+
+INSERT INTO `experience_images` (`id`, `experienceId`, `imageSlot`, `url`, `publicId`, `sortOrder`, `createdAt`, `updatedAt`) VALUES
+(5, 2, 'image1', 'https://res.cloudinary.com/otienobryan/image/upload/v1755517989/experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image1/jcgwro9l4kqtf1o7ggu0.webp', 'experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image1/jcgwro9l4kqtf1o7ggu0', 0, '2025-08-18 07:26:28', '2025-08-18 11:53:12'),
+(6, 2, 'image2', 'https://res.cloudinary.com/otienobryan/image/upload/v1755517990/experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image2/n7kdaz1q7clcpmc0bc02.webp', 'experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image2/n7kdaz1q7clcpmc0bc02', 1, '2025-08-18 07:26:28', '2025-08-18 11:53:12'),
+(7, 2, 'image3', 'https://res.cloudinary.com/otienobryan/image/upload/v1755517990/experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image3/poe4lvdrntc4eoj4dh6f.webp', 'experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image3/poe4lvdrntc4eoj4dh6f', 2, '2025-08-18 07:26:28', '2025-08-18 11:53:12'),
+(8, 2, 'image4', 'https://res.cloudinary.com/otienobryan/image/upload/v1755517991/experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image4/rdvnppxlqhpfl8c8jwcz.webp', 'experiences/exp_88110152-f57c-434c-89d1-9f942463796e/image4/rdvnppxlqhpfl8c8jwcz', 3, '2025-08-18 07:26:28', '2025-08-18 11:53:12'),
+(9, 3, 'image1', 'https://res.cloudinary.com/otienobryan/image/upload/v1755519012/experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image1/rmmgtlafycvqsodka7gi.webp', 'experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image1/rmmgtlafycvqsodka7gi', 0, '2025-08-18 11:24:54', '2025-08-18 12:10:18'),
+(10, 3, 'image2', 'https://res.cloudinary.com/otienobryan/image/upload/v1755519013/experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image2/egqees9lnmk68kmyf2vi.webp', 'experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image2/egqees9lnmk68kmyf2vi', 1, '2025-08-18 11:24:54', '2025-08-18 12:10:18'),
+(11, 3, 'image3', 'https://res.cloudinary.com/otienobryan/image/upload/v1755519014/experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image3/dqbm7cllycrogawqjavb.webp', 'experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image3/dqbm7cllycrogawqjavb', 2, '2025-08-18 11:24:54', '2025-08-18 12:10:18'),
+(12, 3, 'image4', 'https://res.cloudinary.com/otienobryan/image/upload/v1755519016/experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image4/m1s4wbakes9nywoaxdum.webp', 'experiences/exp_635ff210-2076-4409-9ef4-084077b59c44/image4/m1s4wbakes9nywoaxdum', 3, '2025-08-18 11:24:54', '2025-08-18 12:10:18'),
+(13, 4, 'image1', 'https://res.cloudinary.com/otienobryan/image/upload/v1755586530/experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image1/ohowkpsojcfftwm9p323.webp', 'experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image1/ohowkpsojcfftwm9p323', 0, '2025-08-19 06:55:34', '2025-08-19 06:55:34'),
+(14, 4, 'image2', 'https://res.cloudinary.com/otienobryan/image/upload/v1755586531/experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image2/iiiiwprdustgpslles40.webp', 'experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image2/iiiiwprdustgpslles40', 1, '2025-08-19 06:55:34', '2025-08-19 06:55:34'),
+(15, 4, 'image3', 'https://res.cloudinary.com/otienobryan/image/upload/v1755586531/experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image3/m3sh8vkpjgdvkidlaiwn.webp', 'experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image3/m3sh8vkpjgdvkidlaiwn', 2, '2025-08-19 06:55:34', '2025-08-19 06:55:34'),
+(16, 4, 'image4', 'https://res.cloudinary.com/otienobryan/image/upload/v1755586532/experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image4/ulef2s4t0cuped2fmgv1.webp', 'experiences/exp_1b475896-a65d-46f1-916c-6dde6cce12dd/image4/ulef2s4t0cuped2fmgv1', 3, '2025-08-19 06:55:34', '2025-08-19 06:55:34'),
+(17, 5, 'image1', 'https://res.cloudinary.com/otienobryan/image/upload/v1755592928/experiences/exp_f584432b-d54e-40c3-9120-a44b53f8706b/image1/v23xugvxlygzlh4h35t0.webp', 'experiences/exp_f584432b-d54e-40c3-9120-a44b53f8706b/image1/v23xugvxlygzlh4h35t0', 0, '2025-08-19 08:41:13', '2025-08-19 08:42:11'),
+(18, 5, 'image2', 'https://res.cloudinary.com/otienobryan/image/upload/v1755592868/experiences/exp_b69a5a63-050d-4d6e-9849-f236efc74d7a/image2/k7asyixidq3j9nprglrc.webp', 'experiences/exp_b69a5a63-050d-4d6e-9849-f236efc74d7a/image2/k7asyixidq3j9nprglrc', 1, '2025-08-19 08:41:13', '2025-08-19 08:41:13'),
+(19, 5, 'image3', 'https://res.cloudinary.com/otienobryan/image/upload/v1755592929/experiences/exp_f584432b-d54e-40c3-9120-a44b53f8706b/image3/fl0wcsnqefsmhtqkz8ji.webp', 'experiences/exp_f584432b-d54e-40c3-9120-a44b53f8706b/image3/fl0wcsnqefsmhtqkz8ji', 2, '2025-08-19 08:41:13', '2025-08-19 08:42:11'),
+(20, 5, 'image4', 'https://res.cloudinary.com/otienobryan/image/upload/v1755592871/experiences/exp_b69a5a63-050d-4d6e-9849-f236efc74d7a/image4/nibjogx0qbsouib4tyk7.webp', 'experiences/exp_b69a5a63-050d-4d6e-9849-f236efc74d7a/image4/nibjogx0qbsouib4tyk7', 3, '2025-08-19 08:41:13', '2025-08-19 08:41:13');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `experience_schedules`
+--
+
+CREATE TABLE `experience_schedules` (
+  `id` int(11) NOT NULL,
+  `experienceId` int(11) NOT NULL,
+  `companyId` int(11) NOT NULL,
+  `aircraftId` int(11) DEFAULT NULL,
+  `startTime` datetime NOT NULL,
+  `endTime` datetime DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL COMMENT 'Experience price',
+  `priceUnit` enum('per_person','per_group','per_hour','per_flight') DEFAULT 'per_person',
+  `durationMinutes` int(11) NOT NULL COMMENT 'Total experience duration in minutes',
+  `seatsAvailable` int(11) NOT NULL COMMENT 'Number of seats available',
+  `status` enum('scheduled','cancelled','completed') NOT NULL DEFAULT 'scheduled',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `experience_schedules`
+--
+
+INSERT INTO `experience_schedules` (`id`, `experienceId`, `companyId`, `aircraftId`, `startTime`, `endTime`, `price`, `priceUnit`, `durationMinutes`, `seatsAvailable`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 2, 11, 5, '2025-08-20 06:00:00', '2025-08-20 08:00:00', 250.00, 'per_person', 120, 12, 'scheduled', '2025-08-18 08:18:39', '2025-08-18 08:18:39'),
+(2, 2, 11, 12, '2025-08-11 11:20:00', '2025-08-11 13:20:00', 400.00, 'per_person', 300, 4, 'scheduled', '2025-08-18 11:20:57', '2025-08-18 11:20:57'),
+(3, 3, 11, 12, '2025-08-23 14:25:00', '2025-08-23 13:25:00', 200.00, 'per_person', 120, 4, 'scheduled', '2025-08-18 11:25:59', '2025-08-18 11:25:59'),
+(4, 4, 11, 10, '2025-08-22 11:42:00', '2025-08-22 10:42:00', 800.00, 'per_group', 120, 6, 'scheduled', '2025-08-19 08:43:45', '2025-08-19 08:43:45'),
+(5, 2, 11, 12, '2025-08-27 11:18:00', '2025-08-27 10:18:00', 200.00, 'per_group', 120, 5, 'scheduled', '2025-08-20 08:18:56', '2025-08-20 08:18:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `experience_templates`
+--
+
+CREATE TABLE `experience_templates` (
+  `id` int(11) NOT NULL,
+  `companyId` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL COMMENT 'Experience title',
+  `description` text NOT NULL COMMENT 'Experience description',
+  `country` varchar(100) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `locationName` varchar(150) DEFAULT NULL COMMENT 'E.g., Maasai Mara National Reserve, Diani Beach, Wilson Airport',
+  `isActive` tinyint(1) NOT NULL DEFAULT 1,
+  `termsConditions` text DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `experience_templates`
+--
+
+INSERT INTO `experience_templates` (`id`, `companyId`, `title`, `description`, `country`, `city`, `locationName`, `isActive`, `termsConditions`, `createdAt`, `updatedAt`) VALUES
+(2, 11, 'Nairobi Skyline Helicopter Tour', '15-minute helicopter ride over Nairobi\'s most iconic landmarks including the CBD, KICC, and Nairobi National Park.', 'Kenya', 'Nairobi', 'Nairobi city', 1, 'Maximum weight per passenger: 120kg. Children under 5 not permitted. Flights subject to weather conditions. 24-hour cancellation policy.', '2025-08-18 07:26:28', '2025-08-19 08:53:43'),
+(3, 11, 'Mount Kenya Scenic Helicopter Flight', 'Enjoy a breathtaking aerial tour around Mount Kenya, Africa\'s second-highest peak. Witness glaciers, alpine lakes, and wildlife from the comfort of a private helicopter.', 'Kenya', 'Nanyuki', 'Mount Kenya National Park', 1, 'Flights are subject to weather conditions. Passengers must carry valid identification.', '2025-08-18 11:24:54', '2025-08-18 11:56:59'),
+(4, 11, 'Lake Turkana Helicopter Adventure', 'Soar over Kenya’s wild north and witness the breathtaking Jade Sea from above. This exclusive helicopter safari takes you across volcanic landscapes, crocodile-infested Central Island, and the surreal desert beauty of Lake Turkana. Perfect for thrill-seekers and photographers.', 'Kenya', 'Marsabit', 'Lake Turkana & Central Island', 1, 'Subject to weather conditions. Minimum booking of 2 passengers.', '2025-08-19 06:55:34', '2025-08-19 06:55:34'),
+(5, 11, 'Helicopter Safari over Maasai Mara', 'Experience the breathtaking Maasai Mara from the sky. Fly over vast savannahs, witness the Great Migration, and land at secluded spots inaccessible by road. Perfect for wildlife photography and a unique safari adventure.', 'Kenya', 'Narok', 'Maasai Mara', 1, 'Flights are subject to weather conditions. Minimum of 2 passengers per booking. Children under 12 must be accompanied by an adult. Wildlife sightings cannot be guaranteed.', '2025-08-19 08:41:13', '2025-08-19 08:41:13');
 
 -- --------------------------------------------------------
 
@@ -1448,7 +1569,11 @@ INSERT INTO `passengers` (`id`, `booking_id`, `first_name`, `last_name`, `age`, 
 (39, 'BK-17JUL25-144932-03109', 'Test', 'User', 28, 'Kenyan', '326272', '2025-07-17 11:49:30', 0),
 (40, 'BK-24JUL25-190952-RM401', 'Benjamin', 'Okwama', NULL, NULL, NULL, '2025-07-24 16:09:52', 0),
 (41, 'BK-20250806-112505-GVL', 'Benjamin', 'Okwama', 25, 'Kenyan', 'N/A', '2025-08-06 08:25:05', 1),
-(42, 'BK-06AUG25-121530-86I01', 'Benjamin', 'Okwama', NULL, NULL, NULL, '2025-08-06 09:15:30', 0);
+(42, 'BK-06AUG25-121530-86I01', 'Benjamin', 'Okwama', NULL, NULL, NULL, '2025-08-06 09:15:30', 0),
+(43, 'BK-17AUG25-103805-ZM501', 'Benjamin', 'Okwama', NULL, NULL, NULL, '2025-08-17 07:38:05', 0),
+(44, 'BK-18AUG25-125816-JWO01', 'Benjamin', 'Okwama', NULL, NULL, NULL, '2025-08-18 09:58:17', 0),
+(45, 'BK-18AUG25-135311-SFG03', 'John', 'Doe', 35, 'US', 'US123456789', '2025-08-18 10:53:12', 0),
+(46, 'BK-18AUG25-170152-BMN02', 'John', 'Doe', 35, 'US', 'US123456789', '2025-08-18 14:01:53', 0);
 
 -- --------------------------------------------------------
 
@@ -1501,7 +1626,13 @@ CREATE TABLE `pilots` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `idNumber` varchar(255) NOT NULL,
-  `license` varchar(255) NOT NULL,
+  `licenseNumber` varchar(255) NOT NULL,
+  `licenseExpiry` datetime NOT NULL,
+  `medicalExpiry` datetime NOT NULL,
+  `licenseDocumentUrl` varchar(255) DEFAULT NULL,
+  `licenseDocumentPublicId` varchar(255) DEFAULT NULL,
+  `medicalDocumentUrl` varchar(255) DEFAULT NULL,
+  `medicalDocumentPublicId` varchar(255) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(255) NOT NULL,
   `imageUrl` varchar(255) DEFAULT NULL,
@@ -1516,21 +1647,63 @@ CREATE TABLE `pilots` (
 -- Dumping data for table `pilots`
 --
 
-INSERT INTO `pilots` (`id`, `name`, `idNumber`, `license`, `email`, `phone`, `imageUrl`, `rate`, `imagePublicId`, `companyId`, `createdAt`, `updatedAt`) VALUES
-(7, 'Jimmy Kamau', '46464646', 'License33', 'a@b.c', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752584025/charter_pilots_images/i62par3ld8ca5cbghl27.webp', 70, 'charter_pilots_images/i62par3ld8ca5cbghl27', 9, '2025-07-15 12:53:44', '2025-07-15 12:53:44'),
-(8, 'Omondi Njue', '33874296', '44eyeh', 'ab@gmail.com', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752589348/charter_pilots_images/im0tftgku2xt6pp0ibdr.jpg', 100, 'charter_pilots_images/im0tftgku2xt6pp0ibdr', 9, '2025-07-15 14:22:27', '2025-07-16 06:13:37'),
-(9, 'John Otieno', '23156872', 'KCAA/HPL/065198', 'john.otieno@rotorlink.co.ke', '+254733112233', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734792/aib_pilots_images/hkxgkmszvc7ajv49gbxh.jpg', 300, 'aib_pilots_images/hkxgkmszvc7ajv49gbxh', 11, '2025-07-17 06:38:13', '2025-07-17 11:04:06'),
-(10, 'Faith Korir', '30587914', 'KCAA/HPL/091522', 'faith.korir@heliservice.co.ke', '+254710556677', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734560/charter_pilots_images/uwec8m2kape7rjdguptq.webp', 450, 'charter_pilots_images/uwec8m2kape7rjdguptq', 11, '2025-07-17 06:42:39', '2025-07-17 11:03:43'),
-(11, 'Aisha Njeri', '29765431', 'KCAA/HPL/082174', 'aisha.njeri@skyrotors.co.ke', '+254721987654', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734730/charter_pilots_images/uyhxcqxo737uwlgqoduq.webp', 250, 'charter_pilots_images/uyhxcqxo737uwlgqoduq', 11, '2025-07-17 06:45:29', '2025-07-17 06:45:29'),
-(12, 'Daniel Mwangi', '24578146', 'KCAA/HPL/073256', 'daniel.m@heliaviation.co.ke', '+254712345678', 'https://res.cloudinary.com/otienobryan/image/upload/v1752735492/aib_pilots_images/ycszrwqpmygbwf8zwrj6.jpg', 150, 'aib_pilots_images/ycszrwqpmygbwf8zwrj6', 11, '2025-07-17 06:48:19', '2025-07-18 13:22:51'),
-(13, 'Jimmy Kamau', '46464646', 'License33', 'a@b.c', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752584025/charter_pilots_images/i62par3ld8ca5cbghl27.webp', 70, 'charter_pilots_images/i62par3ld8ca5cbghl27', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
-(14, 'Omondi Njue', '33874296', '44eyeh', 'ab@gmail.com', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752589348/charter_pilots_images/im0tftgku2xt6pp0ibdr.jpg', 100, 'charter_pilots_images/im0tftgku2xt6pp0ibdr', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
-(15, 'John Otieno', '23156872', 'KCAA/HPL/065198', 'john.otieno@rotorlink.co.ke', '+254733112233', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734792/aib_pilots_images/hkxgkmszvc7ajv49gbxh.jpg', 300, 'aib_pilots_images/hkxgkmszvc7ajv49gbxh', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
-(16, 'Faith Korir', '30587914', 'KCAA/HPL/091522', 'faith.korir@heliservice.co.ke', '+254710556677', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734560/charter_pilots_images/uwec8m2kape7rjdguptq.webp', 450, 'charter_pilots_images/uwec8m2kape7rjdguptq', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
-(17, 'Aisha Njeri', '29765431', 'KCAA/HPL/082174', 'aisha.njeri@skyrotors.co.ke', '+254721987654', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734730/charter_pilots_images/uyhxcqxo737uwlgqoduq.webp', 250, 'charter_pilots_images/uyhxcqxo737uwlgqoduq', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
-(18, 'Daniel Mwangi', '24578146', 'KCAA/HPL/073256', 'daniel.m@heliaviation.co.ke', '+254712345678', 'https://res.cloudinary.com/otienobryan/image/upload/v1752735492/aib_pilots_images/ycszrwqpmygbwf8zwrj6.jpg', 150, 'aib_pilots_images/ycszrwqpmygbwf8zwrj6', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
-(19, 'Jimmy karauri', '33874296ffff', 'DDGG474747', 'ab@cit.com', '0715647474', 'https://res.cloudinary.com/otienobryan/image/upload/v1754036586/charter_pilots_images/fo0vaf63gkw2d35cmdyc.jpg', 150, 'charter_pilots_images/fo0vaf63gkw2d35cmdyc', 11, '2025-08-01 08:23:07', '2025-08-01 08:23:07'),
-(20, 'peter', '272727272', 'AHFHDHD', 'peter@gmail.com', '0716266262', 'https://res.cloudinary.com/otienobryan/image/upload/v1754376044/charter_pilots_images/ajjm0ivaq7jlzwqdi2oj.jpg', 150, 'charter_pilots_images/ajjm0ivaq7jlzwqdi2oj', 12, '2025-08-05 06:40:44', '2025-08-05 06:40:44');
+INSERT INTO `pilots` (`id`, `name`, `idNumber`, `licenseNumber`, `licenseExpiry`, `medicalExpiry`, `licenseDocumentUrl`, `licenseDocumentPublicId`, `medicalDocumentUrl`, `medicalDocumentPublicId`, `email`, `phone`, `imageUrl`, `rate`, `imagePublicId`, `companyId`, `createdAt`, `updatedAt`) VALUES
+(7, 'Jimmy Kamau', '46464646', 'License33', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'a@b.c', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752584025/charter_pilots_images/i62par3ld8ca5cbghl27.webp', 70, 'charter_pilots_images/i62par3ld8ca5cbghl27', 9, '2025-07-15 12:53:44', '2025-08-20 10:19:10'),
+(8, 'Omondi Njue', '33874296', '44eyeh', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'ab@gmail.com', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752589348/charter_pilots_images/im0tftgku2xt6pp0ibdr.jpg', 100, 'charter_pilots_images/im0tftgku2xt6pp0ibdr', 9, '2025-07-15 14:22:27', '2025-07-16 06:13:37'),
+(9, 'John Otieno', '23156872', 'KCAA/HPL/065198', '2025-10-02 00:00:00', '2025-10-31 00:00:00', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755695051/pilot_documents/john_otieno/john_otieno_license.pdf', 'pilot_documents/john_otieno/john_otieno_license.pdf', NULL, NULL, 'john.otieno@rotorlink.co.ke', '+254733112233', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734792/aib_pilots_images/hkxgkmszvc7ajv49gbxh.jpg', 300, 'aib_pilots_images/hkxgkmszvc7ajv49gbxh', 11, '2025-07-17 06:38:13', '2025-08-20 13:04:10'),
+(10, 'Faith Korir', '30587914', 'KCAA/HPL/091522', '2025-08-14 00:00:00', '2025-08-22 00:00:00', NULL, NULL, NULL, NULL, 'faith.korir@heliservice.co.ke', '+254710556677', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734560/charter_pilots_images/uwec8m2kape7rjdguptq.webp', 450, 'charter_pilots_images/uwec8m2kape7rjdguptq', 11, '2025-07-17 06:42:39', '2025-08-20 12:39:06'),
+(11, 'Aisha Njeri', '29765431', 'KCAA/HPL/082174', '2025-08-22 00:00:00', '2025-08-21 00:00:00', NULL, NULL, NULL, NULL, 'aisha.njeri@skyrotors.co.ke', '+254721987654', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734730/charter_pilots_images/uyhxcqxo737uwlgqoduq.webp', 250, 'charter_pilots_images/uyhxcqxo737uwlgqoduq', 11, '2025-07-17 06:45:29', '2025-08-20 12:38:50'),
+(12, 'Daniel Mwangi', '24578146', 'KCAA/HPL/073256', '2025-08-23 00:00:00', '2025-08-22 00:00:00', NULL, NULL, NULL, NULL, 'daniel.m@heliaviation.co.ke', '+254712345678', 'https://res.cloudinary.com/otienobryan/image/upload/v1752735492/aib_pilots_images/ycszrwqpmygbwf8zwrj6.jpg', 150, 'aib_pilots_images/ycszrwqpmygbwf8zwrj6', 11, '2025-07-17 06:48:19', '2025-08-20 12:38:31'),
+(13, 'Jimmy Kamau', '46464646', 'License33', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'a@b.c', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752584025/charter_pilots_images/i62par3ld8ca5cbghl27.webp', 70, 'charter_pilots_images/i62par3ld8ca5cbghl27', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
+(14, 'Omondi Njue', '33874296', '44eyeh', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'ab@gmail.com', '0714584667', 'https://res.cloudinary.com/otienobryan/image/upload/v1752589348/charter_pilots_images/im0tftgku2xt6pp0ibdr.jpg', 100, 'charter_pilots_images/im0tftgku2xt6pp0ibdr', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
+(15, 'John Otieno', '23156872', 'KCAA/HPL/065198', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'john.otieno@rotorlink.co.ke', '+254733112233', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734792/aib_pilots_images/hkxgkmszvc7ajv49gbxh.jpg', 300, 'aib_pilots_images/hkxgkmszvc7ajv49gbxh', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
+(16, 'Faith Korir', '30587914', 'KCAA/HPL/091522', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'faith.korir@heliservice.co.ke', '+254710556677', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734560/charter_pilots_images/uwec8m2kape7rjdguptq.webp', 450, 'charter_pilots_images/uwec8m2kape7rjdguptq', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
+(17, 'Aisha Njeri', '29765431', 'KCAA/HPL/082174', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'aisha.njeri@skyrotors.co.ke', '+254721987654', 'https://res.cloudinary.com/otienobryan/image/upload/v1752734730/charter_pilots_images/uyhxcqxo737uwlgqoduq.webp', 250, 'charter_pilots_images/uyhxcqxo737uwlgqoduq', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
+(18, 'Daniel Mwangi', '24578146', 'KCAA/HPL/073256', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'daniel.m@heliaviation.co.ke', '+254712345678', 'https://res.cloudinary.com/otienobryan/image/upload/v1752735492/aib_pilots_images/ycszrwqpmygbwf8zwrj6.jpg', 150, 'aib_pilots_images/ycszrwqpmygbwf8zwrj6', 5, '2025-07-24 09:45:42', '2025-07-24 09:45:42'),
+(19, 'Jimmy karauri', '33874296ffff', 'DDGG474747', '2025-08-14 00:00:00', '2025-08-06 00:00:00', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755688932/pilot_documents/jimmy_karauri/jimmy_karauri_license.pdf', 'pilot_documents/jimmy_karauri/jimmy_karauri_license.pdf', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755688981/pilot_documents/jimmy_karauri/jimmy_karauri_medical.pdf', 'pilot_documents/jimmy_karauri/jimmy_karauri_medical.pdf', 'ab@cit.com', '0715647474', 'https://res.cloudinary.com/otienobryan/image/upload/v1754036586/charter_pilots_images/fo0vaf63gkw2d35cmdyc.jpg', 150, 'charter_pilots_images/fo0vaf63gkw2d35cmdyc', 11, '2025-08-01 08:23:07', '2025-08-20 12:32:34'),
+(20, 'peter', '272727272', 'AHFHDHD', '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, NULL, NULL, NULL, 'peter@gmail.com', '0716266262', 'https://res.cloudinary.com/otienobryan/image/upload/v1754376044/charter_pilots_images/ajjm0ivaq7jlzwqdi2oj.jpg', 150, 'charter_pilots_images/ajjm0ivaq7jlzwqdi2oj', 12, '2025-08-05 06:40:44', '2025-08-05 06:40:44'),
+(21, 'kamau Njoroge', '4464646', 'KCA/777/YY', '2025-08-30 00:00:00', '2025-08-20 00:00:00', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755766571/pilot_documents/kamau_njoroge/kamau_njoroge_license.pdf', 'pilot_documents/kamau_njoroge/kamau_njoroge_license.pdf', 'https://res.cloudinary.com/otienobryan/raw/upload/v1755691583/pilot_documents/kamau/kamau_medical.pdf', 'pilot_documents/kamau/kamau_medical.pdf', 'ab@gmail.com', '07146464', 'https://res.cloudinary.com/otienobryan/image/upload/v1755693468/aib_pilots_images/ekycswybzihtjwxx9kjp.webp', 150, 'aib_pilots_images/ekycswybzihtjwxx9kjp', 11, '2025-08-20 12:05:33', '2025-08-21 08:56:11');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaction_ledger`
+--
+
+CREATE TABLE `transaction_ledger` (
+  `id` int(11) NOT NULL,
+  `transactionId` varchar(255) NOT NULL,
+  `parentTransactionId` varchar(255) DEFAULT NULL,
+  `companyId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `bookingId` varchar(255) DEFAULT NULL,
+  `transactionType` enum('payment_received','platform_fee','company_payout','refund','chargeback','adjustment','transfer') NOT NULL,
+  `paymentProvider` enum('stripe','mpesa','paypal','bank_transfer') NOT NULL,
+  `providerTransactionId` varchar(255) DEFAULT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `currency` enum('USD','KES','EUR','GBP') NOT NULL DEFAULT 'USD',
+  `exchangeRate` decimal(10,6) NOT NULL DEFAULT 1.000000,
+  `baseAmount` decimal(15,2) NOT NULL,
+  `fee` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `tax` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `netAmount` decimal(15,2) NOT NULL,
+  `status` enum('pending','processing','completed','failed','cancelled','reversed') NOT NULL DEFAULT 'pending',
+  `description` text DEFAULT NULL,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
+  `providerMetadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`providerMetadata`)),
+  `errorMessage` text DEFAULT NULL,
+  `processedAt` datetime DEFAULT NULL,
+  `settledAt` datetime DEFAULT NULL,
+  `reversedAt` datetime DEFAULT NULL,
+  `reversalReason` text DEFAULT NULL,
+  `ipAddress` varchar(45) DEFAULT NULL,
+  `userAgent` text DEFAULT NULL,
+  `isReconciled` tinyint(1) NOT NULL DEFAULT 0,
+  `reconciledAt` datetime DEFAULT NULL,
+  `reconciliationNotes` text DEFAULT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1899,7 +2072,14 @@ ALTER TABLE `agent_details`
 --
 ALTER TABLE `aircrafts`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `IDX_f07333b2229059cc039b6bc2c8` (`registrationNumber`);
+  ADD UNIQUE KEY `IDX_f07333b2229059cc039b6bc2c8` (`registrationNumber`),
+  ADD KEY `idx_aircrafts_company_id` (`companyId`),
+  ADD KEY `idx_aircrafts_type` (`type`),
+  ADD KEY `idx_aircrafts_is_available` (`isAvailable`),
+  ADD KEY `idx_aircrafts_maintenance_status` (`maintenanceStatus`),
+  ADD KEY `idx_aircrafts_available_maintenance` (`isAvailable`,`maintenanceStatus`),
+  ADD KEY `idx_aircrafts_type_available` (`type`,`isAvailable`),
+  ADD KEY `idx_aircrafts_complete` (`companyId`,`type`,`isAvailable`,`maintenanceStatus`);
 
 --
 -- Indexes for table `aircraft_amenities`
@@ -1926,7 +2106,8 @@ ALTER TABLE `aircraft_calendar`
 --
 ALTER TABLE `aircraft_images`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `aircraftId` (`aircraftId`);
+  ADD KEY `aircraftId` (`aircraftId`),
+  ADD KEY `idx_aircraft_images_aircraft_id` (`aircraftId`);
 
 --
 -- Indexes for table `aircraft_type_image_placeholders`
@@ -1986,17 +2167,24 @@ ALTER TABLE `charters_admins`
 -- Indexes for table `charters_companies`
 --
 ALTER TABLE `charters_companies`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_charters_companies_status` (`status`),
+  ADD KEY `idx_charters_companies_name` (`companyName`);
 
 --
 -- Indexes for table `charter_deals`
 --
 ALTER TABLE `charter_deals`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `companyId` (`companyId`),
-  ADD KEY `aircraftId` (`aircraftId`),
   ADD KEY `pilotId` (`pilotId`),
-  ADD KEY `fixedRouteId` (`fixedRouteId`);
+  ADD KEY `fixedRouteId` (`fixedRouteId`),
+  ADD KEY `idx_charter_deals_company_id` (`companyId`),
+  ADD KEY `idx_charter_deals_aircraft_id` (`aircraftId`),
+  ADD KEY `idx_charter_deals_date` (`date`),
+  ADD KEY `idx_charter_deals_origin_destination` (`originName`,`destinationName`),
+  ADD KEY `idx_charter_deals_company_date` (`companyId`,`date`),
+  ADD KEY `idx_charter_deals_aircraft_date` (`aircraftId`,`date`),
+  ADD KEY `idx_charter_deals_complete` (`companyId`,`aircraftId`,`date`,`availableSeats`);
 
 --
 -- Indexes for table `charter_deal_amenities`
@@ -2007,9 +2195,44 @@ ALTER TABLE `charter_deal_amenities`
   ADD KEY `amenityId` (`amenityId`);
 
 --
+-- Indexes for table `company_payment_accounts`
+--
+ALTER TABLE `company_payment_accounts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_account_id` (`accountId`),
+  ADD KEY `idx_company_provider` (`companyId`,`paymentProvider`),
+  ADD KEY `idx_account_status` (`accountStatus`),
+  ADD KEY `idx_is_active` (`isActive`),
+  ADD KEY `idx_company_payment_accounts_created_at` (`createdAt`),
+  ADD KEY `idx_company_payment_accounts_updated_at` (`updatedAt`);
+
+--
 -- Indexes for table `drivers`
 --
 ALTER TABLE `drivers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `companyId` (`companyId`);
+
+--
+-- Indexes for table `experience_images`
+--
+ALTER TABLE `experience_images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `experienceId` (`experienceId`);
+
+--
+-- Indexes for table `experience_schedules`
+--
+ALTER TABLE `experience_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `experienceId` (`experienceId`),
+  ADD KEY `companyId` (`companyId`),
+  ADD KEY `aircraftId` (`aircraftId`);
+
+--
+-- Indexes for table `experience_templates`
+--
+ALTER TABLE `experience_templates`
   ADD PRIMARY KEY (`id`),
   ADD KEY `companyId` (`companyId`);
 
@@ -2065,6 +2288,29 @@ ALTER TABLE `payments`
 ALTER TABLE `pilots`
   ADD PRIMARY KEY (`id`),
   ADD KEY `companyId` (`companyId`);
+
+--
+-- Indexes for table `transaction_ledger`
+--
+ALTER TABLE `transaction_ledger`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_transaction_id` (`transactionId`),
+  ADD KEY `idx_parent_transaction` (`parentTransactionId`),
+  ADD KEY `idx_company_created` (`companyId`,`createdAt`),
+  ADD KEY `idx_provider_created` (`paymentProvider`,`createdAt`),
+  ADD KEY `idx_type_created` (`transactionType`,`createdAt`),
+  ADD KEY `idx_status_created` (`status`,`createdAt`),
+  ADD KEY `idx_booking_id` (`bookingId`),
+  ADD KEY `idx_user_id` (`userId`),
+  ADD KEY `idx_provider_transaction` (`paymentProvider`,`providerTransactionId`),
+  ADD KEY `idx_created_at` (`createdAt`),
+  ADD KEY `idx_updated_at` (`updatedAt`),
+  ADD KEY `idx_reconciled` (`isReconciled`),
+  ADD KEY `idx_transaction_ledger_amount` (`amount`),
+  ADD KEY `idx_transaction_ledger_currency` (`currency`),
+  ADD KEY `idx_transaction_ledger_base_amount` (`baseAmount`),
+  ADD KEY `idx_transaction_ledger_processed_at` (`processedAt`),
+  ADD KEY `idx_transaction_ledger_settled_at` (`settledAt`);
 
 --
 -- Indexes for table `users`
@@ -2157,7 +2403,7 @@ ALTER TABLE `wallet_transactions`
 -- AUTO_INCREMENT for table `adminNotifications`
 --
 ALTER TABLE `adminNotifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=197;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
 
 --
 -- AUTO_INCREMENT for table `agent_details`
@@ -2169,13 +2415,13 @@ ALTER TABLE `agent_details`
 -- AUTO_INCREMENT for table `aircrafts`
 --
 ALTER TABLE `aircrafts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT for table `aircraft_amenities`
 --
 ALTER TABLE `aircraft_amenities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `aircraft_calendar`
@@ -2187,7 +2433,7 @@ ALTER TABLE `aircraft_calendar`
 -- AUTO_INCREMENT for table `aircraft_images`
 --
 ALTER TABLE `aircraft_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=369;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=389;
 
 --
 -- AUTO_INCREMENT for table `aircraft_type_image_placeholders`
@@ -2211,25 +2457,25 @@ ALTER TABLE `booking_inquiries`
 -- AUTO_INCREMENT for table `booking_timeline`
 --
 ALTER TABLE `booking_timeline`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `charters_admins`
 --
 ALTER TABLE `charters_admins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `charters_companies`
 --
 ALTER TABLE `charters_companies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `charter_deals`
 --
 ALTER TABLE `charter_deals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `charter_deal_amenities`
@@ -2238,10 +2484,34 @@ ALTER TABLE `charter_deal_amenities`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
 
 --
+-- AUTO_INCREMENT for table `company_payment_accounts`
+--
+ALTER TABLE `company_payment_accounts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `drivers`
 --
 ALTER TABLE `drivers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `experience_images`
+--
+ALTER TABLE `experience_images`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `experience_schedules`
+--
+ALTER TABLE `experience_schedules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `experience_templates`
+--
+ALTER TABLE `experience_templates`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `fixed_routes`
@@ -2265,13 +2535,19 @@ ALTER TABLE `locations`
 -- AUTO_INCREMENT for table `passengers`
 --
 ALTER TABLE `passengers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `pilots`
 --
 ALTER TABLE `pilots`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `transaction_ledger`
+--
+ALTER TABLE `transaction_ledger`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `vehicles`
@@ -2326,16 +2602,49 @@ ALTER TABLE `charter_deals`
   ADD CONSTRAINT `charter_deals_ibfk_4` FOREIGN KEY (`fixedRouteId`) REFERENCES `fixed_routes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
+-- Constraints for table `company_payment_accounts`
+--
+ALTER TABLE `company_payment_accounts`
+  ADD CONSTRAINT `fk_company_payment_accounts_company` FOREIGN KEY (`companyId`) REFERENCES `charters_companies` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `drivers`
 --
 ALTER TABLE `drivers`
   ADD CONSTRAINT `drivers_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `vehicle_companies` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `experience_images`
+--
+ALTER TABLE `experience_images`
+  ADD CONSTRAINT `experience_images_ibfk_1` FOREIGN KEY (`experienceId`) REFERENCES `experience_templates` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `experience_schedules`
+--
+ALTER TABLE `experience_schedules`
+  ADD CONSTRAINT `experience_schedules_ibfk_1` FOREIGN KEY (`experienceId`) REFERENCES `experience_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `experience_schedules_ibfk_2` FOREIGN KEY (`companyId`) REFERENCES `charters_companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `experience_schedules_ibfk_3` FOREIGN KEY (`aircraftId`) REFERENCES `aircrafts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `experience_templates`
+--
+ALTER TABLE `experience_templates`
+  ADD CONSTRAINT `experience_templates_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `charters_companies` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
 -- Constraints for table `inquiry_stops`
 --
 ALTER TABLE `inquiry_stops`
   ADD CONSTRAINT `inquiry_stops_ibfk_1` FOREIGN KEY (`bookingInquiryId`) REFERENCES `booking_inquiries` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `transaction_ledger`
+--
+ALTER TABLE `transaction_ledger`
+  ADD CONSTRAINT `fk_transaction_ledger_company` FOREIGN KEY (`companyId`) REFERENCES `charters_companies` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_transaction_ledger_parent` FOREIGN KEY (`parentTransactionId`) REFERENCES `transaction_ledger` (`transactionId`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `vehicles`

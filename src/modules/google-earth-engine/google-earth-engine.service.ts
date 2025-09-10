@@ -34,6 +34,12 @@ export class GoogleEarthEngineService {
         })
       );
 
+      // Handle different API response statuses gracefully
+      if (response.data.status === 'ZERO_RESULTS') {
+        // Return empty array instead of throwing error for no results
+        return [];
+      }
+
       if (response.data.status !== 'OK') {
         throw new HttpException(`Google Places API error: ${response.data.status}`, HttpStatus.BAD_REQUEST);
       }
