@@ -32,6 +32,12 @@ import { BookingStatus, PaymentStatus } from '../../common/entities/booking.enti
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
+  @Get('test-user/:userId')
+  @ApiOperation({ summary: 'Test if user exists in database' })
+  async testUser(@Param('userId') userId: string) {
+    return await this.bookingsService.testUserExists(userId);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new booking with passengers and payment intent' })
   @ApiResponse({
@@ -378,8 +384,8 @@ export class BookingsController {
         referenceNumber: booking.referenceNumber,
         bookingStatus: booking.bookingStatus,
         paymentStatus: booking.paymentStatus,
-        loyaltyPointsEarned: booking.loyaltyPointsEarned,
-        paymentTransactionId: booking.paymentTransactionId,
+        // loyaltyPointsEarned: booking.loyaltyPointsEarned, // Not in database
+        // paymentTransactionId: booking.paymentTransactionId, // Not in database
       },
     };
   }

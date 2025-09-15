@@ -31,4 +31,9 @@ export class SearchDirectCharterDto {
   @ApiProperty({ description: 'Trip type', enum: ['oneway', 'roundtrip'], default: 'oneway' })
   @IsString()
   tripType: 'oneway' | 'roundtrip' = 'oneway';
+
+  @ApiProperty({ description: 'Aircraft type image placeholder ID for filtering', required: false })
+  @IsOptional()
+  @IsInt()
+  aircraftTypeImagePlaceholderId?: number;
 } 

@@ -55,7 +55,7 @@ export class TransactionLedger {
   @Column({ name: 'userId', type: 'int', nullable: true })
   userId: number; // User who initiated the transaction
 
-  @Column({ name: 'bookingId', type: 'varchar', length: 255, nullable: true })
+  @Column({ name: 'bookingId', nullable: true })
   bookingId: string; // Associated booking
 
   @Column({ name: 'transactionType', type: 'enum', enum: TransactionType })

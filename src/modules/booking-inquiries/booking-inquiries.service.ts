@@ -5,7 +5,7 @@ import { BookingInquiry, InquiryStatus, ProposedPriceType } from '../../common/e
 import { InquiryStop } from '../../common/entities/inquiry-stop.entity';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { User } from '../../common/entities/user.entity';
-import { Booking, BookingStatus, PaymentStatus, PaymentMethod } from '../../common/entities/booking.entity';
+import { Booking, BookingStatus, PaymentStatus, BookingType } from '../../common/entities/booking.entity';
 import { Payment } from '../../common/entities/payment.entity';
 import { CreateBookingInquiryDto } from './dto/create-booking-inquiry.dto';
 import { UpdateBookingInquiryDto } from './dto/update-booking-inquiry.dto';
@@ -181,7 +181,7 @@ export class BookingInquiriesService {
         paymentIntent = await this.paymentProviderService.createPaymentIntent({
           amount: inquiry.proposedPrice * 100, // Convert to cents
           currency: 'USD',
-          bookingId: booking.id,
+          bookingId: booking.id.toString(),
           userId: inquiry.userId,
           description: `Payment for inquiry ${inquiry.referenceNumber}`,
           metadata: {
@@ -227,19 +227,18 @@ export class BookingInquiriesService {
     const bookingId = `BK-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`;
     
     const booking = this.bookingRepository.create({
-      id: bookingId,
       userId: inquiry.userId,
-      dealId: 0, // No deal for inquiry-based bookings
-      company_id: inquiry.company_id,
+      dealId: null, // No deal for inquiry-based bookings
+      companyId: inquiry.company_id,
+      bookingType: BookingType.DIRECT,
       totalPrice: inquiry.proposedPrice || 0,
       onboardDining: inquiry.onboardDining,
-      groundTransportation: inquiry.groundTransportation,
-      billingRegion: inquiry.billingRegion,
-      paymentMethod: PaymentMethod.CARD,
+      referenceNumber: inquiry.referenceNumber,
       bookingStatus: BookingStatus.CONFIRMED,
       paymentStatus: PaymentStatus.PENDING,
-      referenceNumber: inquiry.referenceNumber,
       specialRequirements: inquiry.specialRequirements,
+      totalAdults: inquiry.requestedSeats,
+      totalChildren: 0,
     });
 
     return await this.bookingRepository.save(booking);

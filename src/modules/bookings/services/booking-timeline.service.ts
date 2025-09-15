@@ -25,7 +25,7 @@ export class BookingTimelineService {
     },
   ): Promise<BookingTimeline> {
     const timelineEvent = this.timelineRepository.create({
-      bookingId,
+      bookingId: parseInt(bookingId),
       eventType,
       title: data.title,
       description: data.description,

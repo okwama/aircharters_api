@@ -179,7 +179,7 @@ export class PassengersController {
     },
   })
   async findByBookingId(@Param('bookingId') bookingId: string) {
-    const passengers = await this.passengersService.findByBookingId(bookingId);
+    const passengers = await this.passengersService.findByBookingId(+bookingId);
     return {
       success: true,
       message: 'Passengers retrieved successfully',
@@ -243,6 +243,6 @@ export class PassengersController {
   @ApiParam({ name: 'bookingId', type: String, description: 'Booking ID' })
   @ApiResponse({ status: 204, description: 'Passengers deleted successfully' })
   async removeByBookingId(@Param('bookingId') bookingId: string) {
-    await this.passengersService.removeByBookingId(bookingId);
+    await this.passengersService.removeByBookingId(+bookingId);
   }
 } 

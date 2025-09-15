@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { Booking } from './booking.entity';
 
-@Entity('passengers')
+@Entity('charter_passengers')
 export class Passenger {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'booking_id', type: 'varchar', length: 255 })
+  @Column({ name: 'booking_id', type: 'int' })
   @Index()
-  booking_id: string;
+  booking_id: number;
 
   @Column({ name: 'first_name', type: 'varchar', length: 100 })
   first_name: string;

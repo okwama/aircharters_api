@@ -16,6 +16,7 @@ export interface PaymentIntentResponse {
   paymentMethod?: string;
   requiresAction?: boolean;
   nextAction?: any;
+  metadata?: Record<string, any>;
 }
 
 export interface PaymentConfirmationRequest {
@@ -63,6 +64,7 @@ export interface PaymentProvider {
 export enum PaymentProviderType {
   STRIPE = 'stripe',
   MPESA = 'mpesa',
+  PAYSTACK = 'paystack',
   PAYPAL = 'paypal',
   FLUTTERWAVE = 'flutterwave',
 } 

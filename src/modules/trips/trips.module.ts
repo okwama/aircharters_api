@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TripsController } from './trips.controller';
 import { TripsService } from './trips.service';
+import { TripSchedulerService } from './trip-scheduler.service';
 import { UserTrip } from '../../common/entities/user-trips.entity';
 import { Booking } from '../../common/entities/booking.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
@@ -19,7 +20,7 @@ import { Aircraft } from '../../common/entities/aircraft.entity';
     ]),
   ],
   controllers: [TripsController],
-  providers: [TripsService],
-  exports: [TripsService],
+  providers: [TripsService, TripSchedulerService],
+  exports: [TripsService, TripSchedulerService],
 })
 export class TripsModule {} 

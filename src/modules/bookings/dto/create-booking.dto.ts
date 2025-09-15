@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaymentMethod } from '../../../common/entities/booking.entity';
+// import { PaymentMethod } from '../../../common/entities/booking.entity'; // Not in database
 
 export class PassengerDataDto {
   @ApiProperty()
@@ -41,7 +41,11 @@ export class PassengerDataDto {
   @IsOptional()
   @IsString()
   idPassportNumber?: string;
-  isUser: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isUser?: boolean;
 }
 
 export class CreateBookingDto {
@@ -59,10 +63,7 @@ export class CreateBookingDto {
   @IsBoolean()
   onboardDining?: boolean;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  groundTransportation?: boolean;
+  // Removed groundTransportation - not in database schema
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -74,10 +75,10 @@ export class CreateBookingDto {
   @IsString()
   billingRegion?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsEnum(PaymentMethod)
-  paymentMethod?: PaymentMethod;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsEnum(PaymentMethod)
+  // paymentMethod?: PaymentMethod; // Not in database
 
   @ApiPropertyOptional({ 
     type: [PassengerDataDto],
@@ -88,5 +89,4 @@ export class CreateBookingDto {
   @ValidateNested({ each: true })
   @Type(() => PassengerDataDto)
   passengers?: PassengerDataDto[];
-  companyId: number;
 } 

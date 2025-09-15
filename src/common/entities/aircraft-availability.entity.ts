@@ -21,7 +21,7 @@ export class AircraftAvailability {
   @Column({ name: 'company_id', type: 'int' })
   companyId: number;
 
-  @Column({ name: 'booking_id', type: 'varchar', length: 255, nullable: true })
+  @Column({ name: 'booking_id', nullable: true })
   bookingId: string;
 
   @Column({ 

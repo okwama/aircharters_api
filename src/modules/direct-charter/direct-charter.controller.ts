@@ -1,5 +1,5 @@
-import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Post, Body, UseGuards, Request, Get, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { DirectCharterService } from './direct-charter.service';
 import { SearchDirectCharterDto } from './dto/search-direct-charter.dto';
@@ -62,6 +62,54 @@ export class DirectCharterController {
         success: false,
         message: error.message || 'Failed to book direct charter',
         data: null,
+      };
+    }
+  }
+
+  @Get('aircraft-types')
+  @ApiOperation({ summary: 'Get all aircraft type placeholders' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns list of aircraft type placeholders with images' 
+  })
+  async getAircraftTypes() {
+    try {
+      const aircraftTypes = await this.directCharterService.getAircraftTypes();
+      return {
+        success: true,
+        data: aircraftTypes,
+        message: `Found ${aircraftTypes.length} aircraft types`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || 'Failed to fetch aircraft types',
+        data: [],
+      };
+    }
+  }
+
+  @Get('aircraft')
+  @ApiOperation({ summary: 'Get available aircraft by type' })
+  @ApiQuery({ name: 'typeId', required: false, description: 'Aircraft type ID to filter by' })
+  @ApiQuery({ name: 'userLocation', required: false, description: 'User location for flight duration calculation' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns available aircraft of specified type' 
+  })
+  async getAircraftByType(@Query('typeId') typeId?: number, @Query('userLocation') userLocation?: string) {
+    try {
+      const aircraft = await this.directCharterService.getAircraftByType(typeId, userLocation);
+      return {
+        success: true,
+        data: aircraft,
+        message: `Found ${aircraft.length} available aircraft`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || 'Failed to fetch aircraft',
+        data: [],
       };
     }
   }

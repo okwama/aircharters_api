@@ -217,10 +217,10 @@ export class BookingQueryService {
       id: booking.id,
       referenceNumber: booking.referenceNumber,
       totalPrice: booking.totalPrice,
-      loyaltyPointsEarned: booking.loyaltyPointsEarned,
-      loyaltyPointsRedeemed: booking.loyaltyPointsRedeemed,
-      walletAmountUsed: booking.walletAmountUsed,
-      netAmount: booking.totalPrice - booking.walletAmountUsed,
+      // loyaltyPointsEarned: booking.loyaltyPointsEarned, // Not in database
+      // loyaltyPointsRedeemed: booking.loyaltyPointsRedeemed, // Not in database
+      // walletAmountUsed: booking.walletAmountUsed, // Not in database
+      netAmount: booking.totalPrice, // Simplified without wallet amount
       company: booking.company,
       deal: booking.deal,
       passengers: booking.passengers,

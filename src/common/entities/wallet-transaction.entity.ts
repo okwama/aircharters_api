@@ -30,7 +30,7 @@ export class WalletTransaction {
   @Column({ name: 'user_id', type: 'varchar', length: 255 })
   userId: string;
 
-  @Column({ name: 'booking_id', type: 'varchar', length: 255, nullable: true })
+  @Column({ name: 'booking_id', nullable: true })
   bookingId?: string;
 
   @Column({ name: 'transaction_type', type: 'enum', enum: WalletTransactionType })

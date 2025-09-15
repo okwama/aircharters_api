@@ -8,25 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // Enable CORS
+  // Enable CORS - Allow all origins
   app.enableCors({
-    origin: [
-      '*',
-      'http://localhost:3000',
-      'http://localhost:8080',
-      'http://localhost:4200',
-      'http://localhost:60812',
-      'http://localhost:63596', // Added for Flutter web development
-      'http://192.168.100.2:3000',
-      'http://192.168.100.2:8080',
-      'http://192.168.100.2:4200',
-      'http://192.168.100.2:60812',
-      'http://192.168.100.10:63596',
-      'http://192.168.100.10:5000',
-      'capacitor://localhost',
-      'ionic://localhost',
-    ],
+    origin: true, // Allow all origins
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   });
 
   // Global prefix

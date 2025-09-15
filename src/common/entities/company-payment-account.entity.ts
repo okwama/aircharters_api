@@ -4,6 +4,7 @@ import { ChartersCompany } from './charters-company.entity';
 export enum PaymentProvider {
   STRIPE = 'stripe',
   MPESA = 'mpesa',
+  PAYSTACK = 'paystack',
 }
 
 export enum AccountStatus {
@@ -80,6 +81,10 @@ export class CompanyPaymentAccount {
 
   @Column({ name: 'metadata', type: 'json', nullable: true })
   metadata: any; // Additional provider-specific data
+
+  // Paystack-specific field (MINIMAL APPROACH)
+  @Column({ name: 'paystackSubaccountId', type: 'varchar', length: 255, nullable: true })
+  paystackSubaccountId: string; // Paystack subaccount ID (e.g., ACCT_xxxxx)
 
   @Column({ name: 'isActive', type: 'boolean', default: true })
   isActive: boolean;

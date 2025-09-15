@@ -10,6 +10,7 @@ import {
 } from '../interfaces/payment-provider.interface';
 import { StripeProvider } from '../providers/stripe.provider';
 import { MpesaProvider } from '../providers/mpesa.provider';
+import { PaystackProvider } from '../providers/paystack.provider';
 
 @Injectable()
 export class PaymentProviderService {
@@ -20,15 +21,19 @@ export class PaymentProviderService {
     private configService: ConfigService,
     private stripeProvider: StripeProvider,
     private mpesaProvider: MpesaProvider,
+    private paystackProvider: PaystackProvider,
   ) {
     this.initializeProviders();
   }
 
   private initializeProviders() {
-    // Register Stripe provider
+    // Register Paystack provider as default
+    this.providers.set(PaymentProviderType.PAYSTACK, this.paystackProvider);
+    
+    // Register Stripe provider as fallback
     this.providers.set(PaymentProviderType.STRIPE, this.stripeProvider);
     
-    // Register M-Pesa provider
+    // Register M-Pesa provider as fallback
     this.providers.set(PaymentProviderType.MPESA, this.mpesaProvider);
     
     // Future providers can be added here
@@ -44,13 +49,13 @@ export class PaymentProviderService {
   }
 
   getDefaultProvider(): PaymentProvider {
-    // Default to Stripe for now
-    return this.getProvider(PaymentProviderType.STRIPE);
+    // Default to Paystack for new payments
+    return this.getProvider(PaymentProviderType.PAYSTACK);
   }
 
   async createPaymentIntent(
     request: PaymentIntentRequest,
-    providerType: PaymentProviderType = PaymentProviderType.STRIPE,
+    providerType: PaymentProviderType = PaymentProviderType.PAYSTACK,
   ): Promise<PaymentIntentResponse> {
     const provider = this.getProvider(providerType);
     
@@ -73,7 +78,7 @@ export class PaymentProviderService {
 
   async confirmPayment(
     request: PaymentConfirmationRequest,
-    providerType: PaymentProviderType = PaymentProviderType.STRIPE,
+    providerType: PaymentProviderType = PaymentProviderType.PAYSTACK,
   ): Promise<PaymentConfirmationResponse> {
     const provider = this.getProvider(providerType);
     
@@ -91,7 +96,7 @@ export class PaymentProviderService {
 
   async getPaymentStatus(
     paymentIntentId: string,
-    providerType: PaymentProviderType = PaymentProviderType.STRIPE,
+    providerType: PaymentProviderType = PaymentProviderType.PAYSTACK,
   ): Promise<PaymentConfirmationResponse> {
     const provider = this.getProvider(providerType);
     
@@ -109,7 +114,7 @@ export class PaymentProviderService {
     paymentIntentId: string,
     amount?: number,
     reason?: string,
-    providerType: PaymentProviderType = PaymentProviderType.STRIPE,
+    providerType: PaymentProviderType = PaymentProviderType.PAYSTACK,
   ): Promise<any> {
     const provider = this.getProvider(providerType);
     

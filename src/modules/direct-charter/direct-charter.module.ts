@@ -8,6 +8,7 @@ import { Booking } from '../../common/entities/booking.entity';
 import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { Passenger } from '../../common/entities/passenger.entity';
 import { Payment } from '../../common/entities/payment.entity';
+import { AircraftTypeImagePlaceholder } from '../../common/entities/aircraft-type-image-placeholder.entity';
 import { PaymentsModule } from '../payments/payments.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { PaymentsModule } from '../payments/payments.module';
       ChartersCompany,
       Passenger,
       Payment,
+      AircraftTypeImagePlaceholder,
     ]),
     PaymentsModule,
   ],

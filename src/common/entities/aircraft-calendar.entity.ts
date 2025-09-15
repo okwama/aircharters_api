@@ -35,7 +35,7 @@ export class AircraftCalendar {
   })
   eventType: CalendarEventType;
 
-  @Column({ name: 'bookingId', nullable: true, length: 255 })
+  @Column({ name: 'bookingId', nullable: true })
   bookingId?: string;
 
   @Column({ name: 'originAirport', nullable: true, length: 100 })

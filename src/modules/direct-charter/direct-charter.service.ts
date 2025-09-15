@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, DataSource, DeepPartial } from 'typeorm';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { AircraftCalendar, CalendarEventType } from '../../common/entities/aircraft-calendar.entity';
-import { Booking } from '../../common/entities/booking.entity';
+import { Booking, BookingType, BookingStatus, PaymentStatus } from '../../common/entities/booking.entity';
 import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { Passenger } from '../../common/entities/passenger.entity';
 import { User } from '../../common/entities/user.entity';
 import { Payment } from '../../common/entities/payment.entity';
+import { AircraftTypeImagePlaceholder } from '../../common/entities/aircraft-type-image-placeholder.entity';
 import { SearchDirectCharterDto } from './dto/search-direct-charter.dto';
 import { BookDirectCharterDto } from './dto/book-direct-charter.dto';
 import { PaymentProviderService } from '../payments/services/payment-provider.service';
@@ -28,25 +29,36 @@ export class DirectCharterService {
     private passengerRepository: Repository<Passenger>,
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+    @InjectRepository(AircraftTypeImagePlaceholder)
+    private aircraftTypeImagePlaceholderRepository: Repository<AircraftTypeImagePlaceholder>,
     private readonly dataSource: DataSource,
     private readonly paymentProviderService: PaymentProviderService,
   ) {}
 
   async searchAvailableAircraft(searchDto: SearchDirectCharterDto) {
-    const { origin, destination, departureDateTime, returnDateTime, passengerCount, tripType } = searchDto;
+    const { origin, destination, departureDateTime, returnDateTime, passengerCount, tripType, aircraftTypeImagePlaceholderId } = searchDto;
     
     const departureDate = new Date(departureDateTime);
     const returnDate = returnDateTime ? new Date(returnDateTime) : null;
 
     // Get all available aircraft that meet capacity requirements
-    const availableAircraft = await this.aircraftRepository
+    let query = this.aircraftRepository
       .createQueryBuilder('aircraft')
       .leftJoinAndSelect('aircraft.company', 'company')
       .leftJoinAndSelect('aircraft.images', 'images')
+      .leftJoinAndSelect('aircraft.aircraftTypeImagePlaceholder', 'aircraftType')
       .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
       .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
-      .andWhere('aircraft.capacity >= :passengerCount', { passengerCount })
-      .getMany();
+      .andWhere('aircraft.capacity >= :passengerCount', { passengerCount });
+
+    // Add aircraft type filter if provided
+    if (aircraftTypeImagePlaceholderId) {
+      query = query.andWhere('aircraft.aircraftTypeImagePlaceholderId = :aircraftTypeId', { 
+        aircraftTypeId: aircraftTypeImagePlaceholderId 
+      });
+    }
+
+    const availableAircraft = await query.getMany();
 
     const results = [];
 
@@ -239,24 +251,30 @@ export class DirectCharterService {
       const referenceNumber = `AC${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
 
       // Create booking - align with database schema
+      const now = new Date();
       const booking = this.bookingRepository.create({
-        id: bookingId,
-        userId: userId, // Already string type
-        dealId: 0, // Direct charter doesn't use deals, but field is required
-        company_id: aircraft.company?.id || 1, // Use correct field name with underscore
+        userId: userId,
+        dealId: null, // Direct charter doesn't use deals
+        companyId: aircraft.company?.id || 1,
+        aircraftId: bookDto.aircraftId, // Add aircraft ID for direct bookings
+        bookingType: BookingType.DIRECT,
         totalPrice: bookDto.totalPrice,
-        bookingStatus: 'pending', // Start as pending, will be confirmed after payment
-        paymentStatus: 'pending',
+        bookingStatus: BookingStatus.PENDING, // Start as pending, will be confirmed after payment
+        paymentStatus: PaymentStatus.PENDING,
         referenceNumber: referenceNumber,
         specialRequirements: bookDto.specialRequests,
-      } as DeepPartial<Booking>); // <-- concise fix
+        totalAdults: 1, // Default to 1 adult (the user)
+        totalChildren: 0,
+        createdAt: now, // Manually set timestamp
+        updatedAt: now, // Manually set timestamp
+      });
 
       const savedBookingArr = await queryRunner.manager.save(booking);
       const savedBooking = Array.isArray(savedBookingArr) ? savedBookingArr[0] : savedBookingArr;
 
       // Create passenger record for the user - align with database schema
       const passenger = this.passengerRepository.create({
-        booking_id: bookingId, // Use correct field name with underscore
+        booking_id: savedBooking.id, // Use number instead of string
         first_name: user.first_name || 'Direct Charter', // Use correct field name
         last_name: user.last_name || 'Passenger', // Use correct field name
         age: user.date_of_birth ? this.calculateAge(user.date_of_birth) : 25,
@@ -274,7 +292,7 @@ export class DirectCharterService {
         startDateTime: new Date(departureDateTime),
         endDateTime: returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime),
         eventType: CalendarEventType.BOOKED,
-        bookingId: savedBooking.id,
+        bookingId: savedBooking.id.toString(),
         originAirport: bookDto.origin,
         destinationAirport: bookDto.destination,
         passengerCount: bookDto.passengerCount,
@@ -293,11 +311,11 @@ export class DirectCharterService {
         paymentIntent = await this.paymentProviderService.createPaymentIntent({
           amount: bookDto.totalPrice,
           currency: 'USD',
-          bookingId: savedBooking.id,
+          bookingId: savedBooking.id.toString(),
           userId: userId,
           description: `Payment for direct charter booking ${referenceNumber}`,
           metadata: {
-            bookingId: savedBooking.id,
+            bookingId: savedBooking.id.toString(),
             referenceNumber: referenceNumber,
             dealId: 0, // Direct charter doesn't use deals
             company_id: aircraft.company?.id || 1,
@@ -351,6 +369,42 @@ export class DirectCharterService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getAircraftTypes() {
+    return await this.aircraftTypeImagePlaceholderRepository.find({
+      order: { type: 'ASC' }
+    });
+  }
+
+  async getAircraftByType(typeId?: number, userLocation?: string) {
+    let query = this.aircraftRepository
+      .createQueryBuilder('aircraft')
+      .leftJoinAndSelect('aircraft.company', 'company')
+      .leftJoinAndSelect('aircraft.images', 'images')
+      .leftJoinAndSelect('aircraft.aircraftTypeImagePlaceholder', 'aircraftType')
+      .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
+      .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' });
+
+    if (typeId) {
+      query = query.andWhere('aircraft.aircraftTypeImagePlaceholderId = :typeId', { typeId });
+    }
+
+    const aircraft = await query.getMany();
+
+    return aircraft.map(aircraft => ({
+      id: aircraft.id,
+      name: aircraft.name,
+      model: aircraft.model,
+      capacity: aircraft.capacity,
+      pricePerHour: aircraft.pricePerHour,
+      baseAirport: aircraft.baseAirport,
+      baseCity: aircraft.baseCity,
+      companyName: aircraft.company?.companyName || 'Unknown',
+      imageUrl: aircraft.images?.[0]?.url || aircraft.aircraftTypeImagePlaceholder?.placeholderImageUrl || null,
+      aircraftType: aircraft.aircraftTypeImagePlaceholder?.type || 'unknown',
+      flightDurationHours: this.estimateFlightDuration(aircraft.baseCity || 'Nairobi', userLocation || 'Nairobi'), // Calculate from user location
+    }));
   }
 
   private calculateAge(birthDate: Date): number {

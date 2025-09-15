@@ -34,7 +34,7 @@ export class PassengersService {
     return passenger;
   }
 
-  async findByBookingId(bookingId: string): Promise<Passenger[]> {
+  async findByBookingId(bookingId: number): Promise<Passenger[]> {
     return await this.passengerRepository.find({
       where: { booking_id: bookingId },
       order: { created_at: 'ASC' },
@@ -50,11 +50,11 @@ export class PassengersService {
     await this.passengerRepository.delete(id);
   }
 
-  async removeByBookingId(bookingId: string): Promise<void> {
+  async removeByBookingId(bookingId: number): Promise<void> {
     await this.passengerRepository.delete({ booking_id: bookingId });
   }
 
-  async countByBookingId(bookingId: string): Promise<number> {
+  async countByBookingId(bookingId: number): Promise<number> {
     return await this.passengerRepository.count({
       where: { booking_id: bookingId },
     });

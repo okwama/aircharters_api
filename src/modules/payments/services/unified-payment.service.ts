@@ -8,6 +8,7 @@ import { StripeConnectProvider } from '../providers/stripe-connect.provider';
 import { MpesaMerchantProvider } from '../providers/mpesa-merchant.provider';
 import { DynamicCommissionService } from '../../commission/services/dynamic-commission.service';
 import { BookingType } from '../../../common/entities/platform-commission.entity';
+import { ExchangeRateService } from './exchange-rate.service';
 
 export interface UnifiedPaymentRequest {
   userId: number;
@@ -65,6 +66,7 @@ export class UnifiedPaymentService {
     private stripeConnectProvider: StripeConnectProvider,
     private mpesaMerchantProvider: MpesaMerchantProvider,
     private dynamicCommissionService: DynamicCommissionService,
+    private exchangeRateService: ExchangeRateService,
   ) {}
 
   async processPayment(request: UnifiedPaymentRequest): Promise<UnifiedPaymentResponse> {
@@ -119,6 +121,8 @@ export class UnifiedPaymentService {
         paymentResult = await this.processStripePayment(request, companyAccount, commission);
       } else if (providerSelection.provider === PaymentProvider.MPESA) {
         paymentResult = await this.processMpesaPayment(request, companyAccount, commission);
+      } else if (providerSelection.provider === PaymentProvider.PAYSTACK) {
+        paymentResult = await this.processPaystackPayment(request, companyAccount, commission);
       } else {
         throw new BadRequestException(`Unsupported payment provider: ${providerSelection.provider}`);
       }
@@ -361,12 +365,19 @@ export class UnifiedPaymentService {
   private async selectPaymentProvider(request: UnifiedPaymentRequest): Promise<PaymentProviderSelection> {
     const providers: PaymentProviderSelection[] = [];
 
+    // Default to Paystack for all payments (new default)
+    providers.push({
+      provider: PaymentProvider.PAYSTACK,
+      reason: 'Paystack is the default payment provider',
+      priority: 1,
+    });
+
     // Check currency-based selection
     if (request.currency === Currency.KES) {
       providers.push({
         provider: PaymentProvider.MPESA,
         reason: 'Currency is KES, M-Pesa is preferred',
-        priority: 1,
+        priority: 2,
       });
     }
 
@@ -379,8 +390,8 @@ export class UnifiedPaymentService {
       });
     } else if (request.paymentMethod === 'card') {
       providers.push({
-        provider: PaymentProvider.STRIPE,
-        reason: 'User selected card payment method',
+        provider: PaymentProvider.PAYSTACK,
+        reason: 'User selected card payment method, using Paystack',
         priority: 2,
       });
     }
@@ -388,12 +399,21 @@ export class UnifiedPaymentService {
     // Check company account availability
     const stripeAccount = await this.getCompanyPaymentAccount(request.companyId, PaymentProvider.STRIPE);
     const mpesaAccount = await this.getCompanyPaymentAccount(request.companyId, PaymentProvider.MPESA);
+    const paystackAccount = await this.getCompanyPaymentAccount(request.companyId, PaymentProvider.PAYSTACK);
+
+    if (paystackAccount && paystackAccount.accountStatus === 'active') {
+      providers.push({
+        provider: PaymentProvider.PAYSTACK,
+        reason: 'Company has active Paystack account',
+        priority: 3,
+      });
+    }
 
     if (stripeAccount && stripeAccount.accountStatus === 'active') {
       providers.push({
         provider: PaymentProvider.STRIPE,
         reason: 'Company has active Stripe account',
-        priority: 3,
+        priority: 4,
       });
     }
 
@@ -401,16 +421,16 @@ export class UnifiedPaymentService {
       providers.push({
         provider: PaymentProvider.MPESA,
         reason: 'Company has active M-Pesa account',
-        priority: 3,
+        priority: 4,
       });
     }
 
-    // Default to Stripe for USD/EUR/GBP
+    // Default to Paystack for USD/EUR/GBP (updated default)
     if ([Currency.USD, Currency.EUR, Currency.GBP].includes(request.currency)) {
       providers.push({
-        provider: PaymentProvider.STRIPE,
+        provider: PaymentProvider.PAYSTACK,
         reason: 'Default provider for USD/EUR/GBP',
-        priority: 4,
+        priority: 5,
       });
     }
 
@@ -478,6 +498,33 @@ export class UnifiedPaymentService {
     return await this.mpesaMerchantProvider.createSplitPayment(mpesaRequest);
   }
 
+  private async processPaystackPayment(
+    request: UnifiedPaymentRequest,
+    companyAccount: CompanyPaymentAccount,
+    commission: any,
+  ): Promise<any> {
+    // This would integrate with the PaystackProvider
+    // For now, returning a mock response structure
+    return {
+      providerTransactionId: `paystack_${Date.now()}`,
+      requiresAction: true,
+      nextAction: {
+        type: 'redirect_to_url',
+        redirect_to_url: {
+          url: 'https://paystack.com/pay/mock_reference'
+        }
+      },
+      providerData: {
+        paystackReference: `paystack_${Date.now()}`,
+        subaccount: companyAccount.accountId,
+        splitAmounts: {
+          platformFee: commission.platformCommission,
+          companyAmount: commission.companyAmount
+        }
+      }
+    };
+  }
+
   private async createLedgerEntry(data: Partial<TransactionLedger>): Promise<TransactionLedger> {
     const entry = this.transactionLedgerRepository.create(data);
     return await this.transactionLedgerRepository.save(entry);
@@ -530,13 +577,20 @@ export class UnifiedPaymentService {
   }
 
   private async getExchangeRate(currency: Currency): Promise<number> {
-    // TODO: Implement real exchange rate API
-    const rates = {
-      [Currency.KES]: 0.007, // 1 KES = 0.007 USD
-      [Currency.EUR]: 1.08,  // 1 EUR = 1.08 USD
-      [Currency.GBP]: 1.26,  // 1 GBP = 1.26 USD
-    };
-    
-    return rates[currency] || 1.0;
+    try {
+      const exchangeRate = await this.exchangeRateService.getExchangeRate(currency, Currency.USD);
+      return exchangeRate.rate;
+    } catch (error) {
+      this.logger.error(`Failed to get exchange rate for ${currency}: ${error.message}`);
+      // Fallback to hardcoded rates
+      const fallbackRates = {
+        [Currency.KES]: 0.0077, // 1 KES = 0.0077 USD
+        [Currency.EUR]: 1.09,   // 1 EUR = 1.09 USD
+        [Currency.GBP]: 1.27,   // 1 GBP = 1.27 USD
+        [Currency.USD]: 1.0,    // 1 USD = 1 USD
+      };
+      
+      return fallbackRates[currency] || 1.0;
+    }
   }
 }

@@ -67,4 +67,10 @@ export class CharterDeal {
 
   @OneToMany(() => CharterDealAmenity, charterDealAmenity => charterDealAmenity.charterDeal)
   charterDealAmenities: CharterDealAmenity[];
+  taxType: null;
+  taxAmount: null;
+  price: null;
+  departureDateTime: null;
+  estimatedFlightHours: null;
+  estimatedArrivalTime: null;
 } 

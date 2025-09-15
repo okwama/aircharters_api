@@ -18,9 +18,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid token payload');
     }
     
-    // Return a user object that matches the User entity structure
+    // Return a user object that matches what the controller expects
     return {
-      id: payload.sub, // This is the key fix - use 'id' instead of 'sub'
+      sub: payload.sub, // Keep 'sub' for controller compatibility
+      id: payload.sub, // Also include 'id' for entity compatibility
       email: payload.email,
       phone: payload.phone,
       type: payload.type,

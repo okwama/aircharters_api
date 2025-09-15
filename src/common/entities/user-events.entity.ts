@@ -16,7 +16,7 @@ export class UserEvent {
   @Column({ name: 'user_id', type: 'varchar', length: 255 })
   userId: string;
 
-  @Column({ name: 'booking_id', type: 'varchar', length: 255, nullable: true })
+  @Column({ name: 'booking_id', nullable: true })
   bookingId?: string;
 
   @Column({ type: 'enum', enum: UserEventType })

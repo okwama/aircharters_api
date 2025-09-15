@@ -36,9 +36,6 @@ export class ExperienceSchedule {
   @Column({ name: 'endTime', type: 'datetime', nullable: true })
   endTime: Date;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  price: number;
-
   @Column({ name: 'priceUnit', type: 'enum', enum: PriceUnit, default: PriceUnit.PER_PERSON })
   priceUnit: PriceUnit;
 
@@ -56,6 +53,18 @@ export class ExperienceSchedule {
 
   @UpdateDateColumn({ name: 'updatedAt' })
   updatedAt: Date;
+
+  @Column({ name: 'taxType', type: 'varchar', length: 255, nullable: true })
+  taxType: string;
+
+  @Column({ name: 'subTotal', type: 'decimal', precision: 10, scale: 2 })
+  subTotal: number;
+
+  @Column({ name: 'total', type: 'decimal', precision: 10, scale: 2 })
+  total: number;
+
+  @Column({ name: 'taxAmount', type: 'decimal', precision: 10, scale: 2, default: 0.00 })
+  taxAmount: number;
 
   // Relations
   @ManyToOne(() => ExperienceTemplate, experience => experience.schedules)

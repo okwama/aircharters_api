@@ -29,6 +29,43 @@ import { UserTripStatus } from '../../common/entities/user-trips.entity';
 export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
 
+  @Get('pending')
+  @ApiOperation({ summary: 'Get pending bookings (bookings without user trips)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Pending bookings retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              bookingId: { type: 'string' },
+              status: { type: 'string', enum: ['pending'] },
+              booking: { type: 'object' },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getPendingBookings(@Request() req) {
+    const userId = req.user.sub;
+    const pendingBookings = await this.tripsService.getPendingBookings(userId);
+    
+    return {
+      success: true,
+      message: 'Pending bookings retrieved successfully',
+      data: pendingBookings,
+    };
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get user trip history' })
   @ApiResponse({

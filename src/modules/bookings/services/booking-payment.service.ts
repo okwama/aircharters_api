@@ -76,7 +76,7 @@ export class BookingPaymentService {
   ): Promise<Booking> {
     // First, check if booking exists and can be processed
     const existingBooking = await this.bookingRepository.findOne({
-      where: { id: bookingId },
+      where: { id: parseInt(bookingId) },
       relations: ['user'],
     });
 
@@ -95,7 +95,7 @@ export class BookingPaymentService {
     try {
       // Use SELECT FOR UPDATE to prevent race conditions
       const booking = await queryRunner.manager.findOne(Booking, {
-        where: { id: bookingId },
+        where: { id: parseInt(bookingId) },
         relations: ['user'],
         lock: { mode: 'pessimistic_write' },
       });
@@ -110,22 +110,21 @@ export class BookingPaymentService {
 
       // Update payment status
       booking.paymentStatus = PaymentStatus.PAID;
-      booking.paymentTransactionId = paymentTransactionId;
+      // booking.paymentTransactionId = paymentTransactionId; // Not in database
       booking.bookingStatus = BookingStatus.CONFIRMED;
 
       // Calculate and populate loyalty points only when payment is made
       const loyaltyPointsToEarn = Math.floor(amount * 5); // 1 USD = 5 miles
-      booking.loyaltyPointsEarned = loyaltyPointsToEarn;
+      // booking.loyaltyPointsEarned = loyaltyPointsToEarn; // Not in database
 
       // Save booking
       await queryRunner.manager.save(booking);
 
       // Create payment record
       const payment = queryRunner.manager.create(Payment, {
-        id: `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: booking.userId,
-        company_id: booking.company_id,
-        bookingId: booking.id,
+        companyId: booking.companyId,
+        bookingId: booking.id.toString(),
         paymentMethod: this.mapPaymentMethod(paymentMethod),
         totalAmount: amount,
         platformFee: Math.floor(amount * 0.05), // 5% platform fee
@@ -139,9 +138,8 @@ export class BookingPaymentService {
 
       // Create user trip record
       const userTrip = queryRunner.manager.create(UserTrip, {
-        id: `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: booking.userId,
-        bookingId: booking.id,
+        bookingId: booking.id.toString(),
         status: UserTripStatus.UPCOMING,
       });
 
@@ -218,7 +216,7 @@ export class BookingPaymentService {
     paymentTransactionId?: string,
   ): Promise<Booking> {
     const booking = await this.bookingRepository.findOne({
-      where: { id: bookingId },
+      where: { id: parseInt(bookingId) },
     });
 
     if (!booking) {
@@ -229,7 +227,7 @@ export class BookingPaymentService {
     booking.paymentStatus = paymentStatus;
 
     if (paymentTransactionId) {
-      booking.paymentTransactionId = paymentTransactionId;
+      // booking.paymentTransactionId = paymentTransactionId; // Not in database
     }
 
     // Only auto-confirm if payment is successful
@@ -265,7 +263,7 @@ export class BookingPaymentService {
 
     try {
       const booking = await queryRunner.manager.findOne(Booking, {
-        where: { id: bookingId },
+        where: { id: parseInt(bookingId) },
         relations: ['user'],
       });
 
@@ -275,20 +273,20 @@ export class BookingPaymentService {
 
       // Calculate loyalty points to deduct (proportional to refund)
       const refundRatio = refundAmount / booking.totalPrice;
-      const loyaltyPointsToDeduct = Math.floor(booking.loyaltyPointsEarned * refundRatio);
+      // const loyaltyPointsToDeduct = Math.floor(booking.loyaltyPointsEarned * refundRatio); // Not in database
 
       // Deduct loyalty points if any were earned
-      if (loyaltyPointsToDeduct > 0) {
-        await this.walletService.createWalletTransaction(
-          booking.userId,
-          WalletTransactionType.LOYALTY_ADJUSTMENT,
-          0,
-          -loyaltyPointsToDeduct,
-          `Refund for booking ${booking.referenceNumber} - Deducted ${loyaltyPointsToDeduct} miles`,
-          bookingId,
-          { refundAmount, refundReason },
-        );
-      }
+      // if (loyaltyPointsToDeduct > 0) {
+      //   await this.walletService.createWalletTransaction(
+      //     booking.userId,
+      //     WalletTransactionType.LOYALTY_ADJUSTMENT,
+      //     0,
+      //     -loyaltyPointsToDeduct,
+      //     `Refund for booking ${booking.referenceNumber} - Deducted ${loyaltyPointsToDeduct} miles`,
+      //     bookingId,
+      //     { refundAmount, refundReason },
+      //   );
+      // }
 
       // Update booking status
       booking.bookingStatus = BookingStatus.CANCELLED;
@@ -302,12 +300,12 @@ export class BookingPaymentService {
         TimelineEventType.PAYMENT_STATUS_CHANGED,
         {
           title: 'Refund Processed',
-          description: `Refund of $${refundAmount} processed. ${loyaltyPointsToDeduct} loyalty points deducted.`,
+          description: `Refund of $${refundAmount} processed.`,
           newValue: PaymentStatus.REFUNDED,
           metadata: {
             refundAmount,
             refundReason,
-            loyaltyPointsDeducted: loyaltyPointsToDeduct,
+            // loyaltyPointsDeducted: loyaltyPointsToDeduct, // Not in database
           },
         },
         queryRunner,
@@ -346,7 +344,7 @@ export class BookingPaymentService {
   ): Promise<void> {
     const timelineEvent = queryRunner
       ? queryRunner.manager.create(BookingTimeline, {
-          bookingId,
+          bookingId: parseInt(bookingId),
           eventType,
           title: data.title,
           description: data.description,
@@ -356,7 +354,7 @@ export class BookingPaymentService {
           createdAt: new Date(),
         })
       : this.timelineRepository.create({
-          bookingId,
+          bookingId: parseInt(bookingId),
           eventType,
           title: data.title,
           description: data.description,

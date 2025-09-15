@@ -40,8 +40,8 @@ export class PaymentsService {
   async createFromBooking(userId: string, createPaymentDto: CreatePaymentDto): Promise<Payment> {
     // Find the booking to get the company ID
     const booking = await this.bookingRepository.findOne({
-      where: { id: createPaymentDto.bookingId },
-      select: ['id', 'company_id']
+      where: { id: parseInt(createPaymentDto.bookingId) },
+      select: ['id', 'companyId']
     });
 
     if (!booking) {
@@ -49,7 +49,7 @@ export class PaymentsService {
     }
 
     // Use the booking's company ID
-    return this.create(userId, booking.company_id, createPaymentDto);
+    return this.create(userId, booking.companyId, createPaymentDto);
   }
 
   async findAll(): Promise<Payment[]> {

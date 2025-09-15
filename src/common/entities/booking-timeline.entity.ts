@@ -26,8 +26,8 @@ export class BookingTimeline {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'bookingId', type: 'varchar', length: 255 })
-  bookingId: string;
+  @Column({ name: 'bookingId' })
+  bookingId: number;
 
   @Column({ 
     name: 'eventType', 
