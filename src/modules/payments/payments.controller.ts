@@ -22,6 +22,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../common/entities/user.entity';
 import { PaymentProviderType } from './interfaces/payment-provider.interface';
 import { MpesaProvider, MpesaCallbackData } from './providers/mpesa.provider';
+import { RateLimit, RateLimitConfigs } from '../../common/decorators/rate-limit.decorator';
 
 @ApiTags('payments')
 @ApiBearerAuth()
@@ -35,6 +36,7 @@ export class PaymentsController {
   ) {}
 
   @Post('create-intent')
+  @RateLimit(RateLimitConfigs.PAYMENT)
   @ApiOperation({ summary: 'Create a payment intent for booking' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Payment intent created successfully' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid payment data' })
@@ -72,6 +74,7 @@ export class PaymentsController {
   }
 
   @Post('confirm')
+  @RateLimit(RateLimitConfigs.PAYMENT)
   @ApiOperation({ summary: 'Confirm a payment intent' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Payment confirmed successfully' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Payment confirmation failed' })
@@ -119,7 +122,7 @@ export class PaymentsController {
       success: true,
       data: {
         providers: providerInfo,
-        defaultProvider: PaymentProviderType.STRIPE,
+        defaultProvider: PaymentProviderType.PAYSTACK,
       },
     };
   }

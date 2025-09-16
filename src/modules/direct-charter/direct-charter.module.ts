@@ -10,6 +10,7 @@ import { Passenger } from '../../common/entities/passenger.entity';
 import { Payment } from '../../common/entities/payment.entity';
 import { AircraftTypeImagePlaceholder } from '../../common/entities/aircraft-type-image-placeholder.entity';
 import { PaymentsModule } from '../payments/payments.module';
+import { GoogleEarthEngineModule } from '../google-earth-engine/google-earth-engine.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PaymentsModule } from '../payments/payments.module';
       AircraftTypeImagePlaceholder,
     ]),
     PaymentsModule,
+    GoogleEarthEngineModule,
   ],
   controllers: [DirectCharterController],
   providers: [DirectCharterService],

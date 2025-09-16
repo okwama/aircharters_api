@@ -29,7 +29,7 @@ export class GoogleEarthEngineService {
             key: this.apiKey,
             type: searchDto.type || 'establishment',
             location: searchDto.location,
-            radius: searchDto.radius || 50000,
+            radius: searchDto.radius || 2000000, // 2000km default for air travel
           },
         })
       );

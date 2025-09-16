@@ -11,9 +11,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { BookingPaymentService } from './services/booking-payment.service';
 import { BookingTimelineService } from './services/booking-timeline.service';
 import { BookingQueryService } from './services/booking-query.service';
+import { EmailService } from '../email/email.service';
 import { PaymentProviderService } from '../payments/services/payment-provider.service';
 import { PaymentProviderType } from '../payments/interfaces/payment-provider.interface';
 import { User } from '../../common/entities/user.entity';
+import { UserTrip } from '../../common/entities/user-trips.entity';
+import { ExperienceSchedule } from '../../common/entities/experience-schedule.entity';
 
 @Injectable()
 export class BookingsService {
@@ -22,6 +25,8 @@ export class BookingsService {
     private readonly bookingRepository: Repository<Booking>,
     @InjectRepository(CharterDeal)
     private readonly charterDealRepository: Repository<CharterDeal>,
+    @InjectRepository(ExperienceSchedule)
+    private readonly experienceScheduleRepository: Repository<ExperienceSchedule>,
     @InjectRepository(Passenger)
     private readonly passengerRepository: Repository<Passenger>,
     @InjectRepository(BookingTimeline)
@@ -31,6 +36,7 @@ export class BookingsService {
     private readonly bookingTimelineService: BookingTimelineService,
     private readonly bookingQueryService: BookingQueryService,
     public readonly paymentProviderService: PaymentProviderService,
+    private readonly emailService: EmailService,
   ) {}
 
   async testUserExists(userId: string) {
@@ -244,15 +250,23 @@ export class BookingsService {
   }
 
   /**
-   * Create booking with payment intent for seamless Stripe integration
+   * Create booking with payment intent for seamless Paystack integration
+   * STANDARDIZED FLOW: Create booking first, then payment intent (if totalPrice > 0)
    */
   async createWithPaymentIntent(createBookingDto: CreateBookingDto, userId: string): Promise<any> {
-    // Create the booking first
-    const booking = await this.create(createBookingDto, userId);
-    
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      // Create payment intent with Stripe
-      const paymentIntent = await this.paymentProviderService.createPaymentIntent({
+      // Create the booking first (within transaction)
+      const booking = await this.createBookingInTransaction(createBookingDto, userId, queryRunner);
+      
+      // Only create payment intent if totalPrice > 0 (not an inquiry)
+      let paymentIntent = null;
+      if (booking.totalPrice > 0) {
+        try {
+          paymentIntent = await this.paymentProviderService.createPaymentIntent({
         amount: booking.totalPrice,
         currency: 'USD',
         bookingId: booking.id.toString(),
@@ -263,19 +277,31 @@ export class BookingsService {
           referenceNumber: booking.referenceNumber,
           dealId: booking.dealId,
           company_id: booking.companyId,
-        },
-      }, PaymentProviderType.STRIPE);
+              bookingType: 'deal_booking',
+            },
+          }, PaymentProviderType.PAYSTACK);
+        } catch (error) {
+          console.error('Failed to create payment intent for deal booking:', error);
+          // If payment intent creation fails, rollback the entire transaction
+          throw new BadRequestException(`Payment setup failed: ${error.message}`);
+        }
+      } else {
+        console.log(`Skipping payment intent creation for deal inquiry (totalPrice: ${booking.totalPrice})`);
+      }
+
+      // Commit transaction only after all operations succeed
+      await queryRunner.commitTransaction();
 
       return {
         booking,
-        paymentIntent: {
+        paymentIntent: paymentIntent ? {
           id: paymentIntent.id,
           clientSecret: paymentIntent.clientSecret,
           status: paymentIntent.status,
           requiresAction: paymentIntent.requiresAction,
           nextAction: paymentIntent.nextAction,
-        },
-        paymentInstructions: {
+        } : null,
+        paymentInstructions: paymentIntent ? {
           amount: booking.totalPrice,
           currency: 'USD',
           paymentMethods: ['card', 'apple_pay', 'google_pay', 'bank_transfer'],
@@ -289,32 +315,92 @@ export class BookingsService {
             processBooking: `/bookings/${booking.id}/process-payment`,
             paymentStatus: `/payments/status/${paymentIntent.id}`
           }
-        }
+        } : null,
       };
     } catch (error) {
-      // If payment intent creation fails, still return the booking
-      // User can create payment intent later
-      console.error('Failed to create payment intent:', error);
-      return {
-        booking,
-        paymentIntent: null,
-        paymentInstructions: {
-          amount: booking.totalPrice,
-          currency: 'USD',
-          paymentMethods: ['card', 'apple_pay', 'google_pay', 'bank_transfer'],
-          nextSteps: [
-            'Create payment intent using /payments/create-intent',
-            'Complete payment with Stripe',
-            'Process booking using /bookings/:id/process-payment'
-          ],
-          apiEndpoints: {
-            createIntent: `/payments/create-intent`,
-            confirmPayment: `/payments/confirm`,
-            processBooking: `/bookings/${booking.id}/process-payment`
-          }
-        }
-      };
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
+  }
+
+  /**
+   * Create booking within a transaction (extracted from create method)
+   * This ensures consistency with the main create method
+   */
+  private async createBookingInTransaction(
+    createBookingDto: CreateBookingDto, 
+    userId: string, 
+    queryRunner: any
+  ): Promise<Booking> {
+    let deal = null;
+    let experience = null;
+    let companyId: number;
+    let aircraftId: number;
+    let bookingType: BookingType;
+    let dealId: number | null = null;
+    let experienceScheduleId: number | null = null;
+
+    // Determine if this is a deal booking or experience booking
+    if (createBookingDto.experienceScheduleId) {
+      // Experience booking
+      experience = await queryRunner.manager.findOne(ExperienceSchedule, {
+        where: { id: createBookingDto.experienceScheduleId },
+        relations: ['company', 'aircraft']
+      });
+
+      if (!experience) {
+        throw new NotFoundException(`Experience schedule with ID ${createBookingDto.experienceScheduleId} not found`);
+      }
+
+      companyId = experience.companyId;
+      aircraftId = experience.aircraftId;
+      bookingType = BookingType.EXPERIENCE;
+      experienceScheduleId = createBookingDto.experienceScheduleId;
+    } else {
+      // Deal booking
+      deal = await queryRunner.manager.findOne(CharterDeal, {
+        where: { id: createBookingDto.dealId },
+        relations: ['company', 'aircraft']
+      });
+
+      if (!deal) {
+        throw new NotFoundException(`Deal with ID ${createBookingDto.dealId} not found`);
+      }
+
+      companyId = deal.companyId;
+      aircraftId = deal.aircraftId;
+      bookingType = BookingType.DEAL;
+      dealId = createBookingDto.dealId;
+    }
+
+    // Create the booking
+    const booking = queryRunner.manager.create(Booking, {
+      userId,
+      companyId,
+      aircraftId,
+      dealId,
+      experienceScheduleId,
+      bookingType,
+      totalPrice: createBookingDto.totalPrice,
+      onboardDining: createBookingDto.onboardDining,
+      specialRequirements: createBookingDto.specialRequirements,
+      billingRegion: createBookingDto.billingRegion,
+      bookingStatus: BookingStatus.PENDING,
+      paymentStatus: PaymentStatus.PENDING,
+      referenceNumber: this.generateBookingReference(),
+      // Copy route information from deal or experience
+      originName: deal?.originName || experience?.originName,
+      destinationName: deal?.destinationName || experience?.destinationName,
+      originLatitude: deal?.originLatitude || experience?.originLatitude,
+      originLongitude: deal?.originLongitude || experience?.originLongitude,
+      destinationLatitude: deal?.destinationLatitude || experience?.destinationLatitude,
+      destinationLongitude: deal?.destinationLongitude || experience?.destinationLongitude,
+      departureDateTime: deal?.date || experience?.scheduledDate,
+    });
+
+    return await queryRunner.manager.save(booking);
   }
 
   async findAll(userId?: string): Promise<Booking[]> {
@@ -531,6 +617,27 @@ export class BookingsService {
     // Generate confirmation email content
     const confirmationEmail = this.generateConfirmationEmail(updatedBooking);
 
+    // Send booking confirmation email
+    try {
+      await this.emailService.sendBookingConfirmationEmail(
+        updatedBooking.user.email,
+        {
+          referenceNumber: updatedBooking.referenceNumber,
+          passengerName: `${updatedBooking.user.first_name} ${updatedBooking.user.last_name}`,
+          departure: updatedBooking.deal.originName,
+          destination: updatedBooking.deal.destinationName,
+          date: updatedBooking.deal.date.toLocaleDateString(),
+          time: updatedBooking.deal.time,
+          aircraft: updatedBooking.deal.aircraft.name,
+          company: updatedBooking.deal.company.companyName,
+          totalAmount: updatedBooking.totalPrice,
+        }
+      );
+    } catch (error) {
+      console.error('Failed to send booking confirmation email:', error);
+      // Don't fail the booking confirmation if email fails
+    }
+
     return {
       id: updatedBooking.id,
       referenceNumber: updatedBooking.referenceNumber,
@@ -571,5 +678,189 @@ export class BookingsService {
 
   async getBookingStatusByReference(referenceNumber: string): Promise<BookingStatusResponseDto> {
     return this.bookingQueryService.getBookingStatusByReference(referenceNumber);
+  }
+
+  /**
+   * Update booking status from PENDING to CONFIRMED after successful payment
+   */
+  async confirmBookingAfterPayment(bookingId: string, paymentReference: string): Promise<Booking> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Find the booking
+      const booking = await queryRunner.manager.findOne(Booking, {
+        where: { id: parseInt(bookingId) }
+      });
+
+      if (!booking) {
+        throw new NotFoundException(`Booking with ID ${bookingId} not found`);
+      }
+
+      // Update booking status to confirmed
+      booking.bookingStatus = BookingStatus.CONFIRMED;
+      booking.paymentStatus = PaymentStatus.PAID;
+      booking.updatedAt = new Date();
+
+      const updatedBooking = await queryRunner.manager.save(booking);
+
+      // Add timeline event
+      await this.bookingTimelineService.createTimelineEvent(
+        bookingId,
+        TimelineEventType.PAYMENT_COMPLETED,
+        {
+          title: 'Payment Confirmed',
+          description: 'Payment confirmed and booking confirmed',
+          newValue: 'confirmed',
+        }
+      );
+
+      // Create UserTrip record automatically after successful payment
+      await this.createUserTripAfterPayment(updatedBooking, queryRunner);
+
+      await queryRunner.commitTransaction();
+
+      // Send confirmation email
+      try {
+        const user = await this.dataSource.getRepository(User).findOne({
+          where: { id: updatedBooking.userId },
+          select: ['email', 'first_name', 'last_name']
+        });
+        
+        if (user) {
+          await this.emailService.sendBookingConfirmationEmail(
+            user.email,
+            {
+              referenceNumber: updatedBooking.referenceNumber,
+              passengerName: `${user.first_name} ${user.last_name}`,
+              departure: updatedBooking.originName,
+              destination: updatedBooking.destinationName,
+              date: new Date(updatedBooking.departureDateTime).toLocaleDateString(),
+              time: new Date(updatedBooking.departureDateTime).toLocaleTimeString(),
+              aircraft: 'Private Aircraft',
+              company: 'Charter Company',
+              totalAmount: updatedBooking.totalPrice,
+            }
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+        // Don't fail the booking confirmation if email fails
+      }
+
+      return updatedBooking;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * Create UserTrip record after successful payment confirmation
+   * This ensures users can see their confirmed bookings in the trips section
+   */
+  private async createUserTripAfterPayment(booking: Booking, queryRunner: any): Promise<void> {
+    try {
+      // Check if UserTrip already exists for this booking
+      const existingTrip = await queryRunner.manager.findOne(UserTrip, {
+        where: { bookingId: booking.id.toString() }
+      });
+
+      if (existingTrip) {
+        console.log(`UserTrip already exists for booking ${booking.id}`);
+        return;
+      }
+
+      // Create new UserTrip record
+      const userTrip = queryRunner.manager.create(UserTrip, {
+        id: `trip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: booking.userId,
+        bookingId: booking.id.toString(),
+        status: 'upcoming', // Will be calculated dynamically by trips service
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await queryRunner.manager.save(userTrip);
+      console.log(`Created UserTrip for booking ${booking.id}`);
+    } catch (error) {
+      console.error(`Failed to create UserTrip for booking ${booking.id}:`, error);
+      // Don't fail the entire transaction if trip creation fails
+      // The trips service can still work with just the booking data
+    }
+  }
+
+  /**
+   * Create payment intent for a pending inquiry
+   * This allows users to pay for inquiries after admin has set the price
+   */
+  async createPaymentIntentForInquiry(bookingId: string): Promise<any> {
+    const booking = await this.findOne(bookingId);
+
+    if (!booking) {
+      throw new NotFoundException(`Booking with ID ${bookingId} not found`);
+    }
+
+    if (booking.totalPrice <= 0) {
+      throw new BadRequestException('Booking has no price set. Please contact support.');
+    }
+
+    if (booking.paymentStatus === PaymentStatus.PAID) {
+      throw new BadRequestException('Booking is already paid');
+    }
+
+    try {
+      // Create payment intent with Paystack
+      const paymentIntent = await this.paymentProviderService.createPaymentIntent({
+        amount: booking.totalPrice,
+        currency: 'USD',
+        bookingId: booking.id.toString(),
+        userId: booking.userId,
+        description: `Payment for booking ${booking.referenceNumber}`,
+        metadata: {
+          bookingId: booking.id.toString(),
+          referenceNumber: booking.referenceNumber,
+          dealId: booking.dealId,
+          company_id: booking.companyId,
+          bookingType: booking.dealId ? 'deal_booking' : 'direct_charter',
+        },
+      }, PaymentProviderType.PAYSTACK);
+
+      return {
+        paymentIntent: {
+          id: paymentIntent.id,
+          clientSecret: paymentIntent.clientSecret,
+          status: paymentIntent.status,
+          requiresAction: paymentIntent.requiresAction,
+          nextAction: paymentIntent.nextAction,
+        },
+        booking: {
+          id: booking.id,
+          totalPrice: booking.totalPrice,
+          referenceNumber: booking.referenceNumber,
+        },
+        paymentInstructions: {
+          amount: booking.totalPrice,
+          currency: 'USD',
+          paymentMethods: ['card', 'apple_pay', 'google_pay', 'bank_transfer'],
+          nextSteps: [
+            'Complete payment using the client secret',
+            'Confirm payment using /payments/confirm',
+            'Booking will be automatically confirmed'
+          ],
+          apiEndpoints: {
+            confirmPayment: `/payments/confirm`,
+            bookingConfirmation: `/bookings/${booking.id}/confirm-payment`,
+            paymentStatus: `/payments/status/${paymentIntent.id}`
+          }
+        }
+      };
+    } catch (error) {
+      console.error('Failed to create payment intent for inquiry:', error);
+      throw new BadRequestException(`Payment setup failed: ${error.message}`);
+    }
   }
 } 

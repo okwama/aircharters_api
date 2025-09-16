@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Request, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, UseGuards, Request, ParseIntPipe, Query } from '@nestjs/common';
 import { BookingInquiriesService } from './booking-inquiries.service';
 import { CreateBookingInquiryDto } from './dto/create-booking-inquiry.dto';
 import { UpdateBookingInquiryDto } from './dto/update-booking-inquiry.dto';
@@ -57,5 +57,16 @@ export class BookingInquiriesController {
     @Body() updateBookingInquiryDto: UpdateBookingInquiryDto,
   ) {
     return this.bookingInquiriesService.update(id, updateBookingInquiryDto);
+  }
+
+  @Get('aircraft/:aircraftId/availability')
+  async getAircraftAvailabilityForInquiry(
+    @Param('aircraftId', ParseIntPipe) aircraftId: number,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return this.bookingInquiriesService.getAircraftAvailabilityForInquiry(aircraftId, start, end);
   }
 } 

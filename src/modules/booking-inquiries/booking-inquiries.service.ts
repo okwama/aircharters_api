@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, Between, In } from 'typeorm';
 import { BookingInquiry, InquiryStatus, ProposedPriceType } from '../../common/entities/booking-inquiry.entity';
 import { InquiryStop } from '../../common/entities/inquiry-stop.entity';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { User } from '../../common/entities/user.entity';
 import { Booking, BookingStatus, PaymentStatus, BookingType } from '../../common/entities/booking.entity';
 import { Payment } from '../../common/entities/payment.entity';
+import { AircraftCalendar, CalendarEventType } from '../../common/entities/aircraft-calendar.entity';
 import { CreateBookingInquiryDto } from './dto/create-booking-inquiry.dto';
 import { UpdateBookingInquiryDto } from './dto/update-booking-inquiry.dto';
 import { PaymentProviderService } from '../payments/services/payment-provider.service';
@@ -26,6 +27,8 @@ export class BookingInquiriesService {
     private bookingRepository: Repository<Booking>,
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+    @InjectRepository(AircraftCalendar)
+    private aircraftCalendarRepository: Repository<AircraftCalendar>,
     private dataSource: DataSource,
     private paymentProviderService?: PaymentProviderService,
   ) {}
@@ -54,6 +57,19 @@ export class BookingInquiriesService {
 
       if (!user) {
         throw new NotFoundException('User not found');
+      }
+
+      // Check aircraft availability for the requested dates if provided
+      if (createBookingInquiryDto.preferredDepartureDate) {
+        const isAvailable = await this.checkAircraftAvailabilityForInquiry(
+          createBookingInquiryDto.aircraftId,
+          new Date(createBookingInquiryDto.preferredDepartureDate),
+          createBookingInquiryDto.preferredReturnDate ? new Date(createBookingInquiryDto.preferredReturnDate) : null
+        );
+
+        if (!isAvailable) {
+          throw new BadRequestException('Aircraft is not available for the requested dates. Please select different dates or contact support for alternative options.');
+        }
       }
 
       // Create the booking inquiry
@@ -248,5 +264,89 @@ export class BookingInquiriesService {
     const timestamp = Date.now().toString().slice(-8);
     const random = Math.random().toString(36).substr(2, 4).toUpperCase();
     return `AC${timestamp}${random}`;
+  }
+
+  /**
+   * Check if aircraft is available for inquiry dates
+   */
+  private async checkAircraftAvailabilityForInquiry(
+    aircraftId: number,
+    departureDate: Date,
+    returnDate?: Date | null
+  ): Promise<boolean> {
+    const startDate = departureDate;
+    const endDate = returnDate || departureDate;
+
+    // Check for conflicting calendar entries
+    const conflicts = await this.aircraftCalendarRepository.find({
+      where: {
+        aircraftId,
+        eventType: In([CalendarEventType.BOOKED, CalendarEventType.MAINTENANCE, CalendarEventType.BLOCKED]),
+        startDateTime: Between(startDate, endDate),
+      },
+    });
+
+    return conflicts.length === 0;
+  }
+
+  /**
+   * Get aircraft availability for a date range
+   */
+  async getAircraftAvailabilityForInquiry(
+    aircraftId: number,
+    startDate: Date,
+    endDate: Date
+  ) {
+    const aircraft = await this.aircraftRepository.findOne({
+      where: { id: aircraftId },
+      relations: ['company'],
+    });
+
+    if (!aircraft) {
+      throw new NotFoundException('Aircraft not found');
+    }
+
+    // Get all calendar events for the aircraft in the date range
+    const events = await this.aircraftCalendarRepository.find({
+      where: {
+        aircraftId,
+        startDateTime: Between(startDate, endDate),
+      },
+      order: { startDateTime: 'ASC' },
+    });
+
+    // Group events by date
+    const availabilityByDate = {};
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      const dateKey = currentDate.toISOString().split('T')[0];
+      const dayEvents = events.filter(event => 
+        event.startDateTime.toISOString().split('T')[0] === dateKey
+      );
+
+      availabilityByDate[dateKey] = {
+        date: new Date(currentDate),
+        isAvailable: dayEvents.length === 0,
+        events: dayEvents,
+        status: dayEvents.length === 0 ? 'available' : 'unavailable',
+        reason: dayEvents.length > 0 ? dayEvents[0].eventType : null,
+      };
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return {
+      success: true,
+      data: {
+        aircraft,
+        availability: availabilityByDate,
+        summary: {
+          totalDays: Object.keys(availabilityByDate).length,
+          availableDays: Object.values(availabilityByDate).filter((day: any) => day.isAvailable).length,
+          unavailableDays: Object.values(availabilityByDate).filter((day: any) => !day.isAvailable).length,
+        },
+      },
+    };
   }
 } 

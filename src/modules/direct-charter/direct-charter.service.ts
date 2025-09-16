@@ -13,6 +13,7 @@ import { SearchDirectCharterDto } from './dto/search-direct-charter.dto';
 import { BookDirectCharterDto } from './dto/book-direct-charter.dto';
 import { PaymentProviderService } from '../payments/services/payment-provider.service';
 import { PaymentProviderType } from '../payments/interfaces/payment-provider.interface';
+import { GoogleEarthEngineService } from '../google-earth-engine/google-earth-engine.service';
 
 @Injectable()
 export class DirectCharterService {
@@ -33,6 +34,7 @@ export class DirectCharterService {
     private aircraftTypeImagePlaceholderRepository: Repository<AircraftTypeImagePlaceholder>,
     private readonly dataSource: DataSource,
     private readonly paymentProviderService: PaymentProviderService,
+    private readonly googleEarthEngineService: GoogleEarthEngineService,
   ) {}
 
   async searchAvailableAircraft(searchDto: SearchDirectCharterDto) {
@@ -205,16 +207,20 @@ export class DirectCharterService {
   async bookDirectCharter(bookDto: BookDirectCharterDto, userId: string) {
     const { aircraftId, departureDateTime, returnDateTime, tripType } = bookDto;
 
-    // Verify aircraft is still available
-    const isAvailable = await this.checkAircraftAvailability(
-      aircraftId,
-      new Date(departureDateTime),
-      returnDateTime ? new Date(returnDateTime) : null,
-      tripType
-    );
+    // For direct charters, check if aircraft slot is already booked (exclusive booking)
+    const existingBooking = await this.bookingRepository.findOne({
+      where: {
+        aircraftId: aircraftId,
+        bookingStatus: In([BookingStatus.PENDING, BookingStatus.CONFIRMED]),
+        departureDateTime: Between(
+          new Date(departureDateTime),
+          returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime)
+        ),
+      },
+    });
 
-    if (!isAvailable) {
-      throw new BadRequestException('Aircraft is no longer available for the selected time period');
+    if (existingBooking) {
+      throw new BadRequestException('Aircraft slot is already booked for the selected time period');
     }
 
     // Get aircraft details to get company ID
@@ -250,6 +256,12 @@ export class DirectCharterService {
       const bookingId = `BK-${timestamp}-${time}-${random}`;
       const referenceNumber = `AC${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
 
+      // Get coordinates for origin and destination
+      const [originCoords, destinationCoords] = await Promise.all([
+        this.getLocationCoordinates(bookDto.origin),
+        this.getLocationCoordinates(bookDto.destination)
+      ]);
+
       // Create booking - align with database schema
       const now = new Date();
       const booking = this.bookingRepository.create({
@@ -263,8 +275,19 @@ export class DirectCharterService {
         paymentStatus: PaymentStatus.PENDING,
         referenceNumber: referenceNumber,
         specialRequirements: bookDto.specialRequests,
-        totalAdults: 1, // Default to 1 adult (the user)
-        totalChildren: 0,
+        // Flight details - populate from DTO
+        originName: bookDto.origin,
+        destinationName: bookDto.destination,
+        departureDateTime: new Date(bookDto.departureDateTime),
+        // Coordinates from Google service
+        originLatitude: originCoords?.lat || null,
+        originLongitude: originCoords?.lng || null,
+        destinationLatitude: destinationCoords?.lat || null,
+        destinationLongitude: destinationCoords?.lng || null,
+        // Passenger counts
+        totalAdults: bookDto.passengerCount, // Use actual passenger count
+        totalChildren: 0, // Could be calculated from passenger ages if provided
+        onboardDining: false, // Default to false, could be added to DTO if needed
         createdAt: now, // Manually set timestamp
         updatedAt: now, // Manually set timestamp
       });
@@ -303,30 +326,36 @@ export class DirectCharterService {
 
       await queryRunner.manager.save(calendarEntry);
 
-      await queryRunner.commitTransaction();
-
-      // Create payment intent with Stripe (outside transaction)
+      // Create payment intent INSIDE transaction if totalPrice > 0 (not an inquiry)
       let paymentIntent = null;
-      try {
-        paymentIntent = await this.paymentProviderService.createPaymentIntent({
-          amount: bookDto.totalPrice,
-          currency: 'USD',
-          bookingId: savedBooking.id.toString(),
-          userId: userId,
-          description: `Payment for direct charter booking ${referenceNumber}`,
-          metadata: {
+      if (bookDto.totalPrice > 0) {
+        try {
+          paymentIntent = await this.paymentProviderService.createPaymentIntent({
+            amount: bookDto.totalPrice,
+            currency: 'USD',
             bookingId: savedBooking.id.toString(),
-            referenceNumber: referenceNumber,
-            dealId: 0, // Direct charter doesn't use deals
-            company_id: aircraft.company?.id || 1,
-            bookingType: 'direct_charter',
-            aircraftId: bookDto.aircraftId,
-          },
-        }, PaymentProviderType.STRIPE);
-      } catch (error) {
-        console.error('Failed to create payment intent for direct charter:', error);
-        // Continue without payment intent - user can create it later
+            userId: userId,
+            description: `Payment for direct charter booking ${referenceNumber}`,
+            metadata: {
+              bookingId: savedBooking.id.toString(),
+              referenceNumber: referenceNumber,
+              dealId: 0, // Direct charter doesn't use deals
+              company_id: aircraft.company?.id || 1,
+              bookingType: 'direct_charter',
+              aircraftId: bookDto.aircraftId,
+            },
+          }, PaymentProviderType.PAYSTACK);
+        } catch (error) {
+          console.error('Failed to create payment intent for direct charter:', error);
+          // If payment intent creation fails, rollback the entire transaction
+          throw new BadRequestException(`Payment setup failed: ${error.message}`);
+        }
+      } else {
+        console.log(`Skipping payment intent creation for inquiry (totalPrice: ${bookDto.totalPrice})`);
       }
+
+      // Commit transaction only after all operations succeed
+      await queryRunner.commitTransaction();
 
       return {
         booking: {
@@ -335,6 +364,7 @@ export class DirectCharterService {
           totalPrice: bookDto.totalPrice,
           bookingStatus: 'pending',
           paymentStatus: 'pending',
+          companyId: aircraft.company?.id || 1,
         },
         paymentIntent: paymentIntent ? {
           id: paymentIntent.id,
@@ -400,6 +430,7 @@ export class DirectCharterService {
       pricePerHour: aircraft.pricePerHour,
       baseAirport: aircraft.baseAirport,
       baseCity: aircraft.baseCity,
+      companyId: aircraft.company?.id || null,
       companyName: aircraft.company?.companyName || 'Unknown',
       imageUrl: aircraft.images?.[0]?.url || aircraft.aircraftTypeImagePlaceholder?.placeholderImageUrl || null,
       aircraftType: aircraft.aircraftTypeImagePlaceholder?.type || 'unknown',
@@ -418,4 +449,39 @@ export class DirectCharterService {
     
     return age;
   }
+
+  // Helper method to get coordinates for a location using Google service
+  private async getLocationCoordinates(locationName: string): Promise<{ lat: number; lng: number } | null> {
+    try {
+      // Search for the location using Google Places API
+      const searchResults = await this.googleEarthEngineService.searchLocations({
+        query: locationName,
+        type: 'airport', // Prioritize airports for flight routes
+      });
+      
+      if (searchResults.length > 0) {
+        return searchResults[0].location;
+      }
+      
+      // If no airport found, try a broader search
+      const broaderResults = await this.googleEarthEngineService.searchLocations({
+        query: locationName,
+      });
+      
+      if (broaderResults.length > 0) {
+        return broaderResults[0].location;
+      }
+      
+      return null;
+    } catch (error) {
+      // Log the error but don't let it break the entire request
+      console.error(`Error getting coordinates for ${locationName}:`, error);
+      // Return null to indicate coordinates couldn't be found, but don't throw
+      return null;
+    }
+  }
 } 
+
+function In(arg0: BookingStatus[]): BookingStatus | import("typeorm").FindOperator<BookingStatus> {
+  throw new Error('Function not implemented.');
+}

@@ -10,10 +10,11 @@ import { Aircraft } from '../../common/entities/aircraft.entity';
 import { User } from '../../common/entities/user.entity';
 import { Booking } from '../../common/entities/booking.entity';
 import { Payment } from '../../common/entities/payment.entity';
+import { AircraftCalendar } from '../../common/entities/aircraft-calendar.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BookingInquiry, InquiryStop, Aircraft, User, Booking, Payment]),
+    TypeOrmModule.forFeature([BookingInquiry, InquiryStop, Aircraft, User, Booking, Payment, AircraftCalendar]),
     PaymentsModule,
   ],
   controllers: [BookingInquiriesController],

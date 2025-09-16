@@ -8,6 +8,7 @@ import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
 import { Booking } from '../../common/entities/booking.entity';
 import { AircraftImage } from '../../common/entities/aircraft-image.entity';
+import { AircraftCalendar } from '../../common/entities/aircraft-calendar.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AircraftImage } from '../../common/entities/aircraft-image.entity';
       CharterDeal,
       Booking,
       AircraftImage,
+      AircraftCalendar,
     ]),
   ],
   controllers: [AircraftAvailabilityController],

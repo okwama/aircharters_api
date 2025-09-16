@@ -29,7 +29,7 @@ export class GoogleEarthEngineSearchDto {
   @IsOptional()
   @IsNumber()
   @Min(1000)
-  @Max(50000)
+  @Max(2000000) // 2000km for international air travel
   radius?: number;
 }
 

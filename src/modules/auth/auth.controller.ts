@@ -14,6 +14,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { RefreshTokenDto, UpdateProfileDto } from './dto';
+import { RateLimit, RateLimitConfigs } from '@/common/decorators/rate-limit.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -24,6 +25,7 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @RateLimit(RateLimitConfigs.AUTH)
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({
     status: 201,
@@ -62,6 +64,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @RateLimit(RateLimitConfigs.AUTH)
   @ApiOperation({ summary: 'Login with email and password' })
   @ApiResponse({
     status: 200,

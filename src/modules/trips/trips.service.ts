@@ -25,52 +25,25 @@ export class TripsService {
 
   /**
    * Get user trip history with full booking and deal details
-   * Includes fallback to charter_bookings for confirmed/paid bookings without user_trips records
+   * Fetches directly from charter_bookings table for all booking types
    */
   async getUserTripHistory(userId: string): Promise<any[]> {
     try {
-      // Primary: Get trips from user_trips table (simplified query)
-      const userTrips = await this.userTripRepository
-        .createQueryBuilder('userTrip')
-        .where('userTrip.user_id = :userId', { userId })
-        .orderBy('userTrip.created_at', 'DESC')
-        .getMany();
-
-      // If we have user trips, get the full details
-      if (userTrips.length > 0) {
-        const userTripsWithDetails = await this.userTripRepository
-          .createQueryBuilder('userTrip')
-          .leftJoinAndSelect('userTrip.booking', 'booking')
-          .leftJoinAndSelect('booking.passengers', 'passengers')
-          .leftJoinAndSelect('booking.deal', 'deal')
-          .leftJoinAndSelect('deal.company', 'company')
-          .leftJoinAndSelect('deal.aircraft', 'aircraft')
-          .where('userTrip.user_id = :userId', { userId })
-          .orderBy('userTrip.created_at', 'DESC')
-          .getMany();
-
-        return userTripsWithDetails.map(trip => this.formatTripResponse(trip));
-      }
-
-      // Fallback: Get confirmed/paid bookings that don't have user_trips records
-      const fallbackBookings = await this.bookingRepository
+      // Get all bookings from charter_bookings table for the user
+      const bookings = await this.bookingRepository
         .createQueryBuilder('booking')
         .leftJoinAndSelect('booking.passengers', 'passengers')
         .leftJoinAndSelect('booking.deal', 'deal')
         .leftJoinAndSelect('deal.company', 'company')
         .leftJoinAndSelect('deal.aircraft', 'aircraft')
+        .leftJoinAndSelect('booking.aircraft', 'directAircraft')
+        .leftJoinAndSelect('directAircraft.company', 'directCompany')
         .where('booking.userId = :userId', { userId })
-        .andWhere('booking.bookingStatus = :status', { status: 'confirmed' })
-        .andWhere('booking.paymentStatus = :paymentStatus', { paymentStatus: 'paid' })
         .orderBy('booking.createdAt', 'DESC')
         .getMany();
 
-      // Filter out bookings that already have user_trips records
-      const bookingsWithoutTrips = fallbackBookings.filter(booking => {
-        return !userTrips.some(trip => trip.bookingId === booking.id.toString());
-      });
-
-      return bookingsWithoutTrips.map(booking => this.formatBookingAsTrip(booking));
+      // Format all bookings as trips with calculated status
+      return bookings.map(booking => this.formatBookingAsTrip(booking));
     } catch (error) {
       console.error('Error fetching user trip history:', error);
       return [];
@@ -78,9 +51,8 @@ export class TripsService {
   }
 
   /**
-   * Get trips by status (upcoming, completed, cancelled)
-   * Now filters by calculated status instead of stored status
-   * Includes fallback to charter_bookings for confirmed/paid bookings without user_trips records
+   * Get trips by status (pending, upcoming, completed, cancelled)
+   * Filters by calculated status based on booking status and departure date
    */
   async getTripsByStatus(userId: string, status: UserTripStatus): Promise<any[]> {
     try {
@@ -266,26 +238,31 @@ export class TripsService {
   }
 
   /**
-   * Format booking as trip response for pending bookings
+   * Format booking as trip response with calculated status
    */
   private formatBookingAsTrip(booking: any): any {
     const deal = booking.deal as any;
     const company = deal?.company as any;
     const aircraft = deal?.aircraft as any;
+    const directAircraft = booking.aircraft as any;
+    const directCompany = directAircraft?.company as any;
+
+    // Calculate status based on booking status and departure date
+    const calculatedStatus = this.calculateTripStatus(booking);
 
     return {
-      id: `pending_${booking.id}`, // Use booking ID with prefix for pending trips
+      id: `trip_${booking.id}`,
       userId: booking.userId,
       bookingId: booking.id,
-      status: 'pending', // Special status for pending bookings
+      status: calculatedStatus,
       rating: null,
       review: null,
       reviewDate: null,
       photos: null,
       videos: null,
       createdAt: booking.createdAt,
-      completedAt: null,
-      cancelledAt: null,
+      completedAt: calculatedStatus === 'completed' ? booking.departureDateTime : null,
+      cancelledAt: calculatedStatus === 'cancelled' ? booking.updatedAt : null,
       booking: {
         id: booking.id,
         userId: booking.userId,
@@ -294,7 +271,9 @@ export class TripsService {
         bookingStatus: booking.bookingStatus,
         paymentStatus: booking.paymentStatus,
         createdAt: booking.createdAt,
+        departureDateTime: booking.departureDateTime,
         passengers: booking.passengers || [],
+        // Deal-based booking data
         deal: deal ? {
           id: deal.id,
           date: deal.date,
@@ -305,20 +284,42 @@ export class TripsService {
             name: company.name,
             logo: company.logo,
           } : null,
-          route: deal ? {
-            origin: deal.originName,
-            destination: deal.destinationName,
-            originLatitude: deal.originLatitude,
-            originLongitude: deal.originLongitude,
-            destinationLatitude: deal.destinationLatitude,
-            destinationLongitude: deal.destinationLongitude,
-          } : null,
+          route: {
+            origin: deal.originName || booking.originName,
+            destination: deal.destinationName || booking.destinationName,
+            originLatitude: deal.originLatitude || booking.originLatitude,
+            originLongitude: deal.originLongitude || booking.originLongitude,
+            destinationLatitude: deal.destinationLatitude || booking.destinationLatitude,
+            destinationLongitude: deal.destinationLongitude || booking.destinationLongitude,
+          },
           aircraft: aircraft ? {
             id: aircraft.id,
             name: aircraft.name,
             type: aircraft.type,
             capacity: aircraft.capacity,
           } : null,
+        } : null,
+        // Direct charter booking data
+        directCharter: !deal ? {
+          aircraft: directAircraft ? {
+            id: directAircraft.id,
+            name: directAircraft.name,
+            type: directAircraft.type,
+            capacity: directAircraft.capacity,
+          } : null,
+          company: directCompany ? {
+            id: directCompany.id,
+            name: directCompany.name,
+            logo: directCompany.logo,
+          } : null,
+          route: {
+            origin: booking.originName,
+            destination: booking.destinationName,
+            originLatitude: booking.originLatitude,
+            originLongitude: booking.originLongitude,
+            destinationLatitude: booking.destinationLatitude,
+            destinationLongitude: booking.destinationLongitude,
+          },
         } : null,
       },
     };
@@ -339,27 +340,42 @@ export class TripsService {
   }
 
   /**
-   * Calculate booking status based on booking and deal information
+   * Calculate trip status based on booking status and departure date
+   * pending - Pending bookings (pending or priced status with totalPrice > 0)
+   * upcoming - Upcoming trips (confirmed status)
+   * completed - Completed trips (departure day passed)
+   * cancelled - Cancelled trips
    */
-  private calculateBookingStatus(booking: any): UserTripStatus {
-    const deal = booking.deal;
-    if (!deal) return UserTripStatus.CANCELLED;
-
-    const today = new Date();
-    const flightDate = new Date(deal.date);
-    
+  private calculateTripStatus(booking: any): string {
     // If booking is cancelled, trip is cancelled
     if (booking.bookingStatus === 'cancelled') {
-      return UserTripStatus.CANCELLED;
+      return 'cancelled';
     }
     
-    // If flight date has passed, trip is completed
-    if (flightDate < today) {
-      return UserTripStatus.COMPLETED;
+    // If booking status is pending or priced, trip is pending
+    if (booking.bookingStatus === 'pending' || booking.bookingStatus === 'priced') {
+      return 'pending';
     }
     
-    // Otherwise, trip is upcoming
-    return UserTripStatus.UPCOMING;
+    // If booking is confirmed, check departure date
+    if (booking.bookingStatus === 'confirmed') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      
+      const departureDate = new Date(booking.departureDateTime);
+      departureDate.setHours(0, 0, 0, 0); // Reset time to start of day
+      
+      // If departure date has passed, trip is completed
+      if (departureDate < today) {
+        return 'completed';
+      }
+      
+      // Otherwise, trip is upcoming
+      return 'upcoming';
+    }
+    
+    // Default to pending for any other status
+    return 'pending';
   }
 
   /**

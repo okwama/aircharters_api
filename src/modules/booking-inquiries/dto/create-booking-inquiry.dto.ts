@@ -70,4 +70,12 @@ export class CreateBookingInquiryDto {
   @ValidateNested({ each: true })
   @Type(() => InquiryStopDto)
   stops: InquiryStopDto[];
+
+  @IsOptional()
+  @IsString()
+  preferredDepartureDate?: string;
+
+  @IsOptional()
+  @IsString()
+  preferredReturnDate?: string;
 } 

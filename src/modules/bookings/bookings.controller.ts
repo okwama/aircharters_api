@@ -599,4 +599,126 @@ export class BookingsController {
       data: timeline,
     };
   }
+
+  @Patch(':id/confirm-payment')
+  @ApiOperation({ summary: 'Confirm booking after successful payment' })
+  @ApiParam({ name: 'id', description: 'Booking ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Booking confirmed successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            bookingStatus: { type: 'string' },
+            paymentStatus: { type: 'string' },
+            paymentTransactionId: { type: 'string' },
+          },
+        },
+      },
+    },
+  })
+  async confirmBookingAfterPayment(
+    @Param('id') id: string,
+    @Body() body: { paymentReference: string },
+    @Request() req
+  ) {
+    // Verify ownership
+    const booking = await this.bookingsService.findOne(id);
+    if (booking.userId !== req.user.sub) {
+      throw new BadRequestException('You can only confirm your own bookings');
+    }
+
+    const updatedBooking = await this.bookingsService.confirmBookingAfterPayment(
+      id,
+      body.paymentReference
+    );
+
+    return {
+      success: true,
+      message: 'Booking confirmed successfully',
+        data: {
+          id: updatedBooking.id,
+          bookingStatus: updatedBooking.bookingStatus,
+          paymentStatus: updatedBooking.paymentStatus,
+          referenceNumber: updatedBooking.referenceNumber,
+        },
+    };
+  }
+
+  @Post(':id/create-payment-intent')
+  @ApiOperation({ summary: 'Create payment intent for a pending inquiry' })
+  @ApiParam({ name: 'id', description: 'Booking ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payment intent created successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        data: {
+          type: 'object',
+          properties: {
+            paymentIntent: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                clientSecret: { type: 'string' },
+                status: { type: 'string' },
+                requiresAction: { type: 'boolean' },
+                nextAction: { type: 'object' },
+              },
+            },
+            booking: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                totalPrice: { type: 'number' },
+                referenceNumber: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bad request - booking not found or not payable' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async createPaymentIntentForInquiry(
+    @Param('id') id: string,
+    @Request() req
+  ) {
+    // Verify ownership
+    const booking = await this.bookingsService.findOne(id);
+    if (booking.userId !== req.user.sub) {
+      throw new BadRequestException('You can only create payment intents for your own bookings');
+    }
+
+    // Check if booking is in a payable state
+    if (booking.bookingStatus !== 'pending' && booking.bookingStatus !== 'priced') {
+      throw new BadRequestException('Booking is not in a payable state');
+    }
+
+    if (booking.totalPrice <= 0) {
+      throw new BadRequestException('Booking has no price set. Please contact support.');
+    }
+
+    if (booking.paymentStatus === 'paid') {
+      throw new BadRequestException('Booking is already paid');
+    }
+
+    const result = await this.bookingsService.createPaymentIntentForInquiry(id);
+
+    return {
+      success: true,
+      message: 'Payment intent created successfully',
+      data: result,
+    };
+  }
 }

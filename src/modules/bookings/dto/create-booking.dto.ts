@@ -53,6 +53,11 @@ export class CreateBookingDto {
   @IsNumber()
   dealId: number;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  experienceScheduleId?: number;
+
   @ApiProperty()
   @IsNumber()
   @Min(0)

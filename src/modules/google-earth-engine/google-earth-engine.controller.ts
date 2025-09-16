@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { GoogleEarthEngineService } from './google-earth-engine.service';
 import { GoogleEarthEngineSearchDto, GoogleEarthEngineReverseGeocodeDto, GoogleEarthEngineDistanceDto } from './dto/google-earth-engine.dto';
 
@@ -11,14 +11,34 @@ export class GoogleEarthEngineController {
     return this.googleEarthEngineService.searchLocations(searchDto);
   }
 
+  @Post('search')
+  async searchLocationsPost(@Body() searchDto: GoogleEarthEngineSearchDto) {
+    return this.googleEarthEngineService.searchLocations(searchDto);
+  }
+
   @Get('geocode/reverse')
   async reverseGeocode(@Query() reverseGeocodeDto: GoogleEarthEngineReverseGeocodeDto) {
+    return this.googleEarthEngineService.reverseGeocode(reverseGeocodeDto);
+  }
+
+  @Post('reverse-geocode')
+  async reverseGeocodePost(@Body() reverseGeocodeDto: GoogleEarthEngineReverseGeocodeDto) {
     return this.googleEarthEngineService.reverseGeocode(reverseGeocodeDto);
   }
 
   @Get('distance/calculate')
   async calculateDistance(@Query() distanceDto: GoogleEarthEngineDistanceDto) {
     return this.googleEarthEngineService.calculateDistance(distanceDto);
+  }
+
+  @Post('distance')
+  async calculateDistancePost(@Body() distanceDto: GoogleEarthEngineDistanceDto) {
+    return this.googleEarthEngineService.calculateDistance(distanceDto);
+  }
+
+  @Get('place/:placeId')
+  async getPlaceDetails(@Query('placeId') placeId: string) {
+    return this.googleEarthEngineService.getPlaceDetails(placeId);
   }
 
   @Get('distance/flight')

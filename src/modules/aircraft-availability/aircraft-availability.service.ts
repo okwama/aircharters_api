@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, Not, IsNull, MoreThanOrEqual } from 'typeorm';
+import { Repository, Between, Not, IsNull, MoreThanOrEqual, In } from 'typeorm';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { Location } from '../../common/entities/location.entity';
 import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
 import { Booking } from '../../common/entities/booking.entity';
 import { AircraftImage } from '../../common/entities/aircraft-image.entity';
+import { AircraftCalendar, CalendarEventType } from '../../common/entities/aircraft-calendar.entity';
 import { AircraftAvailabilitySearchDto, AvailableAircraftDto } from './dto/aircraft-availability.dto';
 
 // ... existing code ...
@@ -26,6 +27,8 @@ export class AircraftAvailabilityService {
     private readonly bookingRepository: Repository<Booking>,
     @InjectRepository(AircraftImage)
     private readonly aircraftImageRepository: Repository<AircraftImage>,
+    @InjectRepository(AircraftCalendar)
+    private readonly aircraftCalendarRepository: Repository<AircraftCalendar>,
   ) {}
 
   /**
@@ -134,7 +137,7 @@ export class AircraftAvailabilityService {
     date: Date,
     passengerCount: number
   ): Promise<boolean> {
-    // Simplified availability check - just verify aircraft is available and has enough capacity
+    // Check if aircraft exists and is operational
     const aircraft = await this.aircraftRepository.findOne({ 
       where: { 
         id: aircraftId,
@@ -146,7 +149,123 @@ export class AircraftAvailabilityService {
     if (!aircraft) return false;
 
     // Check if aircraft has enough capacity for the requested passenger count
-    return aircraft.capacity >= passengerCount;
+    if (aircraft.capacity < passengerCount) return false;
+
+    // Check for calendar conflicts (bookings, maintenance, blocked periods)
+    const conflicts = await this.aircraftCalendarRepository.find({
+      where: {
+        aircraftId,
+        eventType: In([CalendarEventType.BOOKED, CalendarEventType.MAINTENANCE, CalendarEventType.BLOCKED]),
+        startDateTime: Between(
+          new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
+          new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
+        ),
+      },
+    });
+
+    // If there are conflicts, aircraft is not available
+    return conflicts.length === 0;
+  }
+
+  /**
+   * Get aircraft availability for a date range
+   */
+  async getAircraftAvailability(
+    aircraftId: number,
+    startDate: Date,
+    endDate: Date
+  ) {
+    const aircraft = await this.aircraftRepository.findOne({
+      where: { id: aircraftId },
+      relations: ['company'],
+    });
+
+    if (!aircraft) {
+      throw new NotFoundException('Aircraft not found');
+    }
+
+    // Get all calendar events for the aircraft in the date range
+    const events = await this.aircraftCalendarRepository.find({
+      where: {
+        aircraftId,
+        startDateTime: Between(startDate, endDate),
+      },
+      order: { startDateTime: 'ASC' },
+    });
+
+    // Group events by date
+    const availabilityByDate = {};
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      const dateKey = currentDate.toISOString().split('T')[0];
+      const dayEvents = events.filter(event => 
+        event.startDateTime.toISOString().split('T')[0] === dateKey
+      );
+
+      availabilityByDate[dateKey] = {
+        date: new Date(currentDate),
+        isAvailable: dayEvents.length === 0,
+        events: dayEvents,
+        status: dayEvents.length === 0 ? 'available' : 'unavailable',
+      };
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return {
+      success: true,
+      data: {
+        aircraft,
+        availability: availabilityByDate,
+        summary: {
+          totalDays: Object.keys(availabilityByDate).length,
+          availableDays: Object.values(availabilityByDate).filter((day: any) => day.isAvailable).length,
+          unavailableDays: Object.values(availabilityByDate).filter((day: any) => !day.isAvailable).length,
+        },
+      },
+    };
+  }
+
+  /**
+   * Create calendar event for aircraft
+   */
+  async createCalendarEvent(
+    aircraftId: number,
+    eventType: CalendarEventType,
+    startTime: Date,
+    endTime: Date,
+    description?: string
+  ) {
+    const aircraft = await this.aircraftRepository.findOne({
+      where: { id: aircraftId },
+    });
+
+    if (!aircraft) {
+      throw new NotFoundException('Aircraft not found');
+    }
+
+    // Check for conflicts before creating the event
+    const conflicts = await this.aircraftCalendarRepository.find({
+      where: {
+        aircraftId,
+        startDateTime: Between(startTime, endTime),
+        eventType: In([CalendarEventType.BOOKED, CalendarEventType.MAINTENANCE, CalendarEventType.BLOCKED]),
+      },
+    });
+
+    if (conflicts.length > 0) {
+      throw new BadRequestException('Aircraft is not available for the specified time period');
+    }
+
+    const calendarEvent = this.aircraftCalendarRepository.create({
+      aircraftId,
+      eventType,
+      startDateTime: startTime,
+      endDateTime: endTime,
+    });
+
+    return await this.aircraftCalendarRepository.save(calendarEvent);
   }
 
   /**

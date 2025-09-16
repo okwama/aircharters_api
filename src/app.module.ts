@@ -20,6 +20,7 @@ import { AmenitiesModule } from './modules/amenities/amenities.module';
 import { CommissionModule } from './modules/commission/commission.module';
 import { ExperiencesModule } from './modules/experiences/experiences.module';
 import { SmsModule } from './modules/sms/sms.module';
+import { EmailModule } from './modules/email/email.module';
 import { HealthController } from './health.controller';
 import { User } from './common/entities/user.entity';
 import { CharterDeal } from './common/entities/charter-deal.entity';
@@ -157,6 +158,7 @@ import { ExperienceSchedule } from './common/entities/experience-schedule.entity
     CommissionModule,
     ExperiencesModule,
     SmsModule,
+    EmailModule,
   ],
   controllers: [HealthController],
 })

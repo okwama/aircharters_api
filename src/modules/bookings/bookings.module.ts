@@ -4,6 +4,7 @@ import { BookingsService } from './bookings.service';
 import { BookingsController } from './bookings.controller';
 import { Booking } from '../../common/entities/booking.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
+import { ExperienceSchedule } from '../../common/entities/experience-schedule.entity';
 import { Passenger } from '../../common/entities/passenger.entity';
 import { BookingTimeline } from '../../common/entities/booking-timeline.entity';
 import { UserTrip } from '../../common/entities/user-trips.entity';
@@ -12,15 +13,17 @@ import { User } from '../../common/entities/user.entity';
 import { Payment } from '../../common/entities/payment.entity';
 import { WalletModule } from '../wallet/wallet.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { EmailModule } from '../email/email.module';
 import { BookingPaymentService } from './services/booking-payment.service';
 import { BookingTimelineService } from './services/booking-timeline.service';
 import { BookingQueryService } from './services/booking-query.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Booking, CharterDeal, Passenger, BookingTimeline, UserTrip, WalletTransaction, User, Payment]),
+    TypeOrmModule.forFeature([Booking, CharterDeal, ExperienceSchedule, Passenger, BookingTimeline, UserTrip, WalletTransaction, User, Payment]),
     WalletModule,
     PaymentsModule, // Import PaymentsModule to access PaymentProviderService
+    EmailModule, // Import EmailModule to access EmailService
   ],
   controllers: [BookingsController],
   providers: [
