@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, DataSource, DeepPartial } from 'typeorm';
+import { Repository, Between, In, DataSource, DeepPartial } from 'typeorm';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { AircraftCalendar, CalendarEventType } from '../../common/entities/aircraft-calendar.entity';
 import { Booking, BookingType, BookingStatus, PaymentStatus } from '../../common/entities/booking.entity';
@@ -207,48 +207,50 @@ export class DirectCharterService {
   async bookDirectCharter(bookDto: BookDirectCharterDto, userId: string) {
     const { aircraftId, departureDateTime, returnDateTime, tripType } = bookDto;
 
-    // For direct charters, check if aircraft slot is already booked (exclusive booking)
-    const existingBooking = await this.bookingRepository.findOne({
-      where: {
-        aircraftId: aircraftId,
-        bookingStatus: In([BookingStatus.PENDING, BookingStatus.CONFIRMED]),
-        departureDateTime: Between(
-          new Date(departureDateTime),
-          returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime)
-        ),
-      },
-    });
-
-    if (existingBooking) {
-      throw new BadRequestException('Aircraft slot is already booked for the selected time period');
-    }
-
-    // Get aircraft details to get company ID
-    const aircraft = await this.aircraftRepository.findOne({
-      where: { id: aircraftId },
-      relations: ['company'],
-    });
-
-    if (!aircraft) {
-      throw new NotFoundException(`Aircraft with ID ${aircraftId} not found`);
-    }
-
-    // Get user data for passenger creation
-    const user = await this.dataSource.getRepository(User).findOne({
-      where: { id: userId },
-      select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
-
-    // Use query runner for transaction
+    // Use query runner for transaction with proper locking
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      // For direct charters, check if aircraft slot is already booked (exclusive booking)
+      // Use SELECT FOR UPDATE to prevent race conditions
+      const existingBooking = await queryRunner.manager.findOne(Booking, {
+        where: {
+          aircraftId: aircraftId,
+          bookingStatus: In([BookingStatus.PENDING, BookingStatus.CONFIRMED]),
+          departureDateTime: Between(
+            new Date(departureDateTime),
+            returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime)
+          ),
+        },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (existingBooking) {
+        throw new BadRequestException('Aircraft slot is already booked for the selected time period');
+      }
+
+      // Get aircraft details to get company ID with lock
+      const aircraft = await queryRunner.manager.findOne(Aircraft, {
+        where: { id: aircraftId },
+        relations: ['company'],
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!aircraft) {
+        throw new NotFoundException(`Aircraft with ID ${aircraftId} not found`);
+      }
+
+      // Get user data for passenger creation
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+        select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
       // Generate unique booking ID
       const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const time = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
@@ -480,8 +482,50 @@ export class DirectCharterService {
       return null;
     }
   }
-} 
 
-function In(arg0: BookingStatus[]): BookingStatus | import("typeorm").FindOperator<BookingStatus> {
-  throw new Error('Function not implemented.');
+  /**
+   * Get booked dates for a specific aircraft
+   */
+  async getBookedDates(
+    aircraftId: number,
+    startDate?: Date,
+    endDate?: Date,
+  ): Promise<Date[]> {
+    try {
+      const queryBuilder = this.bookingRepository
+        .createQueryBuilder('booking')
+        .select('booking.departureDateTime')
+        .where('booking.aircraftId = :aircraftId', { aircraftId })
+        .andWhere('booking.bookingStatus IN (:...statuses)', {
+          statuses: [BookingStatus.PENDING, BookingStatus.CONFIRMED],
+        });
+
+      if (startDate) {
+        queryBuilder.andWhere('booking.departureDateTime >= :startDate', {
+          startDate,
+        });
+      }
+
+      if (endDate) {
+        queryBuilder.andWhere('booking.departureDateTime <= :endDate', {
+          endDate,
+        });
+      }
+
+      const results = await queryBuilder.getMany();
+      
+      // Extract unique dates (without time)
+      const bookedDates = new Set<string>();
+      results.forEach(booking => {
+        const date = new Date(booking.departureDateTime);
+        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        bookedDates.add(dateString);
+      });
+
+      return Array.from(bookedDates).map(dateString => new Date(dateString));
+    } catch (error) {
+      console.error('Error fetching booked dates:', error);
+      throw new Error('Failed to fetch booked dates');
+    }
+  }
 }

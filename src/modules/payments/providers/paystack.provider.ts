@@ -88,7 +88,7 @@ export class PaystackProvider implements PaymentProvider {
         email: request.metadata?.customerEmail || 'customer@example.com',
         currency: paystackCurrency,
         reference: this.generateReference(request.bookingId),
-        callback_url: `${process.env.APP_URL}/api/payments/verify`,
+        callback_url: process.env.PAYSTACK_CALLBACK_URL || `${process.env.APP_URL || 'http://localhost:5000'}/api/payments/paystack/verify`,
         metadata: {
           bookingId: request.bookingId,
           companyId: request.metadata?.companyId,
@@ -119,7 +119,8 @@ export class PaystackProvider implements PaymentProvider {
       const userId = this.extractUserIdFromString(request.userId);
       this.logger.log(`Logging transaction for user ID: ${userId} (from: ${request.userId})`);
       
-      await this.logTransactionToLedger({
+      // Don't await - let it run in background to prevent checkout timeout
+      this.logTransactionToLedger({
         transactionId: response.data.reference,
         companyId: request.metadata?.companyId,
         userId: userId,
@@ -132,6 +133,9 @@ export class PaystackProvider implements PaymentProvider {
         status: TransactionStatus.PROCESSING,
         description: request.description,
         metadata: request.metadata,
+      }).catch(error => {
+        // Log error but don't throw to avoid breaking payment flow
+        this.logger.error(`Background transaction logging failed: ${error.message}`);
       });
 
       return {
@@ -329,12 +333,12 @@ export class PaystackProvider implements PaymentProvider {
    * Handle Paystack webhook events
    * Processes payment status updates
    */
-  async handleWebhook(event: any): Promise<boolean> {
+  async handleWebhook(event: any, signature?: string): Promise<boolean> {
     try {
       this.logger.log(`Processing Paystack webhook: ${event.event}`);
 
       // Verify webhook signature
-      if (!this.verifyWebhookSignature(event)) {
+      if (!this.verifyWebhookSignature(event, signature)) {
         this.logger.error('Invalid Paystack webhook signature');
         return false;
       }
@@ -351,6 +355,11 @@ export class PaystackProvider implements PaymentProvider {
           break;
         case 'transfer.failed':
           await this.handleTransferFailed(event.data);
+          break;
+        case 'subscription.create':
+        case 'subscription.disable':
+        case 'subscription.enable':
+          this.logger.log(`Subscription webhook event: ${event.event} - not implemented yet`);
           break;
         default:
           this.logger.log(`Unhandled Paystack webhook event: ${event.event}`);
@@ -487,12 +496,48 @@ export class PaystackProvider implements PaymentProvider {
   /**
    * Verify Paystack webhook signature
    */
-  private verifyWebhookSignature(event: any): boolean {
-    // Implement Paystack webhook signature verification
-    // This is crucial for security
-    const expectedSignature = process.env.PAYSTACK_WEBHOOK_SECRET;
-    // Add proper signature verification logic here
-    return true; // Placeholder - implement proper verification
+  private verifyWebhookSignature(event: any, signature?: string): boolean {
+    try {
+      // In development, skip signature verification for testing
+      if (process.env.NODE_ENV === 'development') {
+        this.logger.warn('Skipping webhook signature verification in development mode');
+        return true;
+      }
+
+      // In production, verify signature
+      const webhookSecret = process.env.PAYSTACK_WEBHOOK_SECRET;
+      if (!webhookSecret) {
+        this.logger.error('PAYSTACK_WEBHOOK_SECRET not configured');
+        return false;
+      }
+
+      if (!signature) {
+        this.logger.error('No webhook signature provided');
+        return false;
+      }
+
+      // Paystack uses HMAC SHA512 for webhook signatures
+      const crypto = require('crypto');
+      const expectedSignature = crypto
+        .createHmac('sha512', webhookSecret)
+        .update(JSON.stringify(event))
+        .digest('hex');
+
+      const isValid = crypto.timingSafeEqual(
+        Buffer.from(signature, 'hex'),
+        Buffer.from(expectedSignature, 'hex')
+      );
+
+      if (!isValid) {
+        this.logger.error('Invalid webhook signature');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      this.logger.error(`Webhook signature verification failed: ${error.message}`);
+      return false;
+    }
   }
 
   /**
@@ -528,7 +573,7 @@ export class PaystackProvider implements PaymentProvider {
   }
 
   /**
-   * Log transaction to ledger
+   * Log transaction to ledger with retry logic and timeout handling
    */
   private async logTransactionToLedger(data: {
     transactionId: string;
@@ -544,6 +589,10 @@ export class PaystackProvider implements PaymentProvider {
     description: string;
     metadata?: any;
   }): Promise<void> {
+    const maxRetries = 3;
+    let lastError: any;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       // Check if this is a test booking or if the bookingId doesn't exist in the database
       const isTestBooking = data.bookingId.startsWith('TEST_') || 
@@ -581,12 +630,33 @@ export class PaystackProvider implements PaymentProvider {
         },
       });
 
-      await this.transactionLedgerRepository.save(ledgerEntry);
+        // Use insert for better performance (bypasses validation and hooks)
+        await this.transactionLedgerRepository.insert(ledgerEntry);
+        
       this.logger.log(`Transaction logged to ledger: ${data.transactionId}`);
+        return; // Success, exit retry loop
     } catch (error) {
-      this.logger.error(`Failed to log transaction to ledger: ${error.message}`, error.stack);
-      // Don't throw error to avoid breaking payment flow
+        lastError = error;
+        
+        // Check if it's a lock timeout error
+        if (error.message && error.message.includes('Lock wait timeout exceeded')) {
+          if (attempt < maxRetries) {
+            // Exponential backoff: wait 1s, 2s, 4s
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            this.logger.warn(`Lock timeout on attempt ${attempt}, retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+        }
+        
+        // For non-lock errors or final attempt, log and break
+        this.logger.error(`Failed to log transaction to ledger (attempt ${attempt}): ${error.message}`, error.stack);
+        break;
+      }
     }
+
+    // If all retries failed, log the final error but don't throw to avoid breaking payment flow
+    this.logger.error(`Failed to log transaction to ledger after ${maxRetries} attempts: ${lastError?.message}`);
   }
 
   /**

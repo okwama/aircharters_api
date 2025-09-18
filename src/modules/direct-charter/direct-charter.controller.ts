@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Query, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { DirectCharterService } from './direct-charter.service';
@@ -123,5 +123,42 @@ export class DirectCharterController {
       message: 'Direct charter service is running',
       timestamp: new Date().toISOString(),
     };
+  }
+
+  @Get('aircraft/:aircraftId/booked-dates')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get booked dates for a specific aircraft' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns list of booked dates for the aircraft' 
+  })
+  @ApiResponse({ status: 404, description: 'Aircraft not found' })
+  @ApiQuery({ name: 'startDate', required: false, description: 'Start date for filtering (ISO string)' })
+  @ApiQuery({ name: 'endDate', required: false, description: 'End date for filtering (ISO string)' })
+  async getBookedDates(
+    @Param('aircraftId') aircraftId: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    try {
+      const bookedDates = await this.directCharterService.getBookedDates(
+        parseInt(aircraftId),
+        startDate ? new Date(startDate) : undefined,
+        endDate ? new Date(endDate) : undefined,
+      );
+      
+      return {
+        success: true,
+        data: bookedDates.map(date => date.toISOString()),
+        message: `Found ${bookedDates.length} booked dates`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || 'Failed to fetch booked dates',
+        data: [],
+      };
+    }
   }
 } 

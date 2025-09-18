@@ -134,6 +134,8 @@ exports.AppModule = AppModule = __decorate([
                     logging: false,
                     extra: {
                         connectionLimit: 20,
+                        acquireTimeout: 60000,
+                        timeout: 60000,
                         charset: 'utf8mb4_unicode_ci',
                         multipleStatements: false,
                         dateStrings: true,
@@ -141,6 +143,8 @@ exports.AppModule = AppModule = __decorate([
                         bigNumberStrings: true,
                         enableKeepAlive: true,
                         keepAliveInitialDelay: 10000,
+                        lockWaitTimeout: 30000,
+                        innodbLockWaitTimeout: 30,
                     },
                     maxQueryExecutionTime: 30000,
                     cache: {
@@ -7504,9 +7508,6 @@ let BookingsService = class BookingsService {
                 isUser: false,
             })));
         }
-        if (deal.availableSeats < passengersToCreate.length) {
-            throw new common_1.BadRequestException(`Insufficient seats available. Only ${deal.availableSeats} seats left, but ${passengersToCreate.length} passengers requested.`);
-        }
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -7532,6 +7533,16 @@ let BookingsService = class BookingsService {
             return typeof age === 'number' && !isNaN(age) && age < 18;
         }).length);
         try {
+            const lockedDeal = await queryRunner.manager.findOne(charter_deal_entity_1.CharterDeal, {
+                where: { id: createBookingDto.dealId },
+                lock: { mode: 'pessimistic_write' },
+            });
+            if (!lockedDeal) {
+                throw new common_1.BadRequestException('Deal not found or no longer available');
+            }
+            if (lockedDeal.availableSeats < passengersToCreate.length) {
+                throw new common_1.BadRequestException(`Insufficient seats available. Only ${lockedDeal.availableSeats} seats left, but ${passengersToCreate.length} passengers requested.`);
+            }
             const referenceNumber = this.generateBookingReference();
             const now = new Date();
             const booking = this.bookingRepository.create({
@@ -7591,15 +7602,15 @@ let BookingsService = class BookingsService {
                 await queryRunner.manager.save(passenger);
             }
             const passengerCount = passengersToCreate.length;
-            deal.availableSeats -= passengerCount;
-            await queryRunner.manager.save(deal);
+            lockedDeal.availableSeats -= passengerCount;
+            await queryRunner.manager.save(lockedDeal);
             await queryRunner.commitTransaction();
             await this.bookingTimelineService.createTimelineEvent(savedBooking.id.toString(), booking_timeline_entity_1.TimelineEventType.BOOKING_CREATED, {
                 title: 'Booking Created',
                 description: `Booking ${referenceNumber} has been created successfully with ${passengerCount} passengers. Loyalty points will be earned upon payment.`,
                 metadata: {
                     passengerCount,
-                    companyId: deal.companyId,
+                    companyId: lockedDeal.companyId,
                     referenceNumber: referenceNumber,
                     totalPrice: createBookingDto.totalPrice,
                     userIncluded: !userInPassengers,
@@ -10620,6 +10631,23 @@ let DirectCharterController = class DirectCharterController {
             timestamp: new Date().toISOString(),
         };
     }
+    async getBookedDates(aircraftId, startDate, endDate) {
+        try {
+            const bookedDates = await this.directCharterService.getBookedDates(parseInt(aircraftId), startDate ? new Date(startDate) : undefined, endDate ? new Date(endDate) : undefined);
+            return {
+                success: true,
+                data: bookedDates.map(date => date.toISOString()),
+                message: `Found ${bookedDates.length} booked dates`,
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: error.message || 'Failed to fetch booked dates',
+                data: [],
+            };
+        }
+    }
 };
 exports.DirectCharterController = DirectCharterController;
 __decorate([
@@ -10686,6 +10714,25 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DirectCharterController.prototype, "healthCheck", null);
+__decorate([
+    (0, common_1.Get)('aircraft/:aircraftId/booked-dates'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get booked dates for a specific aircraft' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Returns list of booked dates for the aircraft'
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Aircraft not found' }),
+    (0, swagger_1.ApiQuery)({ name: 'startDate', required: false, description: 'Start date for filtering (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'endDate', required: false, description: 'End date for filtering (ISO string)' }),
+    __param(0, (0, common_1.Param)('aircraftId')),
+    __param(1, (0, common_1.Query)('startDate')),
+    __param(2, (0, common_1.Query)('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], DirectCharterController.prototype, "getBookedDates", null);
 exports.DirectCharterController = DirectCharterController = __decorate([
     (0, swagger_1.ApiTags)('Direct Charter'),
     (0, common_1.Controller)('direct-charter'),
@@ -10898,34 +10945,36 @@ let DirectCharterService = class DirectCharterService {
     }
     async bookDirectCharter(bookDto, userId) {
         const { aircraftId, departureDateTime, returnDateTime, tripType } = bookDto;
-        const existingBooking = await this.bookingRepository.findOne({
-            where: {
-                aircraftId: aircraftId,
-                bookingStatus: In([booking_entity_1.BookingStatus.PENDING, booking_entity_1.BookingStatus.CONFIRMED]),
-                departureDateTime: (0, typeorm_2.Between)(new Date(departureDateTime), returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime)),
-            },
-        });
-        if (existingBooking) {
-            throw new common_1.BadRequestException('Aircraft slot is already booked for the selected time period');
-        }
-        const aircraft = await this.aircraftRepository.findOne({
-            where: { id: aircraftId },
-            relations: ['company'],
-        });
-        if (!aircraft) {
-            throw new common_1.NotFoundException(`Aircraft with ID ${aircraftId} not found`);
-        }
-        const user = await this.dataSource.getRepository(user_entity_1.User).findOne({
-            where: { id: userId },
-            select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
-        });
-        if (!user) {
-            throw new common_1.NotFoundException(`User with ID ${userId} not found`);
-        }
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
+            const existingBooking = await queryRunner.manager.findOne(booking_entity_1.Booking, {
+                where: {
+                    aircraftId: aircraftId,
+                    bookingStatus: (0, typeorm_2.In)([booking_entity_1.BookingStatus.PENDING, booking_entity_1.BookingStatus.CONFIRMED]),
+                    departureDateTime: (0, typeorm_2.Between)(new Date(departureDateTime), returnDateTime ? new Date(returnDateTime) : new Date(departureDateTime)),
+                },
+                lock: { mode: 'pessimistic_write' },
+            });
+            if (existingBooking) {
+                throw new common_1.BadRequestException('Aircraft slot is already booked for the selected time period');
+            }
+            const aircraft = await queryRunner.manager.findOne(aircraft_entity_1.Aircraft, {
+                where: { id: aircraftId },
+                relations: ['company'],
+                lock: { mode: 'pessimistic_write' },
+            });
+            if (!aircraft) {
+                throw new common_1.NotFoundException(`Aircraft with ID ${aircraftId} not found`);
+            }
+            const user = await queryRunner.manager.findOne(user_entity_1.User, {
+                where: { id: userId },
+                select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
+            });
+            if (!user) {
+                throw new common_1.NotFoundException(`User with ID ${userId} not found`);
+            }
             const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             const time = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
             const random = Math.random().toString(36).substr(2, 3).toUpperCase();
@@ -11123,6 +11172,39 @@ let DirectCharterService = class DirectCharterService {
             return null;
         }
     }
+    async getBookedDates(aircraftId, startDate, endDate) {
+        try {
+            const queryBuilder = this.bookingRepository
+                .createQueryBuilder('booking')
+                .select('booking.departureDateTime')
+                .where('booking.aircraftId = :aircraftId', { aircraftId })
+                .andWhere('booking.bookingStatus IN (:...statuses)', {
+                statuses: [booking_entity_1.BookingStatus.PENDING, booking_entity_1.BookingStatus.CONFIRMED],
+            });
+            if (startDate) {
+                queryBuilder.andWhere('booking.departureDateTime >= :startDate', {
+                    startDate,
+                });
+            }
+            if (endDate) {
+                queryBuilder.andWhere('booking.departureDateTime <= :endDate', {
+                    endDate,
+                });
+            }
+            const results = await queryBuilder.getMany();
+            const bookedDates = new Set();
+            results.forEach(booking => {
+                const date = new Date(booking.departureDateTime);
+                const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                bookedDates.add(dateString);
+            });
+            return Array.from(bookedDates).map(dateString => new Date(dateString));
+        }
+        catch (error) {
+            console.error('Error fetching booked dates:', error);
+            throw new Error('Failed to fetch booked dates');
+        }
+    }
 };
 exports.DirectCharterService = DirectCharterService;
 exports.DirectCharterService = DirectCharterService = __decorate([
@@ -11136,9 +11218,6 @@ exports.DirectCharterService = DirectCharterService = __decorate([
     __param(6, (0, typeorm_1.InjectRepository)(aircraft_type_image_placeholder_entity_1.AircraftTypeImagePlaceholder)),
     __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _g : Object, typeof (_h = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _h : Object, typeof (_j = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _j : Object, typeof (_k = typeof google_earth_engine_service_1.GoogleEarthEngineService !== "undefined" && google_earth_engine_service_1.GoogleEarthEngineService) === "function" ? _k : Object])
 ], DirectCharterService);
-function In(arg0) {
-    throw new Error('Function not implemented.');
-}
 
 
 /***/ }),
@@ -14325,7 +14404,13 @@ let PaystackController = PaystackController_1 = class PaystackController {
                     companyId: request.companyId,
                 },
             };
-            const result = await this.paymentProviderService.createPaymentIntent(paymentRequest, payment_provider_interface_1.PaymentProviderType.PAYSTACK);
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Payment initialization timeout')), 30000);
+            });
+            const result = await Promise.race([
+                this.paymentProviderService.createPaymentIntent(paymentRequest, payment_provider_interface_1.PaymentProviderType.PAYSTACK),
+                timeoutPromise
+            ]);
             return {
                 success: true,
                 data: result,
@@ -14367,7 +14452,7 @@ let PaystackController = PaystackController_1 = class PaystackController {
                 this.logger.error('Invalid Paystack webhook signature');
                 throw new common_1.BadRequestException('Invalid webhook signature');
             }
-            const processed = await this.paystackProvider.handleWebhook(event);
+            const processed = await this.paystackProvider.handleWebhook(event, signature);
             if (processed) {
                 return { success: true, message: 'Webhook processed successfully' };
             }
@@ -14426,12 +14511,36 @@ let PaystackController = PaystackController_1 = class PaystackController {
         }
     }
     verifyWebhookSignature(event, signature) {
-        const expectedSignature = process.env.PAYSTACK_WEBHOOK_SECRET;
-        if (!expectedSignature) {
-            this.logger.warn('PAYSTACK_WEBHOOK_SECRET not configured');
+        try {
+            if (process.env.NODE_ENV === 'development') {
+                this.logger.warn('Skipping webhook signature verification in development mode');
+                return true;
+            }
+            const webhookSecret = process.env.PAYSTACK_WEBHOOK_SECRET;
+            if (!webhookSecret) {
+                this.logger.error('PAYSTACK_WEBHOOK_SECRET not configured');
+                return false;
+            }
+            if (!signature) {
+                this.logger.error('No webhook signature provided');
+                return false;
+            }
+            const crypto = __webpack_require__(/*! crypto */ "crypto");
+            const expectedSignature = crypto
+                .createHmac('sha512', webhookSecret)
+                .update(JSON.stringify(event))
+                .digest('hex');
+            const isValid = crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedSignature, 'hex'));
+            if (!isValid) {
+                this.logger.error('Invalid webhook signature');
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            this.logger.error(`Webhook signature verification failed: ${error.message}`);
             return false;
         }
-        return true;
     }
 };
 exports.PaystackController = PaystackController;
@@ -16463,7 +16572,7 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
                 email: request.metadata?.customerEmail || 'customer@example.com',
                 currency: paystackCurrency,
                 reference: this.generateReference(request.bookingId),
-                callback_url: `${process.env.APP_URL}/api/payments/verify`,
+                callback_url: process.env.PAYSTACK_CALLBACK_URL || `${process.env.APP_URL || 'http://localhost:5000'}/api/payments/paystack/verify`,
                 metadata: {
                     bookingId: request.bookingId,
                     companyId: request.metadata?.companyId,
@@ -16485,7 +16594,7 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
             this.logger.log(`Attempting to log transaction to ledger: ${response.data.reference}`);
             const userId = this.extractUserIdFromString(request.userId);
             this.logger.log(`Logging transaction for user ID: ${userId} (from: ${request.userId})`);
-            await this.logTransactionToLedger({
+            this.logTransactionToLedger({
                 transactionId: response.data.reference,
                 companyId: request.metadata?.companyId,
                 userId: userId,
@@ -16498,6 +16607,8 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
                 status: transaction_ledger_entity_1.TransactionStatus.PROCESSING,
                 description: request.description,
                 metadata: request.metadata,
+            }).catch(error => {
+                this.logger.error(`Background transaction logging failed: ${error.message}`);
             });
             return {
                 id: response.data.reference,
@@ -16646,10 +16757,10 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
             throw new Error(`Refund creation failed: ${error.message}`);
         }
     }
-    async handleWebhook(event) {
+    async handleWebhook(event, signature) {
         try {
             this.logger.log(`Processing Paystack webhook: ${event.event}`);
-            if (!this.verifyWebhookSignature(event)) {
+            if (!this.verifyWebhookSignature(event, signature)) {
                 this.logger.error('Invalid Paystack webhook signature');
                 return false;
             }
@@ -16665,6 +16776,11 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
                     break;
                 case 'transfer.failed':
                     await this.handleTransferFailed(event.data);
+                    break;
+                case 'subscription.create':
+                case 'subscription.disable':
+                case 'subscription.enable':
+                    this.logger.log(`Subscription webhook event: ${event.event} - not implemented yet`);
                     break;
                 default:
                     this.logger.log(`Unhandled Paystack webhook event: ${event.event}`);
@@ -16755,9 +16871,37 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
         }
         return Math.abs(hash);
     }
-    verifyWebhookSignature(event) {
-        const expectedSignature = process.env.PAYSTACK_WEBHOOK_SECRET;
-        return true;
+    verifyWebhookSignature(event, signature) {
+        try {
+            if (process.env.NODE_ENV === 'development') {
+                this.logger.warn('Skipping webhook signature verification in development mode');
+                return true;
+            }
+            const webhookSecret = process.env.PAYSTACK_WEBHOOK_SECRET;
+            if (!webhookSecret) {
+                this.logger.error('PAYSTACK_WEBHOOK_SECRET not configured');
+                return false;
+            }
+            if (!signature) {
+                this.logger.error('No webhook signature provided');
+                return false;
+            }
+            const crypto = __webpack_require__(/*! crypto */ "crypto");
+            const expectedSignature = crypto
+                .createHmac('sha512', webhookSecret)
+                .update(JSON.stringify(event))
+                .digest('hex');
+            const isValid = crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedSignature, 'hex'));
+            if (!isValid) {
+                this.logger.error('Invalid webhook signature');
+                return false;
+            }
+            return true;
+        }
+        catch (error) {
+            this.logger.error(`Webhook signature verification failed: ${error.message}`);
+            return false;
+        }
     }
     async handlePaymentSuccess(data) {
         this.logger.log(`Payment successful: ${data.reference}`);
@@ -16772,46 +16916,62 @@ let PaystackProvider = PaystackProvider_1 = class PaystackProvider {
         this.logger.log(`Transfer failed: ${data.reference}`);
     }
     async logTransactionToLedger(data) {
-        try {
-            const isTestBooking = data.bookingId.startsWith('TEST_') ||
-                data.bookingId.startsWith('TEMP_') ||
-                data.bookingId.startsWith('1757959') ||
-                data.bookingId.startsWith('BK-') ||
-                data.bookingId.startsWith('AC');
-            const ledgerEntry = this.transactionLedgerRepository.create({
-                transactionId: data.transactionId,
-                companyId: isTestBooking ? null : data.companyId,
-                userId: this.extractUserIdFromString(data.userId.toString()),
-                bookingId: isTestBooking ? null : data.bookingId,
-                transactionType: transaction_ledger_entity_1.TransactionType.PAYMENT_RECEIVED,
-                paymentProvider: company_payment_account_entity_1.PaymentProvider.PAYSTACK,
-                amount: data.amount,
-                currency: data.currency,
-                exchangeRate: data.exchangeRate,
-                baseAmount: data.amount * data.exchangeRate,
-                netAmount: data.amount,
-                status: data.status,
-                description: data.description,
-                metadata: {
-                    ...data.metadata,
-                    paystackAmount: data.paystackAmount,
-                    paystackCurrency: data.paystackCurrency,
-                    originalCurrency: data.currency,
-                    convertedCurrency: data.paystackCurrency,
-                    isTestTransaction: isTestBooking,
-                },
-                providerMetadata: {
-                    paystackReference: data.transactionId,
-                    paystackAmount: data.paystackAmount,
-                    paystackCurrency: data.paystackCurrency,
-                },
-            });
-            await this.transactionLedgerRepository.save(ledgerEntry);
-            this.logger.log(`Transaction logged to ledger: ${data.transactionId}`);
+        const maxRetries = 3;
+        let lastError;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const isTestBooking = data.bookingId.startsWith('TEST_') ||
+                    data.bookingId.startsWith('TEMP_') ||
+                    data.bookingId.startsWith('1757959') ||
+                    data.bookingId.startsWith('BK-') ||
+                    data.bookingId.startsWith('AC');
+                const ledgerEntry = this.transactionLedgerRepository.create({
+                    transactionId: data.transactionId,
+                    companyId: isTestBooking ? null : data.companyId,
+                    userId: this.extractUserIdFromString(data.userId.toString()),
+                    bookingId: isTestBooking ? null : data.bookingId,
+                    transactionType: transaction_ledger_entity_1.TransactionType.PAYMENT_RECEIVED,
+                    paymentProvider: company_payment_account_entity_1.PaymentProvider.PAYSTACK,
+                    amount: data.amount,
+                    currency: data.currency,
+                    exchangeRate: data.exchangeRate,
+                    baseAmount: data.amount * data.exchangeRate,
+                    netAmount: data.amount,
+                    status: data.status,
+                    description: data.description,
+                    metadata: {
+                        ...data.metadata,
+                        paystackAmount: data.paystackAmount,
+                        paystackCurrency: data.paystackCurrency,
+                        originalCurrency: data.currency,
+                        convertedCurrency: data.paystackCurrency,
+                        isTestTransaction: isTestBooking,
+                    },
+                    providerMetadata: {
+                        paystackReference: data.transactionId,
+                        paystackAmount: data.paystackAmount,
+                        paystackCurrency: data.paystackCurrency,
+                    },
+                });
+                await this.transactionLedgerRepository.insert(ledgerEntry);
+                this.logger.log(`Transaction logged to ledger: ${data.transactionId}`);
+                return;
+            }
+            catch (error) {
+                lastError = error;
+                if (error.message && error.message.includes('Lock wait timeout exceeded')) {
+                    if (attempt < maxRetries) {
+                        const delay = Math.pow(2, attempt - 1) * 1000;
+                        this.logger.warn(`Lock timeout on attempt ${attempt}, retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                }
+                this.logger.error(`Failed to log transaction to ledger (attempt ${attempt}): ${error.message}`, error.stack);
+                break;
+            }
         }
-        catch (error) {
-            this.logger.error(`Failed to log transaction to ledger: ${error.message}`, error.stack);
-        }
+        this.logger.error(`Failed to log transaction to ledger after ${maxRetries} attempts: ${lastError?.message}`);
     }
     async updateBookingStatus(bookingId, paymentSuccessful) {
         try {
@@ -21772,6 +21932,16 @@ module.exports = require("twilio");
 /***/ ((module) => {
 
 module.exports = require("typeorm");
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("crypto");
 
 /***/ })
 

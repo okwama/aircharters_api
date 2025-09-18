@@ -51,10 +51,18 @@ export class PaystackController {
         },
       };
 
-      const result = await this.paymentProviderService.createPaymentIntent(
-        paymentRequest,
-        PaymentProviderType.PAYSTACK,
-      );
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Payment initialization timeout')), 30000); // 30 seconds
+      });
+
+      const result = await Promise.race([
+        this.paymentProviderService.createPaymentIntent(
+          paymentRequest,
+          PaymentProviderType.PAYSTACK,
+        ),
+        timeoutPromise
+      ]);
 
       return {
         success: true,
@@ -121,7 +129,7 @@ export class PaystackController {
       }
 
       // Process webhook event
-      const processed = await this.paystackProvider.handleWebhook(event);
+      const processed = await this.paystackProvider.handleWebhook(event, signature);
 
       if (processed) {
         return { success: true, message: 'Webhook processed successfully' };
@@ -209,17 +217,45 @@ export class PaystackController {
    * Verify Paystack webhook signature
    */
   private verifyWebhookSignature(event: any, signature: string): boolean {
-    // Implement proper Paystack webhook signature verification
-    // This is a placeholder - implement proper HMAC verification
-    const expectedSignature = process.env.PAYSTACK_WEBHOOK_SECRET;
-    
-    if (!expectedSignature) {
-      this.logger.warn('PAYSTACK_WEBHOOK_SECRET not configured');
+    try {
+      // In development, skip signature verification for testing
+      if (process.env.NODE_ENV === 'development') {
+        this.logger.warn('Skipping webhook signature verification in development mode');
+        return true;
+      }
+
+      const webhookSecret = process.env.PAYSTACK_WEBHOOK_SECRET;
+      if (!webhookSecret) {
+        this.logger.error('PAYSTACK_WEBHOOK_SECRET not configured');
+        return false;
+      }
+
+      if (!signature) {
+        this.logger.error('No webhook signature provided');
+        return false;
+      }
+
+      // Paystack uses HMAC SHA512 for webhook signatures
+      const crypto = require('crypto');
+      const expectedSignature = crypto
+        .createHmac('sha512', webhookSecret)
+        .update(JSON.stringify(event))
+        .digest('hex');
+
+      const isValid = crypto.timingSafeEqual(
+        Buffer.from(signature, 'hex'),
+        Buffer.from(expectedSignature, 'hex')
+      );
+
+      if (!isValid) {
+        this.logger.error('Invalid webhook signature');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      this.logger.error(`Webhook signature verification failed: ${error.message}`);
       return false;
     }
-
-    // TODO: Implement proper HMAC SHA512 verification
-    // For now, return true for development
-    return true;
   }
 }

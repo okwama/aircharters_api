@@ -118,6 +118,8 @@ import { ExperienceSchedule } from './common/entities/experience-schedule.entity
         extra: {
           // Connection pool settings
           connectionLimit: 20,
+          acquireTimeout: 60000, // 60 seconds
+          timeout: 60000, // 60 seconds
           charset: 'utf8mb4_unicode_ci',
           
           // Connection management
@@ -131,6 +133,10 @@ import { ExperienceSchedule } from './common/entities/experience-schedule.entity
           // Connection health checks
           enableKeepAlive: true,
           keepAliveInitialDelay: 10000,
+          
+          // Lock timeout prevention
+          lockWaitTimeout: 30000, // 30 seconds
+          innodbLockWaitTimeout: 30, // 30 seconds
         },
         
         // TypeORM specific optimizations

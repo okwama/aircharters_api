@@ -114,15 +114,7 @@ export class BookingsService {
       })));
     }
 
-    // Check if deal has enough available seats
-    if (deal.availableSeats < passengersToCreate.length) {
-      throw new BadRequestException(`Insufficient seats available. Only ${deal.availableSeats} seats left, but ${passengersToCreate.length} passengers requested.`);
-    }
-
-    // Note: Removed hasExistingBooking check to allow multiple users to book the same deal
-    // The seat availability check below is sufficient to prevent overbooking
-
-    // Start transaction immediately after connecting
+    // Start transaction immediately to prevent race conditions
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -151,6 +143,21 @@ export class BookingsService {
     }).length);
 
     try {
+      // Re-fetch deal with pessimistic lock to prevent race conditions
+      const lockedDeal = await queryRunner.manager.findOne(CharterDeal, {
+        where: { id: createBookingDto.dealId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!lockedDeal) {
+        throw new BadRequestException('Deal not found or no longer available');
+      }
+
+      // Check if deal has enough available seats (inside transaction with lock)
+      if (lockedDeal.availableSeats < passengersToCreate.length) {
+        throw new BadRequestException(`Insufficient seats available. Only ${lockedDeal.availableSeats} seats left, but ${passengersToCreate.length} passengers requested.`);
+      }
+
       // Generate reference number for booking creation
       const referenceNumber = this.generateBookingReference();
       
@@ -217,10 +224,10 @@ export class BookingsService {
         await queryRunner.manager.save(passenger);
       }
 
-      // Update available seats in the deal
+      // Update available seats in the deal (using locked deal)
       const passengerCount = passengersToCreate.length;
-      deal.availableSeats -= passengerCount;
-      await queryRunner.manager.save(deal);
+      lockedDeal.availableSeats -= passengerCount;
+      await queryRunner.manager.save(lockedDeal);
 
       await queryRunner.commitTransaction();
 
@@ -230,7 +237,7 @@ export class BookingsService {
         description: `Booking ${referenceNumber} has been created successfully with ${passengerCount} passengers. Loyalty points will be earned upon payment.`,
         metadata: { 
           passengerCount, 
-          companyId: deal.companyId,
+          companyId: lockedDeal.companyId,
           referenceNumber: referenceNumber,
           totalPrice: createBookingDto.totalPrice,
           userIncluded: !userInPassengers, // Track if user was automatically added
