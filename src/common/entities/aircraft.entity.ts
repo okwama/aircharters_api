@@ -40,6 +40,10 @@ export class Aircraft {
   @Column({ name: 'pricePerHour', type: 'decimal', precision: 10, scale: 2, nullable: true })
   pricePerHour: number;
 
+  // Cruise speed in knots (KTAS). Used for NM-based duration calculations.
+  @Column({ name: 'cruiseSpeedKnots', type: 'int', nullable: true })
+  cruiseSpeedKnots: number | null;
+
   @Column({ name: 'isAvailable', type: 'boolean', default: true })
   isAvailable: boolean;
 

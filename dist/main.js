@@ -857,6 +857,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Aircraft.prototype, "pricePerHour", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'cruiseSpeedKnots', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], Aircraft.prototype, "cruiseSpeedKnots", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'isAvailable', type: 'boolean', default: true }),
     __metadata("design:type", Boolean)
 ], Aircraft.prototype, "isAvailable", void 0);
@@ -1372,6 +1376,10 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'estimatedFlightHours', type: 'decimal', precision: 5, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], Booking.prototype, "estimatedFlightHours", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'distanceNm', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], Booking.prototype, "distanceNm", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'estimatedArrivalTime', type: 'datetime', nullable: true }),
     __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
@@ -10907,12 +10915,12 @@ let DirectCharterService = class DirectCharterService {
     }
     async calculatePricing(aircraft, origin, destination, departureDate, returnDate, tripType) {
         const basePricePerHour = parseFloat(aircraft.pricePerHour.toString());
-        const flightDurationHours = this.estimateFlightDuration(origin, destination);
+        const flightDurationHours = await this.computeDurationHours(origin, destination, aircraft);
         const repositioningCost = this.calculateRepositioningCost(aircraft, origin);
         let totalHours = flightDurationHours;
         let totalPrice = basePricePerHour * flightDurationHours;
         if (tripType === 'roundtrip' && returnDate) {
-            const returnDurationHours = this.estimateFlightDuration(destination, origin);
+            const returnDurationHours = await this.computeDurationHours(destination, origin, aircraft);
             totalHours += returnDurationHours;
             totalPrice += basePricePerHour * returnDurationHours;
         }
@@ -10927,6 +10935,31 @@ let DirectCharterService = class DirectCharterService {
     }
     estimateFlightDuration(origin, destination) {
         return 2.5;
+    }
+    kmToNm(km) {
+        return km / 1.852;
+    }
+    async computeDurationHours(origin, destination, aircraft) {
+        try {
+            const [originCoords, destCoords] = await Promise.all([
+                this.getLocationCoordinates(origin),
+                this.getLocationCoordinates(destination),
+            ]);
+            if (!originCoords || !destCoords) {
+                return this.estimateFlightDuration(origin, destination);
+            }
+            const distanceKm = this.googleEarthEngineService.calculateFlightDistance(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng);
+            const distanceNm = this.kmToNm(distanceKm);
+            const speedKnots = aircraft.cruiseSpeedKnots || 0;
+            if (speedKnots > 0 && distanceNm > 0) {
+                const hours = distanceNm / speedKnots;
+                return Math.max(hours, 0.5);
+            }
+            return this.estimateFlightDuration(origin, destination);
+        }
+        catch (e) {
+            return this.estimateFlightDuration(origin, destination);
+        }
     }
     calculateRepositioningCost(aircraft, origin) {
         if (aircraft.baseCity?.toLowerCase() === origin.toLowerCase()) {
@@ -10984,6 +11017,21 @@ let DirectCharterService = class DirectCharterService {
                 this.getLocationCoordinates(bookDto.origin),
                 this.getLocationCoordinates(bookDto.destination)
             ]);
+            let distanceNm = null;
+            let estimatedFlightHours = null;
+            let estimatedArrivalTime = null;
+            try {
+                if (originCoords && destinationCoords) {
+                    const distanceKm = this.googleEarthEngineService.calculateFlightDistance(originCoords.lat, originCoords.lng, destinationCoords.lat, destinationCoords.lng);
+                    distanceNm = Math.round(this.kmToNm(distanceKm) * 100) / 100;
+                }
+                const duration = await this.computeDurationHours(bookDto.origin, bookDto.destination, aircraft);
+                estimatedFlightHours = Math.round(duration * 100) / 100;
+                const dep = new Date(bookDto.departureDateTime);
+                estimatedArrivalTime = new Date(dep.getTime() + (duration * 3600 * 1000));
+            }
+            catch (e) {
+            }
             const now = new Date();
             const booking = this.bookingRepository.create({
                 userId: userId,
@@ -10999,10 +11047,13 @@ let DirectCharterService = class DirectCharterService {
                 originName: bookDto.origin,
                 destinationName: bookDto.destination,
                 departureDateTime: new Date(bookDto.departureDateTime),
+                estimatedFlightHours: estimatedFlightHours ?? null,
+                estimatedArrivalTime: estimatedArrivalTime ?? null,
                 originLatitude: originCoords?.lat || null,
                 originLongitude: originCoords?.lng || null,
                 destinationLatitude: destinationCoords?.lat || null,
                 destinationLongitude: destinationCoords?.lng || null,
+                distanceNm: distanceNm ?? null,
                 totalAdults: bookDto.passengerCount,
                 totalChildren: 0,
                 onboardDining: false,
@@ -11072,6 +11123,9 @@ let DirectCharterService = class DirectCharterService {
                     bookingStatus: 'pending',
                     paymentStatus: 'pending',
                     companyId: aircraft.company?.id || 1,
+                    distanceNm: distanceNm,
+                    estimatedFlightHours: estimatedFlightHours,
+                    estimatedArrivalTime: estimatedArrivalTime?.toISOString() || null,
                 },
                 paymentIntent: paymentIntent ? {
                     id: paymentIntent.id,
@@ -11121,7 +11175,8 @@ let DirectCharterService = class DirectCharterService {
             .leftJoinAndSelect('aircraft.images', 'images')
             .leftJoinAndSelect('aircraft.aircraftTypeImagePlaceholder', 'aircraftType')
             .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
-            .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' });
+            .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
+            .andWhere('company.status = :companyStatus', { companyStatus: 'active' });
         if (typeId) {
             query = query.andWhere('aircraft.aircraftTypeImagePlaceholderId = :typeId', { typeId });
         }
@@ -11218,6 +11273,9 @@ exports.DirectCharterService = DirectCharterService = __decorate([
     __param(6, (0, typeorm_1.InjectRepository)(aircraft_type_image_placeholder_entity_1.AircraftTypeImagePlaceholder)),
     __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _g : Object, typeof (_h = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _h : Object, typeof (_j = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _j : Object, typeof (_k = typeof google_earth_engine_service_1.GoogleEarthEngineService !== "undefined" && google_earth_engine_service_1.GoogleEarthEngineService) === "function" ? _k : Object])
 ], DirectCharterService);
+function andWhere(arg0, arg1) {
+    throw new Error('Function not implemented.');
+}
 
 
 /***/ }),

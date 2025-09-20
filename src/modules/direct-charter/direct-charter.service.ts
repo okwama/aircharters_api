@@ -146,9 +146,9 @@ export class DirectCharterService {
     tripType: string
   ) {
     const basePricePerHour = parseFloat(aircraft.pricePerHour.toString());
-    
-    // Calculate flight duration (simplified - you might want to use actual flight time APIs)
-    const flightDurationHours = this.estimateFlightDuration(origin, destination);
+
+    // Calculate flight duration using NM and cruise speed in knots (fallback to estimate)
+    const flightDurationHours = await this.computeDurationHours(origin, destination, aircraft);
     
     // Calculate repositioning cost if aircraft needs to move
     const repositioningCost = this.calculateRepositioningCost(aircraft, origin);
@@ -157,7 +157,7 @@ export class DirectCharterService {
     let totalPrice = basePricePerHour * flightDurationHours;
 
     if (tripType === 'roundtrip' && returnDate) {
-      const returnDurationHours = this.estimateFlightDuration(destination, origin);
+      const returnDurationHours = await this.computeDurationHours(destination, origin, aircraft);
       totalHours += returnDurationHours;
       totalPrice += basePricePerHour * returnDurationHours;
     }
@@ -174,9 +174,52 @@ export class DirectCharterService {
   }
 
   private estimateFlightDuration(origin: string, destination: string): number {
-    // Simplified flight duration estimation
-    // In a real implementation, you'd use flight time APIs or distance calculations
-    return 2.5; // Default 2.5 hours
+    // Legacy fallback: simplified estimate
+    return 2.5;
+  }
+
+  // Convert kilometers to nautical miles
+  private kmToNm(km: number): number {
+    return km / 1.852;
+  }
+
+  // Compute duration in hours using nautical miles and cruise speed in knots
+  private async computeDurationHours(origin: string, destination: string, aircraft: Aircraft): Promise<number> {
+    try {
+      // Resolve coordinates
+      const [originCoords, destCoords] = await Promise.all([
+        this.getLocationCoordinates(origin),
+        this.getLocationCoordinates(destination),
+      ]);
+
+      if (!originCoords || !destCoords) {
+        return this.estimateFlightDuration(origin, destination);
+      }
+
+      // Calculate great-circle distance in km using Google service
+      const distanceKm = this.googleEarthEngineService.calculateFlightDistance(
+        originCoords.lat,
+        originCoords.lng,
+        destCoords.lat,
+        destCoords.lng,
+      );
+
+      // Convert to nautical miles
+      const distanceNm = this.kmToNm(distanceKm);
+
+      // Use cruise speed in knots if available
+      const speedKnots = aircraft.cruiseSpeedKnots || 0;
+      if (speedKnots > 0 && distanceNm > 0) {
+        const hours = distanceNm / speedKnots;
+        // Enforce a reasonable minimum (0.5h) to avoid zero-duration; business can adjust later
+        return Math.max(hours, 0.5);
+      }
+
+      // Fallback to legacy estimate
+      return this.estimateFlightDuration(origin, destination);
+    } catch (e) {
+      return this.estimateFlightDuration(origin, destination);
+    }
   }
 
   private calculateRepositioningCost(aircraft: Aircraft, origin: string): number {
@@ -264,6 +307,30 @@ export class DirectCharterService {
         this.getLocationCoordinates(bookDto.destination)
       ]);
 
+      // Compute distance (km->NM) and duration for persistence
+      let distanceNm: number | null = null;
+      let estimatedFlightHours: number | null = null;
+      let estimatedArrivalTime: Date | null = null;
+
+      try {
+        if (originCoords && destinationCoords) {
+          const distanceKm = this.googleEarthEngineService.calculateFlightDistance(
+            originCoords.lat,
+            originCoords.lng,
+            destinationCoords.lat,
+            destinationCoords.lng,
+          );
+          distanceNm = Math.round(this.kmToNm(distanceKm) * 100) / 100;
+        }
+        // Use same duration logic used for pricing
+        const duration = await this.computeDurationHours(bookDto.origin, bookDto.destination, aircraft);
+        estimatedFlightHours = Math.round(duration * 100) / 100;
+        const dep = new Date(bookDto.departureDateTime);
+        estimatedArrivalTime = new Date(dep.getTime() + (duration * 3600 * 1000));
+      } catch (e) {
+        // Leave as nulls if any error
+      }
+
       // Create booking - align with database schema
       const now = new Date();
       const booking = this.bookingRepository.create({
@@ -281,11 +348,14 @@ export class DirectCharterService {
         originName: bookDto.origin,
         destinationName: bookDto.destination,
         departureDateTime: new Date(bookDto.departureDateTime),
+        estimatedFlightHours: estimatedFlightHours ?? null,
+        estimatedArrivalTime: estimatedArrivalTime ?? null,
         // Coordinates from Google service
         originLatitude: originCoords?.lat || null,
         originLongitude: originCoords?.lng || null,
         destinationLatitude: destinationCoords?.lat || null,
         destinationLongitude: destinationCoords?.lng || null,
+        distanceNm: distanceNm ?? null,
         // Passenger counts
         totalAdults: bookDto.passengerCount, // Use actual passenger count
         totalChildren: 0, // Could be calculated from passenger ages if provided
@@ -367,6 +437,10 @@ export class DirectCharterService {
           bookingStatus: 'pending',
           paymentStatus: 'pending',
           companyId: aircraft.company?.id || 1,
+          // Expose computed flight metrics
+          distanceNm: distanceNm,
+          estimatedFlightHours: estimatedFlightHours,
+          estimatedArrivalTime: estimatedArrivalTime?.toISOString() || null,
         },
         paymentIntent: paymentIntent ? {
           id: paymentIntent.id,
@@ -416,7 +490,8 @@ export class DirectCharterService {
       .leftJoinAndSelect('aircraft.images', 'images')
       .leftJoinAndSelect('aircraft.aircraftTypeImagePlaceholder', 'aircraftType')
       .where('aircraft.isAvailable = :isAvailable', { isAvailable: true })
-      .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' });
+      .andWhere('aircraft.maintenanceStatus = :maintenanceStatus', { maintenanceStatus: 'operational' })
+      .andWhere('company.status = :companyStatus', { companyStatus: 'active' });
 
     if (typeId) {
       query = query.andWhere('aircraft.aircraftTypeImagePlaceholderId = :typeId', { typeId });
@@ -529,3 +604,7 @@ export class DirectCharterService {
     }
   }
 }
+function andWhere(arg0: string, arg1: { companyStatus: string; }) {
+  throw new Error('Function not implemented.');
+}
+

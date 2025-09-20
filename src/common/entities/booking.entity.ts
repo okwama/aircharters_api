@@ -123,6 +123,9 @@ export class Booking {
   @Column({ name: 'estimatedFlightHours', type: 'decimal', precision: 5, scale: 2, nullable: true })
   estimatedFlightHours: number;
 
+  @Column({ name: 'distanceNm', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  distanceNm: number;
+
   @Column({ name: 'estimatedArrivalTime', type: 'datetime', nullable: true })
   estimatedArrivalTime: Date;
 
