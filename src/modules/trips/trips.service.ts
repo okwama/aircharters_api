@@ -266,6 +266,7 @@ export class TripsService {
       booking: {
         id: booking.id,
         userId: booking.userId,
+        companyId: booking.companyId,
         referenceNumber: booking.referenceNumber,
         totalPrice: booking.totalPrice,
         bookingStatus: booking.bookingStatus,
@@ -403,6 +404,7 @@ export class TripsService {
       booking: booking ? {
         id: booking.id,
         userId: booking.userId,
+        companyId: booking.companyId,
         referenceNumber: booking.referenceNumber,
         totalPrice: booking.totalPrice,
         bookingStatus: booking.bookingStatus,
