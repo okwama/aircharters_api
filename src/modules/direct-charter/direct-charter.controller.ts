@@ -49,8 +49,29 @@ export class DirectCharterController {
     @Request() req: any
   ) {
     try {
+      console.log('=== BACKEND: DIRECT CHARTER BOOKING REQUEST (with passengers) ===');
+      console.log('Passenger payload types:', Array.isArray(bookDto.passengers), bookDto.passengers?.map(p => ({
+        firstName: typeof p.firstName,
+        lastName: typeof p.lastName,
+        age: typeof p.age,
+        nationality: typeof p.nationality,
+        idPassportNumber: typeof p.idPassportNumber,
+        isUser: typeof p.isUser,
+      })));
+    } catch (e) {}
+    console.log('=== BACKEND: DIRECT CHARTER BOOKING REQUEST ===');
+    console.log('User ID:', req.user.id);
+    console.log('Request Body:', JSON.stringify(bookDto, null, 2));
+    console.log('Request Headers:', req.headers);
+    
+    try {
       const userId = req.user.id;
+      console.log('=== BACKEND: CALLING DIRECT CHARTER SERVICE ===');
+      
       const result = await this.directCharterService.bookDirectCharter(bookDto, userId);
+      
+      console.log('=== BACKEND: BOOKING SUCCESS ===');
+      console.log('Result:', JSON.stringify(result, null, 2));
       
       return {
         success: true,
@@ -58,6 +79,11 @@ export class DirectCharterController {
         message: 'Direct charter booking confirmed successfully',
       };
     } catch (error) {
+      console.log('=== BACKEND: BOOKING ERROR ===');
+      console.log('Error Type:', error.constructor.name);
+      console.log('Error Message:', error.message);
+      console.log('Error Stack:', error.stack);
+      
       return {
         success: false,
         message: error.message || 'Failed to book direct charter',

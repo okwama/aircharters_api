@@ -33,6 +33,7 @@ export class TripsService {
       const bookings = await this.bookingRepository
         .createQueryBuilder('booking')
         .leftJoinAndSelect('booking.passengers', 'passengers')
+        .leftJoinAndSelect('booking.stops', 'stops')
         .leftJoinAndSelect('booking.deal', 'deal')
         .leftJoinAndSelect('deal.company', 'company')
         .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -75,6 +76,7 @@ export class TripsService {
       .createQueryBuilder('userTrip')
       .leftJoinAndSelect('userTrip.booking', 'booking')
       .leftJoinAndSelect('booking.passengers', 'passengers')
+      .leftJoinAndSelect('booking.stops', 'stops')
       .leftJoinAndSelect('booking.deal', 'deal')
       .leftJoinAndSelect('deal.company', 'company')
       .leftJoinAndSelect('deal.aircraft', 'aircraft')

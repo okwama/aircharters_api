@@ -6,6 +6,7 @@ import { GoogleEarthEngineService } from '../google-earth-engine/google-earth-en
 import { PaymentsModule } from '../payments/payments.module';
 import { BookingInquiry } from '../../common/entities/booking-inquiry.entity';
 import { InquiryStop } from '../../common/entities/inquiry-stop.entity';
+import { BookingStop } from '../../common/entities/booking-stop.entity';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { User } from '../../common/entities/user.entity';
 import { Booking } from '../../common/entities/booking.entity';
@@ -14,7 +15,7 @@ import { AircraftCalendar } from '../../common/entities/aircraft-calendar.entity
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BookingInquiry, InquiryStop, Aircraft, User, Booking, Payment, AircraftCalendar]),
+    TypeOrmModule.forFeature([BookingInquiry, InquiryStop, BookingStop, Aircraft, User, Booking, Payment, AircraftCalendar]),
     PaymentsModule,
   ],
   controllers: [BookingInquiriesController],

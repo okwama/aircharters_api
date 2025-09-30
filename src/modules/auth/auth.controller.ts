@@ -100,6 +100,44 @@ export class AuthController {
     return await this.authService.loginWithEmail(loginDto.email, loginDto.password);
   }
 
+  @Post('login/phone')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RateLimitConfigs.AUTH)
+  @ApiOperation({ summary: 'Login with phone number and password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Phone login successful',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' },
+        tokenType: { type: 'string' },
+        expiresIn: { type: 'number' },
+        user: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            email: { type: 'string' },
+            phoneNumber: { type: 'string' },
+            firstName: { type: 'string' },
+            lastName: { type: 'string' },
+            countryCode: { type: 'string' },
+            loyaltyPoints: { type: 'number' },
+            walletBalance: { type: 'number' },
+            isActive: { type: 'boolean' },
+            emailVerified: { type: 'boolean' },
+            phoneVerified: { type: 'boolean' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Invalid phone number or password' })
+  async loginWithPhone(@Body() phoneLoginDto: { phoneNumber: string; password: string }) {
+    return await this.authService.loginWithPhone(phoneLoginDto.phoneNumber, phoneLoginDto.password);
+  }
+
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })

@@ -61,6 +61,7 @@ const aircraft_image_entity_1 = __webpack_require__(/*! ./common/entities/aircra
 const aircraft_calendar_entity_1 = __webpack_require__(/*! ./common/entities/aircraft-calendar.entity */ "./src/common/entities/aircraft-calendar.entity.ts");
 const booking_inquiry_entity_1 = __webpack_require__(/*! ./common/entities/booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
 const inquiry_stop_entity_1 = __webpack_require__(/*! ./common/entities/inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
+const booking_stop_entity_1 = __webpack_require__(/*! ./common/entities/booking-stop.entity */ "./src/common/entities/booking-stop.entity.ts");
 const amenity_entity_1 = __webpack_require__(/*! ./common/entities/amenity.entity */ "./src/common/entities/amenity.entity.ts");
 const aircraft_amenity_entity_1 = __webpack_require__(/*! ./common/entities/aircraft-amenity.entity */ "./src/common/entities/aircraft-amenity.entity.ts");
 const charter_deal_amenity_entity_1 = __webpack_require__(/*! ./common/entities/charter-deal-amenity.entity */ "./src/common/entities/charter-deal-amenity.entity.ts");
@@ -116,6 +117,7 @@ exports.AppModule = AppModule = __decorate([
                         aircraft_calendar_entity_1.AircraftCalendar,
                         booking_inquiry_entity_1.BookingInquiry,
                         inquiry_stop_entity_1.InquiryStop,
+                        booking_stop_entity_1.BookingStop,
                         amenity_entity_1.Amenity,
                         aircraft_amenity_entity_1.AircraftAmenity,
                         charter_deal_amenity_entity_1.CharterDealAmenity,
@@ -1109,6 +1111,92 @@ exports.BookingInquiry = BookingInquiry = __decorate([
 
 /***/ }),
 
+/***/ "./src/common/entities/booking-stop.entity.ts":
+/*!****************************************************!*\
+  !*** ./src/common/entities/booking-stop.entity.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookingStop = exports.LocationType = void 0;
+const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
+const booking_entity_1 = __webpack_require__(/*! ./booking.entity */ "./src/common/entities/booking.entity.ts");
+var LocationType;
+(function (LocationType) {
+    LocationType["AIRPORT"] = "airport";
+    LocationType["CITY"] = "city";
+    LocationType["CUSTOM"] = "custom";
+})(LocationType || (exports.LocationType = LocationType = {}));
+let BookingStop = class BookingStop {
+};
+exports.BookingStop = BookingStop;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], BookingStop.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'booking_id', type: 'int' }),
+    __metadata("design:type", Number)
+], BookingStop.prototype, "bookingId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'stop_name', type: 'varchar', length: 255 }),
+    __metadata("design:type", String)
+], BookingStop.prototype, "stopName", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 11, scale: 8 }),
+    __metadata("design:type", Number)
+], BookingStop.prototype, "longitude", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 8 }),
+    __metadata("design:type", Number)
+], BookingStop.prototype, "latitude", void 0);
+__decorate([
+    (0, typeorm_1.Column)('datetime', { nullable: true }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], BookingStop.prototype, "datetime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'stop_order', type: 'int', default: 1 }),
+    __metadata("design:type", Number)
+], BookingStop.prototype, "stopOrder", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'location_type', type: 'enum', enum: LocationType, default: LocationType.CUSTOM }),
+    __metadata("design:type", String)
+], BookingStop.prototype, "locationType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'location_code', type: 'varchar', length: 10, nullable: true }),
+    __metadata("design:type", String)
+], BookingStop.prototype, "locationCode", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'created_at', type: 'datetime', precision: 6 }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], BookingStop.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at', type: 'datetime', precision: 6 }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], BookingStop.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => booking_entity_1.Booking, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'booking_id' }),
+    __metadata("design:type", typeof (_d = typeof booking_entity_1.Booking !== "undefined" && booking_entity_1.Booking) === "function" ? _d : Object)
+], BookingStop.prototype, "booking", void 0);
+exports.BookingStop = BookingStop = __decorate([
+    (0, typeorm_1.Entity)('charter_booking_stops')
+], BookingStop);
+
+
+/***/ }),
+
 /***/ "./src/common/entities/booking-timeline.entity.ts":
 /*!********************************************************!*\
   !*** ./src/common/entities/booking-timeline.entity.ts ***!
@@ -1223,6 +1311,7 @@ const charter_deal_entity_1 = __webpack_require__(/*! ./charter-deal.entity */ "
 const charters_company_entity_1 = __webpack_require__(/*! ./charters-company.entity */ "./src/common/entities/charters-company.entity.ts");
 const passenger_entity_1 = __webpack_require__(/*! ./passenger.entity */ "./src/common/entities/passenger.entity.ts");
 const aircraft_entity_1 = __webpack_require__(/*! ./aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
+const booking_stop_entity_1 = __webpack_require__(/*! ./booking-stop.entity */ "./src/common/entities/booking-stop.entity.ts");
 var BookingStatus;
 (function (BookingStatus) {
     BookingStatus["PENDING"] = "pending";
@@ -1428,6 +1517,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => passenger_entity_1.Passenger, passenger => passenger.booking),
     __metadata("design:type", Array)
 ], Booking.prototype, "passengers", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => booking_stop_entity_1.BookingStop, stop => stop.booking, { cascade: true }),
+    __metadata("design:type", Array)
+], Booking.prototype, "stops", void 0);
 exports.Booking = Booking = __decorate([
     (0, typeorm_1.Entity)('charter_bookings')
 ], Booking);
@@ -5292,6 +5385,9 @@ let AuthController = class AuthController {
     async login(loginDto) {
         return await this.authService.loginWithEmail(loginDto.email, loginDto.password);
     }
+    async loginWithPhone(phoneLoginDto) {
+        return await this.authService.loginWithPhone(phoneLoginDto.phoneNumber, phoneLoginDto.password);
+    }
     async refreshToken(refreshTokenDto) {
         return await this.authService.refreshToken(refreshTokenDto.refreshToken);
     }
@@ -5412,6 +5508,46 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('login/phone'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, rate_limit_decorator_1.RateLimit)(rate_limit_decorator_1.RateLimitConfigs.AUTH),
+    (0, swagger_1.ApiOperation)({ summary: 'Login with phone number and password' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Phone login successful',
+        schema: {
+            type: 'object',
+            properties: {
+                accessToken: { type: 'string' },
+                refreshToken: { type: 'string' },
+                tokenType: { type: 'string' },
+                expiresIn: { type: 'number' },
+                user: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string' },
+                        email: { type: 'string' },
+                        phoneNumber: { type: 'string' },
+                        firstName: { type: 'string' },
+                        lastName: { type: 'string' },
+                        countryCode: { type: 'string' },
+                        loyaltyPoints: { type: 'number' },
+                        walletBalance: { type: 'number' },
+                        isActive: { type: 'boolean' },
+                        emailVerified: { type: 'boolean' },
+                        phoneVerified: { type: 'boolean' },
+                    },
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Invalid phone number or password' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "loginWithPhone", null);
 __decorate([
     (0, common_1.Post)('refresh'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -5580,18 +5716,24 @@ let AuthService = class AuthService {
     }
     async register(registerDto) {
         try {
-            const { email, password, firstName, lastName, authProvider } = registerDto;
+            const { email, password, firstName, lastName, phoneNumber, countryCode, authProvider } = registerDto;
             if (!email || !password || !firstName || !lastName) {
                 throw new common_1.BadRequestException('Missing required fields: email, password, firstName, lastName');
             }
+            const existingUserConditions = [{ email }];
+            if (phoneNumber) {
+                existingUserConditions.push({ phone_number: phoneNumber });
+            }
             const existingUser = await this.userRepository.findOne({
-                where: [
-                    { email },
-                    { phone_number: email }
-                ]
+                where: existingUserConditions
             });
             if (existingUser) {
-                throw new common_1.ConflictException('User with this email already exists');
+                if (existingUser.email === email) {
+                    throw new common_1.ConflictException('User with this email already exists');
+                }
+                else if (existingUser.phone_number === phoneNumber) {
+                    throw new common_1.ConflictException('User with this phone number already exists');
+                }
             }
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -5602,8 +5744,8 @@ let AuthService = class AuthService {
                 password: hashedPassword,
                 first_name: firstName,
                 last_name: lastName,
-                phone_number: null,
-                country_code: null,
+                phone_number: phoneNumber || null,
+                country_code: countryCode || null,
                 loyalty_points: 0,
                 wallet_balance: 0,
                 is_active: true,
@@ -5701,6 +5843,58 @@ let AuthService = class AuthService {
                 throw error;
             }
             throw new common_1.UnauthorizedException('Login failed: ' + error.message);
+        }
+    }
+    async loginWithPhone(phoneNumber, password) {
+        try {
+            console.log('🔥 Backend phone login attempt for:', phoneNumber);
+            const user = await this.userRepository.findOne({
+                where: { phone_number: phoneNumber }
+            });
+            if (!user) {
+                throw new common_1.UnauthorizedException('Invalid phone number or password');
+            }
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                throw new common_1.UnauthorizedException('Invalid phone number or password');
+            }
+            console.log('🔥 Backend phone login successful for user:', user.id);
+            const payload = {
+                sub: user.id,
+                email: user.email,
+                phone: user.phone_number,
+                type: 'backend',
+            };
+            const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+            const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+            return {
+                accessToken,
+                refreshToken,
+                tokenType: 'Bearer',
+                expiresIn: 3600,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    phoneNumber: user.phone_number,
+                    firstName: user.first_name,
+                    lastName: user.last_name,
+                    countryCode: user.country_code,
+                    loyaltyPoints: user.loyalty_points,
+                    walletBalance: user.wallet_balance,
+                    isActive: user.is_active,
+                    emailVerified: user.email_verified,
+                    phoneVerified: user.phone_verified,
+                    createdAt: user.created_at,
+                    updatedAt: user.updated_at,
+                },
+            };
+        }
+        catch (error) {
+            console.error('🔥 Backend phone login error:', error);
+            if (error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException('Phone login failed: ' + error.message);
         }
     }
     async refreshToken(refreshToken) {
@@ -6093,6 +6287,7 @@ const booking_inquiries_service_1 = __webpack_require__(/*! ./booking-inquiries.
 const payments_module_1 = __webpack_require__(/*! ../payments/payments.module */ "./src/modules/payments/payments.module.ts");
 const booking_inquiry_entity_1 = __webpack_require__(/*! ../../common/entities/booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
 const inquiry_stop_entity_1 = __webpack_require__(/*! ../../common/entities/inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
+const booking_stop_entity_1 = __webpack_require__(/*! ../../common/entities/booking-stop.entity */ "./src/common/entities/booking-stop.entity.ts");
 const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
 const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
 const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
@@ -6104,7 +6299,7 @@ exports.BookingInquiriesModule = BookingInquiriesModule;
 exports.BookingInquiriesModule = BookingInquiriesModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([booking_inquiry_entity_1.BookingInquiry, inquiry_stop_entity_1.InquiryStop, aircraft_entity_1.Aircraft, user_entity_1.User, booking_entity_1.Booking, payment_entity_1.Payment, aircraft_calendar_entity_1.AircraftCalendar]),
+            typeorm_1.TypeOrmModule.forFeature([booking_inquiry_entity_1.BookingInquiry, inquiry_stop_entity_1.InquiryStop, booking_stop_entity_1.BookingStop, aircraft_entity_1.Aircraft, user_entity_1.User, booking_entity_1.Booking, payment_entity_1.Payment, aircraft_calendar_entity_1.AircraftCalendar]),
             payments_module_1.PaymentsModule,
         ],
         controllers: [booking_inquiries_controller_1.BookingInquiriesController],
@@ -6135,7 +6330,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BookingInquiriesService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -6143,6 +6338,7 @@ const typeorm_1 = __webpack_require__(/*! @nestjs/typeorm */ "@nestjs/typeorm");
 const typeorm_2 = __webpack_require__(/*! typeorm */ "typeorm");
 const booking_inquiry_entity_1 = __webpack_require__(/*! ../../common/entities/booking-inquiry.entity */ "./src/common/entities/booking-inquiry.entity.ts");
 const inquiry_stop_entity_1 = __webpack_require__(/*! ../../common/entities/inquiry-stop.entity */ "./src/common/entities/inquiry-stop.entity.ts");
+const booking_stop_entity_1 = __webpack_require__(/*! ../../common/entities/booking-stop.entity */ "./src/common/entities/booking-stop.entity.ts");
 const aircraft_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft.entity */ "./src/common/entities/aircraft.entity.ts");
 const user_entity_1 = __webpack_require__(/*! ../../common/entities/user.entity */ "./src/common/entities/user.entity.ts");
 const booking_entity_1 = __webpack_require__(/*! ../../common/entities/booking.entity */ "./src/common/entities/booking.entity.ts");
@@ -6150,9 +6346,10 @@ const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.e
 const aircraft_calendar_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft-calendar.entity */ "./src/common/entities/aircraft-calendar.entity.ts");
 const payment_provider_service_1 = __webpack_require__(/*! ../payments/services/payment-provider.service */ "./src/modules/payments/services/payment-provider.service.ts");
 let BookingInquiriesService = class BookingInquiriesService {
-    constructor(bookingInquiryRepository, inquiryStopRepository, aircraftRepository, userRepository, bookingRepository, paymentRepository, aircraftCalendarRepository, dataSource, paymentProviderService) {
+    constructor(bookingInquiryRepository, inquiryStopRepository, bookingStopRepository, aircraftRepository, userRepository, bookingRepository, paymentRepository, aircraftCalendarRepository, dataSource, paymentProviderService) {
         this.bookingInquiryRepository = bookingInquiryRepository;
         this.inquiryStopRepository = inquiryStopRepository;
+        this.bookingStopRepository = bookingStopRepository;
         this.aircraftRepository = aircraftRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
@@ -6333,7 +6530,21 @@ let BookingInquiriesService = class BookingInquiriesService {
             totalAdults: inquiry.requestedSeats,
             totalChildren: 0,
         });
-        return await this.bookingRepository.save(booking);
+        const savedBooking = await this.bookingRepository.save(booking);
+        if (inquiry.stops && inquiry.stops.length > 0) {
+            const bookingStops = inquiry.stops.map(inquiryStop => this.bookingStopRepository.create({
+                bookingId: savedBooking.id,
+                stopName: inquiryStop.stopName,
+                longitude: inquiryStop.longitude,
+                latitude: inquiryStop.latitude,
+                datetime: inquiryStop.datetime,
+                stopOrder: inquiryStop.stopOrder,
+                locationType: inquiryStop.locationType,
+                locationCode: inquiryStop.locationCode,
+            }));
+            await this.bookingStopRepository.save(bookingStops);
+        }
+        return savedBooking;
     }
     generateReferenceNumber() {
         const timestamp = Date.now().toString().slice(-8);
@@ -6400,12 +6611,13 @@ exports.BookingInquiriesService = BookingInquiriesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(booking_inquiry_entity_1.BookingInquiry)),
     __param(1, (0, typeorm_1.InjectRepository)(inquiry_stop_entity_1.InquiryStop)),
-    __param(2, (0, typeorm_1.InjectRepository)(aircraft_entity_1.Aircraft)),
-    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(4, (0, typeorm_1.InjectRepository)(booking_entity_1.Booking)),
-    __param(5, (0, typeorm_1.InjectRepository)(payment_entity_1.Payment)),
-    __param(6, (0, typeorm_1.InjectRepository)(aircraft_calendar_entity_1.AircraftCalendar)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _g : Object, typeof (_h = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _h : Object, typeof (_j = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _j : Object])
+    __param(2, (0, typeorm_1.InjectRepository)(booking_stop_entity_1.BookingStop)),
+    __param(3, (0, typeorm_1.InjectRepository)(aircraft_entity_1.Aircraft)),
+    __param(4, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(5, (0, typeorm_1.InjectRepository)(booking_entity_1.Booking)),
+    __param(6, (0, typeorm_1.InjectRepository)(payment_entity_1.Payment)),
+    __param(7, (0, typeorm_1.InjectRepository)(aircraft_calendar_entity_1.AircraftCalendar)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _g : Object, typeof (_h = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _h : Object, typeof (_j = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _j : Object, typeof (_k = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _k : Object])
 ], BookingInquiriesService);
 
 
@@ -10582,8 +10794,27 @@ let DirectCharterController = class DirectCharterController {
     }
     async bookDirectCharter(bookDto, req) {
         try {
+            console.log('=== BACKEND: DIRECT CHARTER BOOKING REQUEST (with passengers) ===');
+            console.log('Passenger payload types:', Array.isArray(bookDto.passengers), bookDto.passengers?.map(p => ({
+                firstName: typeof p.firstName,
+                lastName: typeof p.lastName,
+                age: typeof p.age,
+                nationality: typeof p.nationality,
+                idPassportNumber: typeof p.idPassportNumber,
+                isUser: typeof p.isUser,
+            })));
+        }
+        catch (e) { }
+        console.log('=== BACKEND: DIRECT CHARTER BOOKING REQUEST ===');
+        console.log('User ID:', req.user.id);
+        console.log('Request Body:', JSON.stringify(bookDto, null, 2));
+        console.log('Request Headers:', req.headers);
+        try {
             const userId = req.user.id;
+            console.log('=== BACKEND: CALLING DIRECT CHARTER SERVICE ===');
             const result = await this.directCharterService.bookDirectCharter(bookDto, userId);
+            console.log('=== BACKEND: BOOKING SUCCESS ===');
+            console.log('Result:', JSON.stringify(result, null, 2));
             return {
                 success: true,
                 data: result,
@@ -10591,6 +10822,10 @@ let DirectCharterController = class DirectCharterController {
             };
         }
         catch (error) {
+            console.log('=== BACKEND: BOOKING ERROR ===');
+            console.log('Error Type:', error.constructor.name);
+            console.log('Error Message:', error.message);
+            console.log('Error Stack:', error.stack);
             return {
                 success: false,
                 message: error.message || 'Failed to book direct charter',
@@ -10778,6 +11013,7 @@ const payment_entity_1 = __webpack_require__(/*! ../../common/entities/payment.e
 const aircraft_type_image_placeholder_entity_1 = __webpack_require__(/*! ../../common/entities/aircraft-type-image-placeholder.entity */ "./src/common/entities/aircraft-type-image-placeholder.entity.ts");
 const payments_module_1 = __webpack_require__(/*! ../payments/payments.module */ "./src/modules/payments/payments.module.ts");
 const google_earth_engine_module_1 = __webpack_require__(/*! ../google-earth-engine/google-earth-engine.module */ "./src/modules/google-earth-engine/google-earth-engine.module.ts");
+const passenger_validation_service_1 = __webpack_require__(/*! ./services/passenger-validation.service */ "./src/modules/direct-charter/services/passenger-validation.service.ts");
 let DirectCharterModule = class DirectCharterModule {
 };
 exports.DirectCharterModule = DirectCharterModule;
@@ -10797,7 +11033,7 @@ exports.DirectCharterModule = DirectCharterModule = __decorate([
             google_earth_engine_module_1.GoogleEarthEngineModule,
         ],
         controllers: [direct_charter_controller_1.DirectCharterController],
-        providers: [direct_charter_service_1.DirectCharterService],
+        providers: [direct_charter_service_1.DirectCharterService, passenger_validation_service_1.PassengerValidationService],
         exports: [direct_charter_service_1.DirectCharterService],
     })
 ], DirectCharterModule);
@@ -10824,7 +11060,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DirectCharterService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -10841,8 +11077,9 @@ const aircraft_type_image_placeholder_entity_1 = __webpack_require__(/*! ../../c
 const payment_provider_service_1 = __webpack_require__(/*! ../payments/services/payment-provider.service */ "./src/modules/payments/services/payment-provider.service.ts");
 const payment_provider_interface_1 = __webpack_require__(/*! ../payments/interfaces/payment-provider.interface */ "./src/modules/payments/interfaces/payment-provider.interface.ts");
 const google_earth_engine_service_1 = __webpack_require__(/*! ../google-earth-engine/google-earth-engine.service */ "./src/modules/google-earth-engine/google-earth-engine.service.ts");
+const passenger_validation_service_1 = __webpack_require__(/*! ./services/passenger-validation.service */ "./src/modules/direct-charter/services/passenger-validation.service.ts");
 let DirectCharterService = class DirectCharterService {
-    constructor(aircraftRepository, aircraftCalendarRepository, bookingRepository, companyRepository, passengerRepository, paymentRepository, aircraftTypeImagePlaceholderRepository, dataSource, paymentProviderService, googleEarthEngineService) {
+    constructor(aircraftRepository, aircraftCalendarRepository, bookingRepository, companyRepository, passengerRepository, paymentRepository, aircraftTypeImagePlaceholderRepository, dataSource, paymentProviderService, googleEarthEngineService, passengerValidationService) {
         this.aircraftRepository = aircraftRepository;
         this.aircraftCalendarRepository = aircraftCalendarRepository;
         this.bookingRepository = bookingRepository;
@@ -10853,6 +11090,7 @@ let DirectCharterService = class DirectCharterService {
         this.dataSource = dataSource;
         this.paymentProviderService = paymentProviderService;
         this.googleEarthEngineService = googleEarthEngineService;
+        this.passengerValidationService = passengerValidationService;
     }
     async searchAvailableAircraft(searchDto) {
         const { origin, destination, departureDateTime, returnDateTime, passengerCount, tripType, aircraftTypeImagePlaceholderId } = searchDto;
@@ -10977,11 +11215,19 @@ let DirectCharterService = class DirectCharterService {
         return 2;
     }
     async bookDirectCharter(bookDto, userId) {
-        const { aircraftId, departureDateTime, returnDateTime, tripType } = bookDto;
+        console.log('=== BACKEND SERVICE: BOOK DIRECT CHARTER ===');
+        console.log('User ID:', userId);
+        console.log('Booking DTO:', JSON.stringify(bookDto, null, 2));
+        const { aircraftId, departureDateTime, returnDateTime, tripType, passengers } = bookDto;
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
+        console.log('=== BACKEND SERVICE: TRANSACTION STARTED ===');
         try {
+            console.log('=== BACKEND SERVICE: CHECKING AIRCRAFT AVAILABILITY ===');
+            console.log('Aircraft ID:', aircraftId);
+            console.log('Departure DateTime:', departureDateTime);
+            console.log('Return DateTime:', returnDateTime);
             const existingBooking = await queryRunner.manager.findOne(booking_entity_1.Booking, {
                 where: {
                     aircraftId: aircraftId,
@@ -10990,29 +11236,52 @@ let DirectCharterService = class DirectCharterService {
                 },
                 lock: { mode: 'pessimistic_write' },
             });
+            console.log('Existing Booking Check Result:', existingBooking ? 'FOUND CONFLICT' : 'NO CONFLICT');
             if (existingBooking) {
+                console.log('ERROR: Aircraft slot conflict detected');
                 throw new common_1.BadRequestException('Aircraft slot is already booked for the selected time period');
             }
+            console.log('=== BACKEND SERVICE: FETCHING AIRCRAFT DETAILS ===');
             const aircraft = await queryRunner.manager.findOne(aircraft_entity_1.Aircraft, {
                 where: { id: aircraftId },
                 relations: ['company'],
                 lock: { mode: 'pessimistic_write' },
             });
             if (!aircraft) {
+                console.log('ERROR: Aircraft not found');
                 throw new common_1.NotFoundException(`Aircraft with ID ${aircraftId} not found`);
             }
+            console.log('Aircraft Found:', {
+                id: aircraft.id,
+                name: aircraft.name,
+                companyId: aircraft.company?.id,
+                companyName: aircraft.company?.companyName
+            });
+            console.log('=== BACKEND SERVICE: VALIDATING PASSENGERS ===');
+            this.passengerValidationService.validatePassengerRequirements(passengers, bookDto.origin, bookDto.destination, bookDto.passengerCount);
+            this.passengerValidationService.validatePassengerCapacity(passengers.length, aircraft.capacity);
+            console.log('=== BACKEND SERVICE: FETCHING USER DETAILS ===');
             const user = await queryRunner.manager.findOne(user_entity_1.User, {
                 where: { id: userId },
                 select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
             });
             if (!user) {
+                console.log('ERROR: User not found');
                 throw new common_1.NotFoundException(`User with ID ${userId} not found`);
             }
+            console.log('User Found:', {
+                id: user.id,
+                firstName: user.first_name,
+                lastName: user.last_name
+            });
+            console.log('=== BACKEND SERVICE: GENERATING REFERENCE NUMBERS ===');
             const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             const time = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
             const random = Math.random().toString(36).substr(2, 3).toUpperCase();
             const bookingId = `BK-${timestamp}-${time}-${random}`;
             const referenceNumber = `AC${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+            console.log('Generated Booking ID:', bookingId);
+            console.log('Generated Reference Number:', referenceNumber);
             const [originCoords, destinationCoords] = await Promise.all([
                 this.getLocationCoordinates(bookDto.origin),
                 this.getLocationCoordinates(bookDto.destination)
@@ -11032,6 +11301,7 @@ let DirectCharterService = class DirectCharterService {
             }
             catch (e) {
             }
+            console.log('=== BACKEND SERVICE: CREATING BOOKING RECORD ===');
             const now = new Date();
             const booking = this.bookingRepository.create({
                 userId: userId,
@@ -11060,18 +11330,47 @@ let DirectCharterService = class DirectCharterService {
                 createdAt: now,
                 updatedAt: now,
             });
+            console.log('Booking Object Created:', {
+                userId: booking.userId,
+                companyId: booking.companyId,
+                aircraftId: booking.aircraftId,
+                totalPrice: booking.totalPrice,
+                referenceNumber: booking.referenceNumber,
+                bookingStatus: booking.bookingStatus,
+                paymentStatus: booking.paymentStatus
+            });
             const savedBookingArr = await queryRunner.manager.save(booking);
             const savedBooking = Array.isArray(savedBookingArr) ? savedBookingArr[0] : savedBookingArr;
-            const passenger = this.passengerRepository.create({
-                booking_id: savedBooking.id,
-                first_name: user.first_name || 'Direct Charter',
-                last_name: user.last_name || 'Passenger',
-                age: user.date_of_birth ? this.calculateAge(user.date_of_birth) : 25,
-                nationality: user.nationality || 'Kenyan',
-                id_passport_number: 'N/A',
-                is_user: true,
+            console.log('Booking Saved Successfully:', {
+                id: savedBooking.id,
+                referenceNumber: savedBooking.referenceNumber,
+                bookingStatus: savedBooking.bookingStatus
             });
-            await queryRunner.manager.save(passenger);
+            console.log('=== BACKEND SERVICE: CREATING PASSENGER RECORDS ===');
+            const savedPassengers = [];
+            for (let i = 0; i < passengers.length; i++) {
+                const passengerDto = passengers[i];
+                console.log(`Creating passenger ${i + 1}:`, passengerDto);
+                const passengerData = this.passengerValidationService.formatPassengerForDatabase(passengerDto, savedBooking.id);
+                const passenger = this.passengerRepository.create(passengerData);
+                console.log('Passenger Object Created:', {
+                    bookingId: passenger.booking_id,
+                    firstName: passenger.first_name,
+                    lastName: passenger.last_name,
+                    age: passenger.age,
+                    nationality: passenger.nationality,
+                    isUser: passenger.is_user
+                });
+                const savedPassenger = await queryRunner.manager.save(passenger);
+                savedPassengers.push(savedPassenger);
+                console.log(`Passenger ${i + 1} Saved Successfully:`, {
+                    id: savedPassenger.id,
+                    bookingId: savedPassenger.booking_id,
+                    fullName: `${savedPassenger.first_name} ${savedPassenger.last_name}`,
+                    isUser: savedPassenger.is_user
+                });
+            }
+            console.log(`All ${savedPassengers.length} passengers created successfully`);
             const calendarEntry = this.aircraftCalendarRepository.create({
                 aircraftId: bookDto.aircraftId,
                 companyId: aircraft.company?.id || 1,
@@ -11114,7 +11413,17 @@ let DirectCharterService = class DirectCharterService {
             else {
                 console.log(`Skipping payment intent creation for inquiry (totalPrice: ${bookDto.totalPrice})`);
             }
+            console.log('=== BACKEND SERVICE: COMMITTING TRANSACTION ===');
             await queryRunner.commitTransaction();
+            console.log('=== BACKEND SERVICE: BOOKING COMPLETED SUCCESSFULLY ===');
+            console.log('Final Booking Details:', {
+                id: savedBooking.id,
+                referenceNumber: referenceNumber,
+                totalPrice: bookDto.totalPrice,
+                bookingStatus: 'pending',
+                paymentStatus: 'pending',
+                companyId: aircraft.company?.id || 1
+            });
             return {
                 booking: {
                     id: savedBooking.id,
@@ -11156,10 +11465,16 @@ let DirectCharterService = class DirectCharterService {
             };
         }
         catch (error) {
+            console.log('=== BACKEND SERVICE: BOOKING ERROR ===');
+            console.log('Error Type:', error.constructor.name);
+            console.log('Error Message:', error.message);
+            console.log('Error Stack:', error.stack);
+            console.log('Rolling back transaction...');
             await queryRunner.rollbackTransaction();
             throw error;
         }
         finally {
+            console.log('=== BACKEND SERVICE: RELEASING QUERY RUNNER ===');
             await queryRunner.release();
         }
     }
@@ -11271,7 +11586,7 @@ exports.DirectCharterService = DirectCharterService = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(passenger_entity_1.Passenger)),
     __param(5, (0, typeorm_1.InjectRepository)(payment_entity_1.Payment)),
     __param(6, (0, typeorm_1.InjectRepository)(aircraft_type_image_placeholder_entity_1.AircraftTypeImagePlaceholder)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _g : Object, typeof (_h = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _h : Object, typeof (_j = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _j : Object, typeof (_k = typeof google_earth_engine_service_1.GoogleEarthEngineService !== "undefined" && google_earth_engine_service_1.GoogleEarthEngineService) === "function" ? _k : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _c : Object, typeof (_d = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _d : Object, typeof (_e = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _e : Object, typeof (_f = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _f : Object, typeof (_g = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _g : Object, typeof (_h = typeof typeorm_2.DataSource !== "undefined" && typeorm_2.DataSource) === "function" ? _h : Object, typeof (_j = typeof payment_provider_service_1.PaymentProviderService !== "undefined" && payment_provider_service_1.PaymentProviderService) === "function" ? _j : Object, typeof (_k = typeof google_earth_engine_service_1.GoogleEarthEngineService !== "undefined" && google_earth_engine_service_1.GoogleEarthEngineService) === "function" ? _k : Object, typeof (_l = typeof passenger_validation_service_1.PassengerValidationService !== "undefined" && passenger_validation_service_1.PassengerValidationService) === "function" ? _l : Object])
 ], DirectCharterService);
 function andWhere(arg0, arg1) {
     throw new Error('Function not implemented.');
@@ -11300,6 +11615,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BookDirectCharterDto = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const passenger_dto_1 = __webpack_require__(/*! ./passenger.dto */ "./src/modules/direct-charter/dto/passenger.dto.ts");
 class BookDirectCharterDto {
 }
 exports.BookDirectCharterDto = BookDirectCharterDto;
@@ -11369,6 +11686,90 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], BookDirectCharterDto.prototype, "specialRequests", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Passenger details array', type: [passenger_dto_1.PassengerDto] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => passenger_dto_1.PassengerDto),
+    __metadata("design:type", Array)
+], BookDirectCharterDto.prototype, "passengers", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/direct-charter/dto/passenger.dto.ts":
+/*!*********************************************************!*\
+  !*** ./src/modules/direct-charter/dto/passenger.dto.ts ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PassengerDto = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+const class_transformer_1 = __webpack_require__(/*! class-transformer */ "class-transformer");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+class PassengerDto {
+}
+exports.PassengerDto = PassengerDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Passenger first name' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Transform)(({ value }) => (value != null ? String(value) : value)),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "firstName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Passenger last name' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Transform)(({ value }) => (value != null ? String(value) : value)),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "lastName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Passenger age' }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(0),
+    (0, class_validator_1.Max)(150),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value == null)
+            return value;
+        if (typeof value === 'number')
+            return value;
+        const parsed = parseInt(String(value), 10);
+        return isNaN(parsed) ? value : parsed;
+    }),
+    __metadata("design:type", Number)
+], PassengerDto.prototype, "age", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Passenger nationality' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Transform)(({ value }) => (value != null ? String(value) : value)),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "nationality", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Passport or ID number', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Transform)(({ value }) => (value != null ? String(value) : value)),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "idPassportNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Whether this passenger is the booking user', required: false, default: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PassengerDto.prototype, "isUser", void 0);
 
 
 /***/ }),
@@ -11441,6 +11842,147 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], SearchDirectCharterDto.prototype, "aircraftTypeImagePlaceholderId", void 0);
+
+
+/***/ }),
+
+/***/ "./src/modules/direct-charter/services/passenger-validation.service.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/modules/direct-charter/services/passenger-validation.service.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PassengerValidationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+let PassengerValidationService = class PassengerValidationService {
+    validatePassengerRequirements(passengers, origin, destination, expectedPassengerCount) {
+        console.log('=== PASSENGER VALIDATION SERVICE ===');
+        console.log('Expected passengers:', expectedPassengerCount);
+        console.log('Received passengers:', passengers.length);
+        console.log('Flight route:', `${origin} → ${destination}`);
+        if (passengers.length !== expectedPassengerCount) {
+            throw new common_1.BadRequestException(`Expected ${expectedPassengerCount} passengers, but received ${passengers.length}`);
+        }
+        const isInternationalFlight = this.isInternationalFlight(origin, destination);
+        console.log('International flight:', isInternationalFlight);
+        passengers.forEach((passenger, index) => {
+            this.validateIndividualPassenger(passenger, index + 1, isInternationalFlight);
+        });
+        const userPassengers = passengers.filter(p => p.isUser);
+        if (userPassengers.length === 0) {
+            throw new common_1.BadRequestException('At least one passenger must be marked as the booking user');
+        }
+        if (userPassengers.length > 1) {
+            throw new common_1.BadRequestException('Only one passenger can be marked as the booking user');
+        }
+        console.log('All passenger validations passed');
+    }
+    validateIndividualPassenger(passenger, passengerNumber, isInternationalFlight) {
+        const errors = [];
+        if (!passenger.firstName || passenger.firstName.trim().length === 0) {
+            errors.push('First name is required');
+        }
+        if (!passenger.lastName || passenger.lastName.trim().length === 0) {
+            errors.push('Last name is required');
+        }
+        if (!passenger.nationality || passenger.nationality.trim().length === 0) {
+            errors.push('Nationality is required');
+        }
+        if (!passenger.age || passenger.age < 0 || passenger.age > 150) {
+            errors.push('Valid age (0-150) is required');
+        }
+        if (isInternationalFlight) {
+            if (!passenger.idPassportNumber || passenger.idPassportNumber.trim().length === 0) {
+                errors.push('Passport/ID number is required for international flights');
+            }
+        }
+        if (passenger.firstName && passenger.firstName.length > 100) {
+            errors.push('First name must be 100 characters or less');
+        }
+        if (passenger.lastName && passenger.lastName.length > 100) {
+            errors.push('Last name must be 100 characters or less');
+        }
+        if (passenger.nationality && passenger.nationality.length > 100) {
+            errors.push('Nationality must be 100 characters or less');
+        }
+        if (passenger.idPassportNumber && passenger.idPassportNumber.length > 100) {
+            errors.push('Passport/ID number must be 100 characters or less');
+        }
+        if (passenger.age && passenger.age < 2) {
+            console.log(`Passenger ${passengerNumber}: Infant detected (age: ${passenger.age})`);
+        }
+        else if (passenger.age && passenger.age < 18) {
+            console.log(`Passenger ${passengerNumber}: Minor detected (age: ${passenger.age})`);
+        }
+        if (errors.length > 0) {
+            throw new common_1.BadRequestException(`Passenger ${passengerNumber} validation failed: ${errors.join(', ')}`);
+        }
+    }
+    isInternationalFlight(origin, destination) {
+        const kenyanAirports = [
+            'jomo kenyatta international airport',
+            'wilson airport',
+            'moi international airport',
+            'kisumu airport',
+            'eldoret airport',
+            'malindi airport',
+            'lamu airport',
+            'ukunda airport',
+            'diani airport',
+            'nairobi',
+            'mombasa',
+            'kisumu',
+            'eldoret',
+            'malindi',
+            'lamu',
+            'diani',
+            'ukunda',
+        ];
+        const originLower = origin.toLowerCase();
+        const destinationLower = destination.toLowerCase();
+        const isOriginKenyan = kenyanAirports.some(airport => originLower.includes(airport) || airport.includes(originLower));
+        const isDestinationKenyan = kenyanAirports.some(airport => destinationLower.includes(airport) || airport.includes(destinationLower));
+        return !(isOriginKenyan && isDestinationKenyan);
+    }
+    getPassengerAgeCategory(age) {
+        if (age < 2)
+            return 'infant';
+        if (age < 12)
+            return 'child';
+        return 'adult';
+    }
+    validatePassengerCapacity(passengerCount, aircraftCapacity) {
+        if (passengerCount > aircraftCapacity) {
+            throw new common_1.BadRequestException(`Passenger count (${passengerCount}) exceeds aircraft capacity (${aircraftCapacity})`);
+        }
+        if (passengerCount <= 0) {
+            throw new common_1.BadRequestException('At least one passenger is required');
+        }
+    }
+    formatPassengerForDatabase(passenger, bookingId) {
+        return {
+            booking_id: bookingId,
+            first_name: passenger.firstName.trim(),
+            last_name: passenger.lastName.trim(),
+            age: passenger.age,
+            nationality: passenger.nationality.trim(),
+            id_passport_number: passenger.idPassportNumber?.trim() || null,
+            is_user: passenger.isUser || false,
+        };
+    }
+};
+exports.PassengerValidationService = PassengerValidationService;
+exports.PassengerValidationService = PassengerValidationService = __decorate([
+    (0, common_1.Injectable)()
+], PassengerValidationService);
 
 
 /***/ }),
@@ -19573,6 +20115,7 @@ let TripsService = class TripsService {
             const bookings = await this.bookingRepository
                 .createQueryBuilder('booking')
                 .leftJoinAndSelect('booking.passengers', 'passengers')
+                .leftJoinAndSelect('booking.stops', 'stops')
                 .leftJoinAndSelect('booking.deal', 'deal')
                 .leftJoinAndSelect('deal.company', 'company')
                 .leftJoinAndSelect('deal.aircraft', 'aircraft')
@@ -19603,6 +20146,7 @@ let TripsService = class TripsService {
             .createQueryBuilder('userTrip')
             .leftJoinAndSelect('userTrip.booking', 'booking')
             .leftJoinAndSelect('booking.passengers', 'passengers')
+            .leftJoinAndSelect('booking.stops', 'stops')
             .leftJoinAndSelect('booking.deal', 'deal')
             .leftJoinAndSelect('deal.company', 'company')
             .leftJoinAndSelect('deal.aircraft', 'aircraft')

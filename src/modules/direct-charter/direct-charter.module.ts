@@ -11,6 +11,7 @@ import { Payment } from '../../common/entities/payment.entity';
 import { AircraftTypeImagePlaceholder } from '../../common/entities/aircraft-type-image-placeholder.entity';
 import { PaymentsModule } from '../payments/payments.module';
 import { GoogleEarthEngineModule } from '../google-earth-engine/google-earth-engine.module';
+import { PassengerValidationService } from './services/passenger-validation.service';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { GoogleEarthEngineModule } from '../google-earth-engine/google-earth-eng
     GoogleEarthEngineModule,
   ],
   controllers: [DirectCharterController],
-  providers: [DirectCharterService],
+  providers: [DirectCharterService, PassengerValidationService],
   exports: [DirectCharterService],
 })
 export class DirectCharterModule {} 

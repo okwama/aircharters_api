@@ -14,6 +14,7 @@ import { BookDirectCharterDto } from './dto/book-direct-charter.dto';
 import { PaymentProviderService } from '../payments/services/payment-provider.service';
 import { PaymentProviderType } from '../payments/interfaces/payment-provider.interface';
 import { GoogleEarthEngineService } from '../google-earth-engine/google-earth-engine.service';
+import { PassengerValidationService } from './services/passenger-validation.service';
 
 @Injectable()
 export class DirectCharterService {
@@ -35,6 +36,7 @@ export class DirectCharterService {
     private readonly dataSource: DataSource,
     private readonly paymentProviderService: PaymentProviderService,
     private readonly googleEarthEngineService: GoogleEarthEngineService,
+    private readonly passengerValidationService: PassengerValidationService,
   ) {}
 
   async searchAvailableAircraft(searchDto: SearchDirectCharterDto) {
@@ -248,14 +250,25 @@ export class DirectCharterService {
   }
 
   async bookDirectCharter(bookDto: BookDirectCharterDto, userId: string) {
-    const { aircraftId, departureDateTime, returnDateTime, tripType } = bookDto;
+    console.log('=== BACKEND SERVICE: BOOK DIRECT CHARTER ===');
+    console.log('User ID:', userId);
+    console.log('Booking DTO:', JSON.stringify(bookDto, null, 2));
+    
+    const { aircraftId, departureDateTime, returnDateTime, tripType, passengers } = bookDto;
 
     // Use query runner for transaction with proper locking
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    
+    console.log('=== BACKEND SERVICE: TRANSACTION STARTED ===');
 
     try {
+      console.log('=== BACKEND SERVICE: CHECKING AIRCRAFT AVAILABILITY ===');
+      console.log('Aircraft ID:', aircraftId);
+      console.log('Departure DateTime:', departureDateTime);
+      console.log('Return DateTime:', returnDateTime);
+      
       // For direct charters, check if aircraft slot is already booked (exclusive booking)
       // Use SELECT FOR UPDATE to prevent race conditions
       const existingBooking = await queryRunner.manager.findOne(Booking, {
@@ -270,11 +283,15 @@ export class DirectCharterService {
         lock: { mode: 'pessimistic_write' },
       });
 
+      console.log('Existing Booking Check Result:', existingBooking ? 'FOUND CONFLICT' : 'NO CONFLICT');
+
       if (existingBooking) {
+        console.log('ERROR: Aircraft slot conflict detected');
         throw new BadRequestException('Aircraft slot is already booked for the selected time period');
       }
 
       // Get aircraft details to get company ID with lock
+      console.log('=== BACKEND SERVICE: FETCHING AIRCRAFT DETAILS ===');
       const aircraft = await queryRunner.manager.findOne(Aircraft, {
         where: { id: aircraftId },
         relations: ['company'],
@@ -282,24 +299,59 @@ export class DirectCharterService {
       });
 
       if (!aircraft) {
+        console.log('ERROR: Aircraft not found');
         throw new NotFoundException(`Aircraft with ID ${aircraftId} not found`);
       }
+      
+      console.log('Aircraft Found:', {
+        id: aircraft.id,
+        name: aircraft.name,
+        companyId: aircraft.company?.id,
+        companyName: aircraft.company?.companyName
+      });
+
+      // Validate passengers before proceeding
+      console.log('=== BACKEND SERVICE: VALIDATING PASSENGERS ===');
+      this.passengerValidationService.validatePassengerRequirements(
+        passengers,
+        bookDto.origin,
+        bookDto.destination,
+        bookDto.passengerCount
+      );
+
+      // Validate passenger count against aircraft capacity
+      this.passengerValidationService.validatePassengerCapacity(
+        passengers.length,
+        aircraft.capacity
+      );
 
       // Get user data for passenger creation
+      console.log('=== BACKEND SERVICE: FETCHING USER DETAILS ===');
       const user = await queryRunner.manager.findOne(User, {
         where: { id: userId },
         select: ['id', 'first_name', 'last_name', 'nationality', 'date_of_birth']
       });
 
       if (!user) {
+        console.log('ERROR: User not found');
         throw new NotFoundException(`User with ID ${userId} not found`);
       }
+      
+      console.log('User Found:', {
+        id: user.id,
+        firstName: user.first_name,
+        lastName: user.last_name
+      });
       // Generate unique booking ID
+      console.log('=== BACKEND SERVICE: GENERATING REFERENCE NUMBERS ===');
       const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const time = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
       const random = Math.random().toString(36).substr(2, 3).toUpperCase();
       const bookingId = `BK-${timestamp}-${time}-${random}`;
       const referenceNumber = `AC${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+      
+      console.log('Generated Booking ID:', bookingId);
+      console.log('Generated Reference Number:', referenceNumber);
 
       // Get coordinates for origin and destination
       const [originCoords, destinationCoords] = await Promise.all([
@@ -332,6 +384,7 @@ export class DirectCharterService {
       }
 
       // Create booking - align with database schema
+      console.log('=== BACKEND SERVICE: CREATING BOOKING RECORD ===');
       const now = new Date();
       const booking = this.bookingRepository.create({
         userId: userId,
@@ -364,21 +417,61 @@ export class DirectCharterService {
         updatedAt: now, // Manually set timestamp
       });
 
-      const savedBookingArr = await queryRunner.manager.save(booking);
-      const savedBooking = Array.isArray(savedBookingArr) ? savedBookingArr[0] : savedBookingArr;
-
-      // Create passenger record for the user - align with database schema
-      const passenger = this.passengerRepository.create({
-        booking_id: savedBooking.id, // Use number instead of string
-        first_name: user.first_name || 'Direct Charter', // Use correct field name
-        last_name: user.last_name || 'Passenger', // Use correct field name
-        age: user.date_of_birth ? this.calculateAge(user.date_of_birth) : 25,
-        nationality: user.nationality || 'Kenyan',
-        id_passport_number: 'N/A', // Use correct field name with underscore
-        is_user: true, // Use correct field name with underscore
+      console.log('Booking Object Created:', {
+        userId: booking.userId,
+        companyId: booking.companyId,
+        aircraftId: booking.aircraftId,
+        totalPrice: booking.totalPrice,
+        referenceNumber: booking.referenceNumber,
+        bookingStatus: booking.bookingStatus,
+        paymentStatus: booking.paymentStatus
       });
 
-      await queryRunner.manager.save(passenger);
+      const savedBookingArr = await queryRunner.manager.save(booking);
+      const savedBooking = Array.isArray(savedBookingArr) ? savedBookingArr[0] : savedBookingArr;
+      
+      console.log('Booking Saved Successfully:', {
+        id: savedBooking.id,
+        referenceNumber: savedBooking.referenceNumber,
+        bookingStatus: savedBooking.bookingStatus
+      });
+
+      // Create passenger records for all passengers
+      console.log('=== BACKEND SERVICE: CREATING PASSENGER RECORDS ===');
+      const savedPassengers = [];
+      
+      for (let i = 0; i < passengers.length; i++) {
+        const passengerDto = passengers[i];
+        console.log(`Creating passenger ${i + 1}:`, passengerDto);
+        
+        const passengerData = this.passengerValidationService.formatPassengerForDatabase(
+          passengerDto, 
+          savedBooking.id
+        );
+        
+        const passenger = this.passengerRepository.create(passengerData);
+        
+        console.log('Passenger Object Created:', {
+          bookingId: passenger.booking_id,
+          firstName: passenger.first_name,
+          lastName: passenger.last_name,
+          age: passenger.age,
+          nationality: passenger.nationality,
+          isUser: passenger.is_user
+        });
+
+        const savedPassenger = await queryRunner.manager.save(passenger);
+        savedPassengers.push(savedPassenger);
+        
+        console.log(`Passenger ${i + 1} Saved Successfully:`, {
+          id: savedPassenger.id,
+          bookingId: savedPassenger.booking_id,
+          fullName: `${savedPassenger.first_name} ${savedPassenger.last_name}`,
+          isUser: savedPassenger.is_user
+        });
+      }
+      
+      console.log(`All ${savedPassengers.length} passengers created successfully`);
 
       // Create calendar entry for the booking
       const calendarEntry = this.aircraftCalendarRepository.create({
@@ -427,7 +520,18 @@ export class DirectCharterService {
       }
 
       // Commit transaction only after all operations succeed
+      console.log('=== BACKEND SERVICE: COMMITTING TRANSACTION ===');
       await queryRunner.commitTransaction();
+      
+      console.log('=== BACKEND SERVICE: BOOKING COMPLETED SUCCESSFULLY ===');
+      console.log('Final Booking Details:', {
+        id: savedBooking.id,
+        referenceNumber: referenceNumber,
+        totalPrice: bookDto.totalPrice,
+        bookingStatus: 'pending',
+        paymentStatus: 'pending',
+        companyId: aircraft.company?.id || 1
+      });
 
       return {
         booking: {
@@ -470,9 +574,16 @@ export class DirectCharterService {
         message: 'Direct charter booking created successfully. Please complete payment to confirm.',
       };
     } catch (error) {
+      console.log('=== BACKEND SERVICE: BOOKING ERROR ===');
+      console.log('Error Type:', error.constructor.name);
+      console.log('Error Message:', error.message);
+      console.log('Error Stack:', error.stack);
+      console.log('Rolling back transaction...');
+      
       await queryRunner.rollbackTransaction();
       throw error;
     } finally {
+      console.log('=== BACKEND SERVICE: RELEASING QUERY RUNNER ===');
       await queryRunner.release();
     }
   }

@@ -44,6 +44,7 @@ import { AircraftImage } from './common/entities/aircraft-image.entity';
 import { AircraftCalendar } from './common/entities/aircraft-calendar.entity';
 import { BookingInquiry } from './common/entities/booking-inquiry.entity';
 import { InquiryStop } from './common/entities/inquiry-stop.entity';
+import { BookingStop } from './common/entities/booking-stop.entity';
 import { Amenity } from './common/entities/amenity.entity';
 import { AircraftAmenity } from './common/entities/aircraft-amenity.entity';
 import { CharterDealAmenity } from './common/entities/charter-deal-amenity.entity';
@@ -97,6 +98,7 @@ import { ExperienceSchedule } from './common/entities/experience-schedule.entity
           AircraftCalendar,
           BookingInquiry,
           InquiryStop,
+          BookingStop,
           Amenity,
           AircraftAmenity,
           CharterDealAmenity,

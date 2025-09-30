@@ -1,5 +1,7 @@
-import { IsString, IsNotEmpty, IsDateString, IsInt, Min, Max, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsInt, Min, Max, IsNumber, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { PassengerDto } from './passenger.dto';
 
 export class BookDirectCharterDto {
   @ApiProperty({ description: 'Aircraft ID' })
@@ -56,4 +58,10 @@ export class BookDirectCharterDto {
   @IsString()
   @IsOptional()
   specialRequests?: string;
+
+  @ApiProperty({ description: 'Passenger details array', type: [PassengerDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PassengerDto)
+  passengers: PassengerDto[];
 } 

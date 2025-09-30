@@ -13,6 +13,7 @@ import { CharterDeal } from './charter-deal.entity';
 import { ChartersCompany } from './charters-company.entity';
 import { Passenger } from './passenger.entity';
 import { Aircraft } from './aircraft.entity';
+import { BookingStop } from './booking-stop.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',
@@ -163,6 +164,9 @@ export class Booking {
 
   @OneToMany(() => Passenger, passenger => passenger.booking)
   passengers: Passenger[];
+
+  @OneToMany(() => BookingStop, stop => stop.booking, { cascade: true })
+  stops: BookingStop[];
 
   // Computed properties
   get formattedPrice(): string {

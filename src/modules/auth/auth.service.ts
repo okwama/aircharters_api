@@ -15,7 +15,7 @@ export class AuthService {
 
   async register(registerDto: any) {
     try {
-      const { email, password, firstName, lastName, authProvider } = registerDto;
+      const { email, password, firstName, lastName, phoneNumber, countryCode, authProvider } = registerDto;
 
       // Validate required fields
       if (!email || !password || !firstName || !lastName) {
@@ -23,15 +23,23 @@ export class AuthService {
       }
 
       // Check if user already exists
+      const existingUserConditions: any[] = [{ email }];
+      
+      // Check phone number if provided
+      if (phoneNumber) {
+        existingUserConditions.push({ phone_number: phoneNumber });
+      }
+      
       const existingUser = await this.userRepository.findOne({
-        where: [
-          { email },
-          { phone_number: email } // Also check if email is used as phone
-        ]
+        where: existingUserConditions
       });
 
       if (existingUser) {
-        throw new ConflictException('User with this email already exists');
+        if (existingUser.email === email) {
+          throw new ConflictException('User with this email already exists');
+        } else if (existingUser.phone_number === phoneNumber) {
+          throw new ConflictException('User with this phone number already exists');
+        }
       }
 
       // Hash password for backend storage
@@ -47,8 +55,8 @@ export class AuthService {
         password: hashedPassword, // Store hashed password for backend auth
         first_name: firstName,
         last_name: lastName,
-        phone_number: null,
-        country_code: null,
+        phone_number: phoneNumber || null,
+        country_code: countryCode || null,
         loyalty_points: 0,
         wallet_balance: 0,
         is_active: true,
@@ -162,6 +170,69 @@ export class AuthService {
         throw error;
       }
       throw new UnauthorizedException('Login failed: ' + error.message);
+    }
+  }
+
+  // Backend login with phone/password
+  async loginWithPhone(phoneNumber: string, password: string) {
+    try {
+      console.log('🔥 Backend phone login attempt for:', phoneNumber);
+      
+      // Find user by phone number
+      const user = await this.userRepository.findOne({
+        where: { phone_number: phoneNumber }
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid phone number or password');
+      }
+
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid phone number or password');
+      }
+
+      console.log('🔥 Backend phone login successful for user:', user.id);
+
+      // Generate backend JWT tokens
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        phone: user.phone_number,
+        type: 'backend',
+      };
+
+      const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+      const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+      return {
+        accessToken,
+        refreshToken,
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+        user: {
+          id: user.id,
+          email: user.email,
+          phoneNumber: user.phone_number,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          countryCode: user.country_code,
+          loyaltyPoints: user.loyalty_points,
+          walletBalance: user.wallet_balance,
+          isActive: user.is_active,
+          emailVerified: user.email_verified,
+          phoneVerified: user.phone_verified,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        },
+      };
+    } catch (error) {
+      console.error('🔥 Backend phone login error:', error);
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Phone login failed: ' + error.message);
     }
   }
 

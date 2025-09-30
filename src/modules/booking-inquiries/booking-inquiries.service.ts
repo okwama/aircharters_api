@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, Between, In } from 'typeorm';
 import { BookingInquiry, InquiryStatus, ProposedPriceType } from '../../common/entities/booking-inquiry.entity';
 import { InquiryStop } from '../../common/entities/inquiry-stop.entity';
+import { BookingStop } from '../../common/entities/booking-stop.entity';
 import { Aircraft } from '../../common/entities/aircraft.entity';
 import { User } from '../../common/entities/user.entity';
 import { Booking, BookingStatus, PaymentStatus, BookingType } from '../../common/entities/booking.entity';
@@ -19,6 +20,8 @@ export class BookingInquiriesService {
     private bookingInquiryRepository: Repository<BookingInquiry>,
     @InjectRepository(InquiryStop)
     private inquiryStopRepository: Repository<InquiryStop>,
+    @InjectRepository(BookingStop)
+    private bookingStopRepository: Repository<BookingStop>,
     @InjectRepository(Aircraft)
     private aircraftRepository: Repository<Aircraft>,
     @InjectRepository(User)
@@ -257,7 +260,27 @@ export class BookingInquiriesService {
       totalChildren: 0,
     });
 
-    return await this.bookingRepository.save(booking);
+    const savedBooking = await this.bookingRepository.save(booking);
+
+    // Create booking stops from inquiry stops
+    if (inquiry.stops && inquiry.stops.length > 0) {
+      const bookingStops = inquiry.stops.map(inquiryStop => 
+        this.bookingStopRepository.create({
+          bookingId: savedBooking.id,
+          stopName: inquiryStop.stopName,
+          longitude: inquiryStop.longitude,
+          latitude: inquiryStop.latitude,
+          datetime: inquiryStop.datetime,
+          stopOrder: inquiryStop.stopOrder,
+          locationType: inquiryStop.locationType,
+          locationCode: inquiryStop.locationCode,
+        })
+      );
+
+      await this.bookingStopRepository.save(bookingStops);
+    }
+
+    return savedBooking;
   }
 
   private generateReferenceNumber(): string {
