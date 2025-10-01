@@ -43,7 +43,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = configService.get<number>('PORT', 3000);
+  const port = configService.get<number>('PORT', 5008);
   await app.listen(port);
   
   console.log(`🚀 Air Charters API is running on: http://localhost:${port}`);
