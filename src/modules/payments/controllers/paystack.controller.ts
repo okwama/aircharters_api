@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Headers, Logger, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query, Headers, Logger, BadRequestException } from '@nestjs/common';
 import { PaystackProvider } from '../providers/paystack.provider';
 import { PaymentProviderService } from '../services/payment-provider.service';
 import { PaymentProviderType } from '../interfaces/payment-provider.interface';
@@ -80,9 +80,12 @@ export class PaystackController {
    * GET /payments/paystack/verify/:reference
    */
   @Get('verify/:reference')
-  async verifyPayment(@Param('reference') reference: string) {
+  async verifyPayment(
+    @Param('reference') reference: string,
+    @Query('bookingId') bookingId?: string
+  ) {
     try {
-      this.logger.log(`Verifying Paystack payment: ${reference}`);
+      this.logger.log(`Verifying Paystack payment: ${reference}${bookingId ? ` for booking: ${bookingId}` : ''}`);
 
       const result = await this.paymentProviderService.getPaymentStatus(
         reference,
@@ -97,12 +100,23 @@ export class PaystackController {
         currency: result.currency
       })}`);
 
+      // Status is already aligned - Paystack provider returns 'succeeded' directly
+      const alignedStatus = result.status;
+
       return {
         success: true,
-        data: result,
-        message: result.status === 'succeeded' 
+        data: {
+          status: alignedStatus,
+          amount: result.amount,
+          currency: result.currency,
+          transactionId: result.transactionId,
+          paymentMethod: result.paymentMethod,
+          metadata: result.metadata,
+          reference: reference
+        },
+        message: alignedStatus === 'succeeded' 
           ? 'Payment verification completed successfully' 
-          : `Payment verification completed with status: ${result.status}`,
+          : `Payment verification completed with status: ${alignedStatus}`,
       };
     } catch (error) {
       this.logger.error(`Paystack payment verification failed: ${error.message}`, error.stack);
