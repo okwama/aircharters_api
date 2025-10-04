@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 
 export const dataSource = new DataSource({
   type: 'mysql',
-  driver: require('mysql2'),
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT),
   username: process.env.DB_USERNAME,
@@ -54,7 +53,6 @@ export const dataSource = new DataSource({
 export const getDataSource = (configService: ConfigService) => {
   return new DataSource({
     type: 'mysql',
-    driver: require('mysql2'),
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     username: configService.get('DB_USERNAME'),
