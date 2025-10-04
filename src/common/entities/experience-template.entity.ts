@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ExperienceImage } from './experience-image.entity';
-import { ExperienceSchedule } from './experience-schedule.entity';
 import { ChartersCompany } from './charters-company.entity';
 
 @Entity('experience_templates')
@@ -32,6 +31,21 @@ export class ExperienceTemplate {
   @Column({ name: 'termsConditions', type: 'text', nullable: true })
   termsConditions: string;
 
+  @Column({ name: 'taxType', type: 'varchar', length: 255, nullable: true })
+  taxType: string;
+
+  @Column({ name: 'taxAmount', type: 'decimal', precision: 10, scale: 2, default: 0.00 })
+  taxAmount: number;
+
+  @Column({ name: 'subTotal', type: 'decimal', precision: 10, scale: 2 })
+  subTotal: number;
+
+  @Column({ name: 'total', type: 'decimal', precision: 10, scale: 2 })
+  total: number;
+
+  @Column({ name: 'durationMinutes', type: 'int' })
+  durationMinutes: number;
+
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
@@ -45,7 +59,4 @@ export class ExperienceTemplate {
 
   @OneToMany(() => ExperienceImage, image => image.experience)
   images: ExperienceImage[];
-
-  @OneToMany(() => ExperienceSchedule, schedule => schedule.experience)
-  schedules: ExperienceSchedule[];
 }

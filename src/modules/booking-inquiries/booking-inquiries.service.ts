@@ -12,6 +12,9 @@ import { AircraftCalendar, CalendarEventType } from '../../common/entities/aircr
 import { CreateBookingInquiryDto } from './dto/create-booking-inquiry.dto';
 import { UpdateBookingInquiryDto } from './dto/update-booking-inquiry.dto';
 import { PaymentProviderService } from '../payments/services/payment-provider.service';
+import { EmailService } from '../email/email.service';
+import { SmsService } from '../sms/sms.service';
+import { ChartersCompany } from '../../common/entities/charters-company.entity';
 
 @Injectable()
 export class BookingInquiriesService {
@@ -32,8 +35,12 @@ export class BookingInquiriesService {
     private paymentRepository: Repository<Payment>,
     @InjectRepository(AircraftCalendar)
     private aircraftCalendarRepository: Repository<AircraftCalendar>,
+    @InjectRepository(ChartersCompany)
+    private chartersCompanyRepository: Repository<ChartersCompany>,
     private dataSource: DataSource,
     private paymentProviderService?: PaymentProviderService,
+    private emailService?: EmailService,
+    private smsService?: SmsService,
   ) {}
 
   async create(createBookingInquiryDto: CreateBookingInquiryDto, userId: string): Promise<BookingInquiry> {
@@ -110,6 +117,14 @@ export class BookingInquiriesService {
       }
 
       await queryRunner.commitTransaction();
+
+      // Send notifications to charter company
+      try {
+        await this.sendInquiryNotifications(savedInquiry, aircraft, user, createBookingInquiryDto);
+      } catch (notificationError) {
+        console.error('Failed to send inquiry notifications:', notificationError);
+        // Don't fail the inquiry creation if notifications fail
+      }
 
       // Return with relations
       return await this.findOne(savedInquiry.id);
@@ -371,5 +386,61 @@ export class BookingInquiriesService {
         },
       },
     };
+  }
+
+  private async sendInquiryNotifications(
+    inquiry: BookingInquiry,
+    aircraft: Aircraft,
+    user: User,
+    createBookingInquiryDto: CreateBookingInquiryDto
+  ): Promise<void> {
+    try {
+      // Get charter company details
+      const company = await this.chartersCompanyRepository.findOne({
+        where: { id: aircraft.companyId }
+      });
+
+      if (!company) {
+        console.error('Charter company not found for aircraft:', aircraft.id);
+        return;
+      }
+
+      const inquiryData = {
+        referenceNumber: inquiry.referenceNumber,
+        customerName: `${user.first_name} ${user.last_name}`,
+        customerEmail: user.email,
+        aircraftName: aircraft.name,
+        aircraftType: aircraft.type,
+        origin: createBookingInquiryDto.origin || 'Not specified',
+        destination: createBookingInquiryDto.destination || 'Not specified',
+        departureDate: createBookingInquiryDto.preferredDepartureDate || 'Not specified',
+        returnDate: createBookingInquiryDto.preferredReturnDate || undefined,
+        requestedSeats: inquiry.requestedSeats,
+        specialRequirements: inquiry.specialRequirements,
+        userNotes: inquiry.userNotes,
+        createdAt: inquiry.createdAt.toLocaleString(),
+        passengers: [], // Will be populated from inquiry data if available
+      };
+
+      // Send email notification
+      if (this.emailService && company.email) {
+        await this.emailService.sendInquiryNotificationEmail(company.email, inquiryData);
+      }
+
+      // Send SMS notification
+      if (this.smsService && company.mobileNumber) {
+        await this.smsService.sendInquiryNotificationSms(company.mobileNumber, {
+          referenceNumber: inquiry.referenceNumber,
+          customerName: inquiryData.customerName,
+          aircraftName: aircraft.name,
+          requestedSeats: inquiry.requestedSeats,
+        });
+      }
+
+      console.log(`Inquiry notifications sent for ${inquiry.referenceNumber} to company ${company.companyName}`);
+    } catch (error) {
+      console.error('Error sending inquiry notifications:', error);
+      throw error;
+    }
   }
 } 

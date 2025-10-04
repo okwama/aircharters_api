@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ExperienceTemplate } from '../../common/entities/experience-template.entity';
 import { ExperienceImage } from '../../common/entities/experience-image.entity';
-import { ExperienceSchedule } from '../../common/entities/experience-schedule.entity';
 import { ExperienceCardDto, ExperienceCategoryDto, ExperienceDetailDto } from './dto/experience-response.dto';
 
 @Injectable()
@@ -13,16 +12,13 @@ export class ExperiencesService {
     private readonly experienceTemplateRepository: Repository<ExperienceTemplate>,
     @InjectRepository(ExperienceImage)
     private readonly experienceImageRepository: Repository<ExperienceImage>,
-    @InjectRepository(ExperienceSchedule)
-    private readonly experienceScheduleRepository: Repository<ExperienceSchedule>,
   ) {}
 
   async getAllExperiences(): Promise<ExperienceCategoryDto[]> {
-    // Get all active experiences with their images and schedules
+    // Get all active experiences with their images
     const experiences = await this.experienceTemplateRepository
       .createQueryBuilder('et')
       .leftJoinAndSelect('et.images', 'ei')
-      .leftJoinAndSelect('et.schedules', 'es')
       .leftJoinAndSelect('et.company', 'c')
       .where('et.isActive = :isActive', { isActive: true })
       .orderBy('et.createdAt', 'DESC')
@@ -56,7 +52,6 @@ export class ExperiencesService {
     const experience = await this.experienceTemplateRepository
       .createQueryBuilder('et')
       .leftJoinAndSelect('et.images', 'ei')
-      .leftJoinAndSelect('et.schedules', 'es')
       .leftJoinAndSelect('et.company', 'c')
       .where('et.id = :id', { id })
       .andWhere('et.isActive = :isActive', { isActive: true })
@@ -74,7 +69,6 @@ export class ExperiencesService {
     const experiences = await this.experienceTemplateRepository
       .createQueryBuilder('et')
       .leftJoinAndSelect('et.images', 'ei')
-      .leftJoinAndSelect('et.schedules', 'es')
       .leftJoinAndSelect('et.company', 'c')
       .where('et.isActive = :isActive', { isActive: true })
       .andWhere('et.city LIKE :category OR et.country LIKE :category', { 
@@ -86,39 +80,25 @@ export class ExperiencesService {
     return experiences.map(exp => this.transformToCardDto(exp));
   }
 
-  async getExperienceSchedules(id: number, date?: string): Promise<any[]> {
-    const queryBuilder = this.experienceScheduleRepository
-      .createQueryBuilder('es')
-      .where('es.experienceId = :id', { id })
-      .andWhere('es.status = :status', { status: 'scheduled' });
+  async getExperienceAvailability(id: number): Promise<any> {
+    const experience = await this.experienceTemplateRepository.findOne({
+      where: { id, isActive: true },
+    });
 
-    // If date is provided, filter by that specific date
-    if (date) {
-      const targetDate = new Date(date);
-      const nextDate = new Date(targetDate);
-      nextDate.setDate(nextDate.getDate() + 1);
-      
-      queryBuilder
-        .andWhere('es.startTime >= :startDate', { startDate: targetDate })
-        .andWhere('es.startTime < :endDate', { endDate: nextDate });
+    if (!experience) {
+      throw new NotFoundException(`Experience with ID ${id} not found`);
     }
 
-    const schedules = await queryBuilder
-      .orderBy('es.startTime', 'ASC')
-      .getMany();
-
-    return schedules.map(schedule => ({
-      id: schedule.id,
-      startTime: schedule.startTime,
-      endTime: schedule.endTime,
-      price: schedule.total,
-      priceUnit: schedule.priceUnit,
-      durationMinutes: schedule.durationMinutes,
-      seatsAvailable: schedule.seatsAvailable,
-      status: schedule.status,
-      time: schedule.startTime.toTimeString().substring(0, 5), // Format as HH:MM
-      available: schedule.seatsAvailable > 0
-    }));
+    return {
+      id: experience.id,
+      title: experience.title,
+      durationMinutes: experience.durationMinutes,
+      total: experience.total,
+      subTotal: experience.subTotal,
+      taxAmount: experience.taxAmount,
+      taxType: experience.taxType,
+      isAvailable: experience.isActive,
+    };
   }
 
   private getCategoryFromExperience(experience: ExperienceTemplate): string {
@@ -154,9 +134,6 @@ export class ExperiencesService {
     const mainImage = experience.images?.find(img => img.imageSlot === 'image1') || 
                      experience.images?.[0];
     
-    // Get the first available schedule for pricing
-    const firstSchedule = experience.schedules?.[0];
-    
     // Calculate average rating (placeholder for now)
     const rating = '4.8';
     
@@ -165,10 +142,9 @@ export class ExperiencesService {
       imageUrl: mainImage?.url || 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
       title: experience.title,
       location: `${experience.city}, ${experience.country}`,
-      duration: firstSchedule ? `${firstSchedule.durationMinutes} minutes` : 'Varies',
-      price: firstSchedule ? `$${firstSchedule.total}` : 'Contact for pricing',
+      duration: `${experience.durationMinutes} minutes`,
+      price: `$${experience.total}`,
       rating,
-      seatsAvailable: firstSchedule?.seatsAvailable || 0,
     };
   }
 
@@ -180,22 +156,17 @@ export class ExperiencesService {
       country: experience.country,
       city: experience.city,
       locationName: experience.locationName,
+      taxType: experience.taxType,
+      taxAmount: experience.taxAmount,
+      subTotal: experience.subTotal,
+      total: experience.total,
+      durationMinutes: experience.durationMinutes,
       termsConditions: experience.termsConditions || '',
       images: experience.images?.map(img => ({
         id: img.id,
         imageSlot: img.imageSlot,
         url: img.url,
         sortOrder: img.sortOrder,
-      })) || [],
-      schedules: experience.schedules?.map(schedule => ({
-        id: schedule.id,
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
-        price: schedule.total,
-        priceUnit: schedule.priceUnit,
-        durationMinutes: schedule.durationMinutes,
-        seatsAvailable: schedule.seatsAvailable,
-        status: schedule.status,
       })) || [],
       createdAt: experience.createdAt,
       updatedAt: experience.updatedAt,

@@ -78,4 +78,12 @@ export class CreateBookingInquiryDto {
   @IsOptional()
   @IsString()
   preferredReturnDate?: string;
+
+  @IsOptional()
+  @IsString()
+  origin?: string;
+
+  @IsOptional()
+  @IsString()
+  destination?: string;
 } 

@@ -16,7 +16,7 @@ import { PaymentProviderService } from '../payments/services/payment-provider.se
 import { PaymentProviderType } from '../payments/interfaces/payment-provider.interface';
 import { User } from '../../common/entities/user.entity';
 import { UserTrip } from '../../common/entities/user-trips.entity';
-import { ExperienceSchedule } from '../../common/entities/experience-schedule.entity';
+import { ExperienceTemplate } from '../../common/entities/experience-template.entity';
 
 @Injectable()
 export class BookingsService {
@@ -25,8 +25,8 @@ export class BookingsService {
     private readonly bookingRepository: Repository<Booking>,
     @InjectRepository(CharterDeal)
     private readonly charterDealRepository: Repository<CharterDeal>,
-    @InjectRepository(ExperienceSchedule)
-    private readonly experienceScheduleRepository: Repository<ExperienceSchedule>,
+    @InjectRepository(ExperienceTemplate)
+    private readonly experienceTemplateRepository: Repository<ExperienceTemplate>,
     @InjectRepository(Passenger)
     private readonly passengerRepository: Repository<Passenger>,
     @InjectRepository(BookingTimeline)
@@ -169,7 +169,7 @@ export class BookingsService {
         companyId: Number(deal.companyId) || 0,
         aircraftId: deal.aircraftId, // Use aircraft ID from the deal
         bookingType: BookingType.DEAL,
-        experienceScheduleId: null, // NULL for deal bookings
+        experienceTemplateId: null, // NULL for deal bookings
         totalPrice: null, // NULL for deal bookings (pricing happens later)
         taxType: null, // NULL for deal bookings
         taxAmount: null, // NULL for deal bookings
@@ -347,24 +347,24 @@ export class BookingsService {
     let aircraftId: number;
     let bookingType: BookingType;
     let dealId: number | null = null;
-    let experienceScheduleId: number | null = null;
+    let experienceTemplateId: number | null = null;
 
     // Determine if this is a deal booking or experience booking
     if (createBookingDto.experienceScheduleId) {
       // Experience booking
-      experience = await queryRunner.manager.findOne(ExperienceSchedule, {
-        where: { id: createBookingDto.experienceScheduleId },
+      experience = await queryRunner.manager.findOne(ExperienceTemplate, {
+        where: { id: createBookingDto.experienceTemplateId },
         relations: ['company', 'aircraft']
       });
 
       if (!experience) {
-        throw new NotFoundException(`Experience schedule with ID ${createBookingDto.experienceScheduleId} not found`);
+        throw new NotFoundException(`Experience template with ID ${createBookingDto.experienceTemplateId} not found`);
       }
 
       companyId = experience.companyId;
       aircraftId = experience.aircraftId;
       bookingType = BookingType.EXPERIENCE;
-      experienceScheduleId = createBookingDto.experienceScheduleId;
+      experienceTemplateId = createBookingDto.experienceTemplateId;
     } else {
       // Deal booking
       deal = await queryRunner.manager.findOne(CharterDeal, {
@@ -388,7 +388,7 @@ export class BookingsService {
       companyId,
       aircraftId,
       dealId,
-      experienceScheduleId,
+      experienceTemplateId,
       bookingType,
       totalPrice: createBookingDto.totalPrice,
       onboardDining: createBookingDto.onboardDining,

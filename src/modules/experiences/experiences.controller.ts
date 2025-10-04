@@ -78,50 +78,43 @@ export class ExperiencesController {
     };
   }
 
-  @Get(':id/schedules')
-  @ApiOperation({ summary: 'Get experience schedules by ID and date' })
+  @Get(':id/availability')
+  @ApiOperation({ summary: 'Get experience availability and pricing' })
   @ApiParam({ name: 'id', description: 'Experience ID' })
-  @ApiQuery({ name: 'date', description: 'Date in YYYY-MM-DD format', required: false })
   @ApiResponse({ 
     status: 200, 
-    description: 'Experience schedules retrieved successfully',
+    description: 'Experience availability retrieved successfully',
     schema: {
       type: 'object',
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
         data: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' },
-              startTime: { type: 'string', format: 'date-time' },
-              endTime: { type: 'string', format: 'date-time' },
-              price: { type: 'number' },
-              priceUnit: { type: 'string' },
-              durationMinutes: { type: 'number' },
-              seatsAvailable: { type: 'number' },
-              status: { type: 'string' },
-              time: { type: 'string' },
-              available: { type: 'boolean' }
-            }
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            title: { type: 'string' },
+            durationMinutes: { type: 'number' },
+            total: { type: 'number' },
+            subTotal: { type: 'number' },
+            taxAmount: { type: 'number' },
+            taxType: { type: 'string' },
+            isAvailable: { type: 'boolean' }
           }
         }
       }
     }
   })
   @ApiResponse({ status: 404, description: 'Experience not found' })
-  async getExperienceSchedules(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('date') date?: string
+  async getExperienceAvailability(
+    @Param('id', ParseIntPipe) id: number
   ) {
-    const schedules = await this.experiencesService.getExperienceSchedules(id, date);
+    const availability = await this.experiencesService.getExperienceAvailability(id);
     
     return {
       success: true,
-      message: 'Experience schedules retrieved successfully',
-      data: schedules,
+      message: 'Experience availability retrieved successfully',
+      data: availability,
     };
   }
 }

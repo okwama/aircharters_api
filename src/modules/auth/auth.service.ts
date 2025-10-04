@@ -274,4 +274,76 @@ export class AuthService {
       where: { id: userId }
     });
   }
+
+  // Biometric Authentication
+  async loginWithBiometric(biometricId: string, userId: string, userEmail: string) {
+    try {
+      // Validate biometric authentication data
+      if (!biometricId || !userId || !userEmail) {
+        throw new UnauthorizedException('Invalid biometric authentication data');
+      }
+
+      // Find user by ID and email (double verification)
+      const user = await this.userRepository.findOne({
+        where: { 
+          id: userId,
+          email: userEmail 
+        }
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('User not found or biometric data invalid');
+      }
+
+      // Check if user is active
+      if (!user.is_active) {
+        throw new UnauthorizedException('User account is inactive');
+      }
+
+      // Generate JWT tokens for biometric login
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        phone: user.phone_number,
+        type: 'biometric', // Indicate this is a biometric login
+        biometricId: biometricId, // Store biometric ID in token for tracking
+      };
+
+      const accessToken = this.jwtService.sign(payload, { expiresIn: '24h' });
+      const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+
+      console.log('🔥 Biometric login successful for user:', user.email);
+      console.log('🔥 Biometric ID:', biometricId);
+
+      return {
+        accessToken,
+        refreshToken,
+        tokenType: 'Bearer',
+        expiresIn: 86400, // 24 hours in seconds
+        user: {
+          id: user.id,
+          email: user.email,
+          phoneNumber: user.phone_number,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          countryCode: user.country_code,
+          loyaltyPoints: user.loyalty_points,
+          walletBalance: user.wallet_balance,
+          isActive: user.is_active,
+          emailVerified: user.email_verified,
+          phoneVerified: user.phone_verified,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        },
+      };
+    } catch (error) {
+      console.error('🔥 Biometric login error:', error);
+      
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new UnauthorizedException('Biometric authentication failed');
+      }
+    }
+  }
 } 

@@ -57,7 +57,6 @@ import { CompanyPaymentAccount } from './common/entities/company-payment-account
 import { TransactionLedger } from './common/entities/transaction-ledger.entity';
 import { ExperienceTemplate } from './common/entities/experience-template.entity';
 import { ExperienceImage } from './common/entities/experience-image.entity';
-import { ExperienceSchedule } from './common/entities/experience-schedule.entity';
 
 @Module({
   imports: [
@@ -111,7 +110,6 @@ import { ExperienceSchedule } from './common/entities/experience-schedule.entity
           TransactionLedger,
           ExperienceTemplate,
           ExperienceImage,
-          ExperienceSchedule,
         ],
         synchronize: false,
         logging: false,
@@ -139,6 +137,11 @@ import { ExperienceSchedule } from './common/entities/experience-schedule.entity
           // Lock timeout prevention
           lockWaitTimeout: 30000, // 30 seconds
           innodbLockWaitTimeout: 30, // 30 seconds
+          
+          // SSL/TLS Configuration for caching_sha2_password
+          ssl: {
+            rejectUnauthorized: false, // Set to true in production with proper certificates
+          },
         },
         
         // TypeORM specific optimizations

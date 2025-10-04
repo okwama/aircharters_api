@@ -210,6 +210,45 @@ export class AuthController {
     };
   }
 
+  @Post('login/biometric')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RateLimitConfigs.AUTH)
+  @ApiOperation({ summary: 'Login with biometric authentication' })
+  @ApiResponse({
+    status: 200,
+    description: 'Biometric login successful',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' },
+        tokenType: { type: 'string' },
+        expiresIn: { type: 'number' },
+        user: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            email: { type: 'string' },
+            phoneNumber: { type: 'string' },
+            firstName: { type: 'string' },
+            lastName: { type: 'string' },
+            countryCode: { type: 'string' },
+            loyaltyPoints: { type: 'number' },
+            walletBalance: { type: 'number' },
+            isActive: { type: 'boolean' },
+            emailVerified: { type: 'boolean' },
+            phoneVerified: { type: 'boolean' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Invalid biometric authentication' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async loginWithBiometric(@Body() biometricDto: { biometricId: string; userId: string; userEmail: string }) {
+    return await this.authService.loginWithBiometric(biometricDto.biometricId, biometricDto.userId, biometricDto.userEmail);
+  }
+
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

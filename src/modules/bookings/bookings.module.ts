@@ -4,7 +4,7 @@ import { BookingsService } from './bookings.service';
 import { BookingsController } from './bookings.controller';
 import { Booking } from '../../common/entities/booking.entity';
 import { CharterDeal } from '../../common/entities/charter-deal.entity';
-import { ExperienceSchedule } from '../../common/entities/experience-schedule.entity';
+import { ExperienceTemplate } from '../../common/entities/experience-template.entity';
 import { Passenger } from '../../common/entities/passenger.entity';
 import { BookingTimeline } from '../../common/entities/booking-timeline.entity';
 import { UserTrip } from '../../common/entities/user-trips.entity';
@@ -20,7 +20,7 @@ import { BookingQueryService } from './services/booking-query.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Booking, CharterDeal, ExperienceSchedule, Passenger, BookingTimeline, UserTrip, WalletTransaction, User, Payment]),
+    TypeOrmModule.forFeature([Booking, CharterDeal, ExperienceTemplate, Passenger, BookingTimeline, UserTrip, WalletTransaction, User, Payment]),
     WalletModule,
     PaymentsModule, // Import PaymentsModule to access PaymentProviderService
     EmailModule, // Import EmailModule to access EmailService

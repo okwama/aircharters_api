@@ -6,6 +6,7 @@ import { AircraftCalendar, CalendarEventType } from '../../common/entities/aircr
 import { Booking, BookingType, BookingStatus, PaymentStatus } from '../../common/entities/booking.entity';
 import { ChartersCompany } from '../../common/entities/charters-company.entity';
 import { Passenger } from '../../common/entities/passenger.entity';
+import { BookingStop, LocationType } from '../../common/entities/booking-stop.entity';
 import { User } from '../../common/entities/user.entity';
 import { Payment } from '../../common/entities/payment.entity';
 import { AircraftTypeImagePlaceholder } from '../../common/entities/aircraft-type-image-placeholder.entity';
@@ -15,6 +16,8 @@ import { PaymentProviderService } from '../payments/services/payment-provider.se
 import { PaymentProviderType } from '../payments/interfaces/payment-provider.interface';
 import { GoogleEarthEngineService } from '../google-earth-engine/google-earth-engine.service';
 import { PassengerValidationService } from './services/passenger-validation.service';
+import { EmailService } from '../email/email.service';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class DirectCharterService {
@@ -29,6 +32,8 @@ export class DirectCharterService {
     private companyRepository: Repository<ChartersCompany>,
     @InjectRepository(Passenger)
     private passengerRepository: Repository<Passenger>,
+    @InjectRepository(BookingStop)
+    private bookingStopRepository: Repository<BookingStop>,
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
     @InjectRepository(AircraftTypeImagePlaceholder)
@@ -37,6 +42,8 @@ export class DirectCharterService {
     private readonly paymentProviderService: PaymentProviderService,
     private readonly googleEarthEngineService: GoogleEarthEngineService,
     private readonly passengerValidationService: PassengerValidationService,
+    private readonly emailService: EmailService,
+    private readonly smsService: SmsService,
   ) {}
 
   async searchAvailableAircraft(searchDto: SearchDirectCharterDto) {
@@ -473,6 +480,45 @@ export class DirectCharterService {
       
       console.log(`All ${savedPassengers.length} passengers created successfully`);
 
+      // Create booking stops if provided
+      if (bookDto.stops && bookDto.stops.length > 0) {
+        console.log('=== BACKEND SERVICE: CREATING BOOKING STOPS ===');
+        console.log(`Creating ${bookDto.stops.length} stops for booking ${savedBooking.id}`);
+        
+        const savedStops = [];
+        for (let i = 0; i < bookDto.stops.length; i++) {
+          const stopDto = bookDto.stops[i];
+          console.log(`Creating stop ${i + 1}:`, stopDto);
+          
+          const stopData = {
+            bookingId: savedBooking.id,
+            stopName: stopDto.stopName,
+            longitude: stopDto.longitude,
+            latitude: stopDto.latitude,
+            datetime: stopDto.datetime ? new Date(stopDto.datetime) : null,
+            stopOrder: stopDto.stopOrder || (i + 1),
+            locationType: stopDto.locationType || LocationType.CUSTOM,
+            locationCode: stopDto.locationCode || null,
+          };
+          
+          const bookingStop = this.bookingStopRepository.create(stopData);
+          const savedStop = await queryRunner.manager.save(bookingStop);
+          savedStops.push(savedStop);
+          
+          console.log(`Stop ${i + 1} Saved Successfully:`, {
+            id: savedStop.id,
+            bookingId: savedStop.bookingId,
+            stopName: savedStop.stopName,
+            stopOrder: savedStop.stopOrder,
+            locationType: savedStop.locationType
+          });
+        }
+        
+        console.log(`All ${savedStops.length} stops created successfully`);
+      } else {
+        console.log('No stops provided for this booking');
+      }
+
       // Create calendar entry for the booking
       const calendarEntry = this.aircraftCalendarRepository.create({
         aircraftId: bookDto.aircraftId,
@@ -522,6 +568,14 @@ export class DirectCharterService {
       // Commit transaction only after all operations succeed
       console.log('=== BACKEND SERVICE: COMMITTING TRANSACTION ===');
       await queryRunner.commitTransaction();
+      
+      // Send notifications to charter company after successful booking creation
+      try {
+        await this.sendCharterBookingNotifications(savedBooking, aircraft, user);
+      } catch (notificationError) {
+        console.error('Failed to send charter booking notifications:', notificationError);
+        // Don't fail the booking creation if notifications fail
+      }
       
       console.log('=== BACKEND SERVICE: BOOKING COMPLETED SUCCESSFULLY ===');
       console.log('Final Booking Details:', {
@@ -712,6 +766,60 @@ export class DirectCharterService {
     } catch (error) {
       console.error('Error fetching booked dates:', error);
       throw new Error('Failed to fetch booked dates');
+    }
+  }
+
+  private async sendCharterBookingNotifications(
+    booking: Booking,
+    aircraft: Aircraft,
+    user: User
+  ): Promise<void> {
+    try {
+      // Get charter company details
+      const company = await this.companyRepository.findOne({
+        where: { id: aircraft.companyId }
+      });
+
+      if (!company) {
+        console.error('Charter company not found for aircraft:', aircraft.id);
+        return;
+      }
+
+      const bookingData = {
+        referenceNumber: booking.referenceNumber,
+        customerName: `${user.first_name} ${user.last_name}`,
+        customerEmail: user.email,
+        aircraftName: aircraft.name,
+        aircraftType: aircraft.type,
+        origin: booking.originName,
+        destination: booking.destinationName,
+        departureDate: booking.departureDateTime.toLocaleString(),
+        requestedSeats: booking.totalAdults + booking.totalChildren,
+        specialRequirements: booking.specialRequirements,
+        totalPrice: booking.totalPrice,
+        createdAt: booking.createdAt.toLocaleString(),
+        passengers: [], // Could be populated from passenger records if needed
+      };
+
+      // Send email notification
+      if (this.emailService && company.email) {
+        await this.emailService.sendInquiryNotificationEmail(company.email, bookingData);
+      }
+
+      // Send SMS notification
+      if (this.smsService && company.mobileNumber) {
+        await this.smsService.sendInquiryNotificationSms(company.mobileNumber, {
+          referenceNumber: booking.referenceNumber,
+          customerName: bookingData.customerName,
+          aircraftName: aircraft.name,
+          requestedSeats: bookingData.requestedSeats,
+        });
+      }
+
+      console.log(`Charter booking notifications sent for ${booking.referenceNumber} to company ${company.companyName}`);
+    } catch (error) {
+      console.error('Error sending charter booking notifications:', error);
+      throw error;
     }
   }
 }

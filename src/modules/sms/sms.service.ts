@@ -1,46 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as twilio from 'twilio';
+import axios from 'axios';
 
 @Injectable()
 export class SmsService {
-  private client: twilio.Twilio;
-  private verifyServiceSid: string;
+  private readonly logger = new Logger(SmsService.name);
+  private infobipApiKey: string;
+  private infobipBaseUrl: string;
 
   constructor(private configService: ConfigService) {
-    const accountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
-    const authToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
-    this.verifyServiceSid = this.configService.get<string>('TWILIO_VERIFY_SERVICE_SID');
+    this.infobipApiKey = this.configService.get<string>('INFOBIP_API_KEY');
+    this.infobipBaseUrl = this.configService.get<string>('INFOBIP_BASE_URL') || 'https://rpdjky.api.infobip.com';
     
-    if (!accountSid || !authToken || !this.verifyServiceSid) {
-      throw new Error('Twilio credentials not configured. Please set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_VERIFY_SERVICE_SID');
+    if (!this.infobipApiKey) {
+      this.logger.warn('INFOBIP_API_KEY not configured. SMS service will be disabled.');
+      return;
     }
-    
-    this.client = twilio(accountSid, authToken);
   }
 
   async sendVerificationCode(phoneNumber: string): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log(`Sending verification code to: ${phoneNumber}`);
-      console.log(`Using Verify Service SID: ${this.verifyServiceSid}`);
-      
-      // Use Twilio Verify service to send verification code
-      const verification = await this.client.verify.v2
-        .services(this.verifyServiceSid)
-        .verifications
-        .create({
-          to: phoneNumber,
-          channel: 'sms'
-        });
+    if (!this.infobipApiKey) {
+      this.logger.error('Infobip not initialized. Check INFOBIP_API_KEY configuration.');
+      return { success: false, message: 'SMS service not configured' };
+    }
 
-      console.log(`Verification sent successfully. Status: ${verification.status}`);
+    try {
+      this.logger.log(`Sending verification code to: ${phoneNumber}`);
+      
+      // Generate a 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      const result = await axios.post(`${this.infobipBaseUrl}/sms/2/text/single`, {
+        from: 'AirCharters',
+        to: phoneNumber,
+        text: `Your Air Charters verification code is: ${verificationCode}. This code expires in 10 minutes.`
+      }, {
+        headers: {
+          'Authorization': `App ${this.infobipApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      this.logger.log(`Verification code sent successfully to ${phoneNumber}. Message ID: ${result.data?.messages?.[0]?.messageId}`);
       
       return {
         success: true,
         message: 'Verification code sent successfully',
       };
     } catch (error) {
-      console.error('Twilio Verify error:', error);
+      this.logger.error('Infobip SMS error:', error);
       return {
         success: false,
         message: `Failed to send verification code: ${error.message}`,
@@ -49,36 +57,56 @@ export class SmsService {
   }
 
   async verifyCode(phoneNumber: string, code: string): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log(`Verifying code ${code} for phone: ${phoneNumber}`);
-      
-      // Use Twilio Verify service to verify the code
-      const verificationCheck = await this.client.verify.v2
-        .services(this.verifyServiceSid)
-        .verificationChecks
-        .create({
-          to: phoneNumber,
-          code: code
-        });
+    // Note: Infobip doesn't have built-in verification like Twilio
+    // This would need to be implemented with a database to store codes
+    // For now, we'll return a placeholder response
+    this.logger.warn('SMS verification not fully implemented with Infobip. Manual verification required.');
+    
+    return {
+      success: false,
+      message: 'SMS verification not implemented with Infobip. Please contact support.',
+    };
+  }
 
-      console.log(`Verification check result. Status: ${verificationCheck.status}`);
+  async sendInquiryNotificationSms(
+    phoneNumber: string,
+    inquiryData: {
+      referenceNumber: string;
+      customerName: string;
+      aircraftName: string;
+      requestedSeats: number;
+    }
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    if (!this.infobipApiKey) {
+      this.logger.error('Infobip not initialized. Check INFOBIP_API_KEY configuration.');
+      return { success: false, error: 'SMS service not configured' };
+    }
+
+    try {
+      const smsText = `New charter inquiry ${inquiryData.referenceNumber}: ${inquiryData.customerName} requests ${inquiryData.requestedSeats} seats on ${inquiryData.aircraftName}. Please check your email for details.`;
       
-      if (verificationCheck.status === 'approved') {
-        return {
-          success: true,
-          message: 'Code verified successfully',
-        };
-      } else {
-        return {
-          success: false,
-          message: 'Invalid verification code',
-        };
-      }
+      const result = await axios.post(`${this.infobipBaseUrl}/sms/2/text/single`, {
+        from: 'AirCharters',
+        to: phoneNumber,
+        text: smsText
+      }, {
+        headers: {
+          'Authorization': `App ${this.infobipApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      this.logger.log(`Inquiry notification SMS sent to ${phoneNumber}. Message ID: ${result.data?.messages?.[0]?.messageId}`);
+      
+      return { 
+        success: true, 
+        messageId: result.data?.messages?.[0]?.messageId 
+      };
     } catch (error) {
-      console.error('Twilio Verify check error:', error);
-      return {
-        success: false,
-        message: `Verification failed: ${error.message}`,
+      this.logger.error(`Failed to send inquiry notification SMS to ${phoneNumber}:`, error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
       };
     }
   }

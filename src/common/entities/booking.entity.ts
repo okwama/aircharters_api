@@ -60,8 +60,8 @@ export class Booking {
   @Column({ name: 'dealId', type: 'int', nullable: true })
   dealId: number;
 
-  @Column({ name: 'experienceScheduleId', type: 'int', nullable: true })
-  experienceScheduleId: number;
+  @Column({ name: 'experienceTemplateId', type: 'int', nullable: true })
+  experienceTemplateId: number;
 
   @Column({ name: 'totalPrice', type: 'decimal', precision: 10, scale: 2, nullable: true })
   totalPrice: number;

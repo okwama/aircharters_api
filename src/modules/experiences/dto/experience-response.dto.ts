@@ -1,31 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PriceUnit, ScheduleStatus } from '../../../common/entities/experience-schedule.entity';
-
-export class ExperienceScheduleDto {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  startTime: Date;
-
-  @ApiProperty({ required: false })
-  endTime?: Date;
-
-  @ApiProperty()
-  price: number;
-
-  @ApiProperty({ enum: PriceUnit })
-  priceUnit: PriceUnit;
-
-  @ApiProperty()
-  durationMinutes: number;
-
-  @ApiProperty()
-  seatsAvailable: number;
-
-  @ApiProperty({ enum: ScheduleStatus })
-  status: ScheduleStatus;
-}
 
 export class ExperienceImageDto {
   @ApiProperty()
@@ -60,14 +33,26 @@ export class ExperienceDetailDto {
   @ApiProperty({ required: false })
   locationName?: string;
 
+  @ApiProperty({ required: false })
+  taxType?: string;
+
+  @ApiProperty()
+  taxAmount: number;
+
+  @ApiProperty()
+  subTotal: number;
+
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  durationMinutes: number;
+
   @ApiProperty()
   termsConditions: string;
 
   @ApiProperty({ type: [ExperienceImageDto] })
   images: ExperienceImageDto[];
-
-  @ApiProperty({ type: [ExperienceScheduleDto] })
-  schedules: ExperienceScheduleDto[];
 
   @ApiProperty()
   createdAt: Date;
@@ -97,9 +82,6 @@ export class ExperienceCardDto {
 
   @ApiProperty()
   rating: string;
-
-  @ApiProperty()
-  seatsAvailable: number;
 }
 
 export class ExperienceCategoryDto {

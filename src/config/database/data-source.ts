@@ -32,6 +32,11 @@ export const dataSource = new DataSource({
     // Connection health checks
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
+    
+    // SSL/TLS Configuration for caching_sha2_password
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
   
   // TypeORM specific optimizations
@@ -77,6 +82,11 @@ export const getDataSource = (configService: ConfigService) => {
       // Connection health checks
       enableKeepAlive: true,
       keepAliveInitialDelay: 10000,
+      
+      // SSL/TLS Configuration for caching_sha2_password
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
     
     // TypeORM specific optimizations

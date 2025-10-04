@@ -2,6 +2,7 @@ import { IsString, IsNotEmpty, IsDateString, IsInt, Min, Max, IsNumber, IsOption
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { PassengerDto } from './passenger.dto';
+import { BookingStopDto } from './booking-stop.dto';
 
 export class BookDirectCharterDto {
   @ApiProperty({ description: 'Aircraft ID' })
@@ -64,4 +65,11 @@ export class BookDirectCharterDto {
   @ValidateNested({ each: true })
   @Type(() => PassengerDto)
   passengers: PassengerDto[];
+
+  @ApiProperty({ description: 'Booking stops array (origin, intermediate stops, destination)', type: [BookingStopDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BookingStopDto)
+  stops?: BookingStopDto[];
 } 

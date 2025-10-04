@@ -94,4 +94,5 @@ export class CreateBookingDto {
   @ValidateNested({ each: true })
   @Type(() => PassengerDataDto)
   passengers?: PassengerDataDto[];
+  experienceTemplateId: any;
 } 
