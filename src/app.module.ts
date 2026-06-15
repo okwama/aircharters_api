@@ -25,7 +25,6 @@ import { HealthController } from './health.controller';
 import { User } from './common/entities/user.entity';
 import { CharterDeal } from './common/entities/charter-deal.entity';
 import { ChartersCompany } from './common/entities/charters-company.entity';
-// FixedRoute import removed - no longer used
 import { Aircraft as CharterAircraft } from './common/entities/aircraft.entity';
 import { Aircraft } from './common/entities/aircraft-booking.entity';
 import { Company } from './common/entities/company.entity';
@@ -67,89 +66,92 @@ import { ExperienceImage } from './common/entities/experience-image.entity';
     ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
-        entities: [
-          User, 
-          CharterDeal,
-          ChartersCompany,
-          // FixedRoute removed - no longer used
-          CharterAircraft,
-          Aircraft,
-          Company,
-          Passenger,
-          Booking,
-          Payment,
-          WalletTransaction,
-          UserProfile,
-          UserTrip,
-          UserFile,
-          UserEvent,
-          BookingTimeline,
-          Location,
-          AircraftAvailability,
-          AircraftImage,
-          AircraftCalendar,
-          BookingInquiry,
-          InquiryStop,
-          BookingStop,
-          Amenity,
-          AircraftAmenity,
-          CharterDealAmenity,
-          AircraftTypeImagePlaceholder,
-          PlatformCommission,
-          CommissionTier,
-          CompanyCommission,
-          CommissionHistory,
-          CompanyPaymentAccount,
-          TransactionLedger,
-          ExperienceTemplate,
-          ExperienceImage,
-        ],
-        synchronize: false,
-        logging: false,
+      useFactory: (configService: ConfigService) => {
+        const isProduction = configService.get('NODE_ENV') === 'production';
         
-        // Connection Pooling Optimizations
-        extra: {
-          // Connection pool settings
-          connectionLimit: 20,
-          acquireTimeout: 60000, // 60 seconds
-          timeout: 60000, // 60 seconds
-          charset: 'utf8mb4_unicode_ci',
+        return {
+          type: 'mysql',
+          host: configService.get('DB_HOST'),
+          port: configService.get('DB_PORT'),
+          username: configService.get('DB_USERNAME'),
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_DATABASE'),
+          entities: [
+            User, 
+            CharterDeal,
+            ChartersCompany,
+            CharterAircraft,
+            Aircraft,
+            Company,
+            Passenger,
+            Booking,
+            Payment,
+            WalletTransaction,
+            UserProfile,
+            UserTrip,
+            UserFile,
+            UserEvent,
+            BookingTimeline,
+            Location,
+            AircraftAvailability,
+            AircraftImage,
+            AircraftCalendar,
+            BookingInquiry,
+            InquiryStop,
+            BookingStop,
+            Amenity,
+            AircraftAmenity,
+            CharterDealAmenity,
+            AircraftTypeImagePlaceholder,
+            PlatformCommission,
+            CommissionTier,
+            CompanyCommission,
+            CommissionHistory,
+            CompanyPaymentAccount,
+            TransactionLedger,
+            ExperienceTemplate,
+            ExperienceImage,
+          ],
+          synchronize: false,
+          logging: false,
           
-          // Connection management
-          multipleStatements: false,
-          dateStrings: true,
+          // MOVED HERE: Crucial fix for "Server does not support secure connection"
+          // Disables SSL on local environments, but leaves room for production security.
+          ssl: isProduction ? { rejectUnauthorized: false } : false,
           
-          // Performance optimizations
-          supportBigNumbers: true,
-          bigNumberStrings: true,
-          
-          // Connection health checks
-          enableKeepAlive: true,
-          keepAliveInitialDelay: 10000,
-          
-          // Lock timeout prevention
-          lockWaitTimeout: 30000, // 30 seconds
-          innodbLockWaitTimeout: 30, // 30 seconds
-          
-          // SSL/TLS Configuration for caching_sha2_password
-          ssl: {
-            rejectUnauthorized: false, // Set to true in production with proper certificates
+          // Connection Pooling Optimizations
+          extra: {
+            connectionLimit: 20,
+            acquireTimeout: 60000, 
+            timeout: 60000, 
+            charset: 'utf8mb4_unicode_ci',
+            
+            // Connection management
+            multipleStatements: false,
+            dateStrings: true,
+            
+            // Performance optimizations
+            supportBigNumbers: true,
+            bigNumberStrings: true,
+            
+            // Connection health checks
+            enableKeepAlive: true,
+            keepAliveInitialDelay: 10000,
+            
+            // Lock timeout prevention
+            lockWaitTimeout: 30000, 
+            innodbLockWaitTimeout: 30, 
+            
+            // SSL config completely removed from here to prevent driver confusion
           },
-        },
-        
-        // TypeORM specific optimizations
-        maxQueryExecutionTime: 30000,
-        cache: {
-          duration: 30000,
-        },
-      }),
+          
+          // TypeORM specific optimizations
+          maxQueryExecutionTime: 30000,
+          cache: {
+            duration: 30000,
+          },
+        };
+      },
       inject: [ConfigService],
     }),
     AuthModule,
@@ -173,4 +175,4 @@ import { ExperienceImage } from './common/entities/experience-image.entity';
   ],
   controllers: [HealthController],
 })
-export class AppModule {} 
+export class AppModule {}
