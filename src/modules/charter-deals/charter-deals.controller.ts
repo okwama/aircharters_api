@@ -10,7 +10,6 @@ export class CharterDealsController {
   constructor(private readonly charterDealsService: CharterDealsService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all charter deals with filters' })
   @ApiResponse({ 
     status: 200, 
@@ -132,7 +131,6 @@ export class CharterDealsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get charter deal by ID' })
   @ApiResponse({ 
     status: 200, 
